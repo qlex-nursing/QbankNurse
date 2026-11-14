@@ -1,26 +1,657 @@
 @import "tailwindcss";
 
+/* =========================================
+   QNURSE BRAND DESIGN SYSTEM
+========================================= */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --qn-red: #E85D5D;
+  --qn-apricot: #FFD6A5;
+  --qn-indigo: #5B3DF5;
+  --qn-lilac: #E8DEFF;
+  --qn-violet-ink: #2D1B68;
+  --qn-butter: #FFF275;
+  --qn-champagne: #F8E7C9;
+
+  --qn-background: #FFFCFA;
+  --qn-surface: #FFFFFF;
+  --qn-text: #2D1B68;
+  --qn-muted: #777087;
+  --qn-border: #ECE7F2;
+
+  --background: var(--qn-background);
+  --surface: var(--qn-surface);
+  --text-primary: var(--qn-text);
+  --text-secondary: var(--qn-muted);
+  --border: var(--qn-border);
+
+  --iris: var(--qn-indigo);
+  --iris-dark: var(--qn-violet-ink);
+  --iris-light: var(--qn-lilac);
+  --lilac: var(--qn-lilac);
+  --lilac-dark: #CBB9F9;
+
+  --emerald: #2FAE78;
+  --butter: var(--qn-butter);
+  --champagne: var(--qn-champagne);
+  --graphite: #51476E;
+
+  --radius-lg: 1rem;
+  --shadow-card: 0 14px 30px rgba(45, 27, 104, 0.08);
+  --shadow-hover: 0 18px 34px rgba(45, 27, 104, 0.12);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* =========================================
+   GLOBAL RESET
+========================================= */
+
+* {
+  box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  min-height: 100%;
+  scroll-behavior: smooth;
 }
 
 body {
+  min-height: 100vh;
   background: var(--background);
-  color: var(--foreground);
+  color: var(--text-primary);
   font-family: Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+::selection {
+  background: var(--lilac);
+  color: var(--iris-dark);
+}
+
+/* =========================================
+   SCROLLBAR
+========================================= */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D8D1E5;
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #B8A9D2;
+}
+
+/* =========================================
+   REUSABLE BRAND UTILITIES
+========================================= */
+
+.qn-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.qn-card-hover {
+  transition: transform 200ms ease, box-shadow 200ms ease,
+    border-color 200ms ease;
+}
+
+.qn-card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--lilac-dark);
+}
+
+.qn-primary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: 12px;
+  background: var(--iris);
+  color: #FFFFFF;
+  font-weight: 600;
+  transition: all 200ms ease;
+}
+
+.qn-primary-button:hover {
+  background: var(--iris-dark);
+  transform: translateY(-1px);
+}
+
+.qn-secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: 12px;
+  background: var(--iris-light);
+  color: var(--iris);
+  font-weight: 600;
+  transition: all 200ms ease;
+}
+
+.qn-secondary-button:hover {
+  background: #D9C9FF;
+}
+
+.qn-section-label {
+  color: var(--iris);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* =========================================
+   MARKETING NAVIGATION
+========================================= */
+
+.nav-link {
+  --nav-hover-color: #5B3DF5;
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 10px 0;
+  color: #51476E;
+  font-size: 13px;
+  font-weight: 700;
+  transition: color 200ms ease;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--nav-hover-color);
+  transform: translateX(-50%);
+  transition: width 250ms ease;
+}
+
+.nav-link:hover,
+.nav-link:focus-visible,
+.nav-link-active {
+  color: var(--nav-hover-color);
+}
+
+.nav-link:hover::after,
+.nav-link:focus-visible::after,
+.nav-link-active::after {
+  width: 100%;
+}
+
+.nav-hover-red {
+  --nav-hover-color: #E85D5D;
+}
+
+.nav-hover-apricot {
+  --nav-hover-color: #D58A42;
+}
+
+.nav-hover-indigo {
+  --nav-hover-color: #5B3DF5;
+}
+
+.nav-hover-butter {
+  --nav-hover-color: #B39B00;
+}
+
+/* =========================================
+   STUDENT EXPERIENCE MARQUEE
+========================================= */
+
+.experience-marquee {
+  width: 100%;
+  overflow: hidden;
+}
+
+.experience-track {
+  width: max-content;
+  animation: experience-scroll-left 55s linear infinite;
+}
+
+.experience-marquee:hover .experience-track {
+  animation-play-state: paused;
+}
+
+@keyframes experience-scroll-left {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* =========================================
+   DASHBOARD THEME VARIABLES
+========================================= */
+
+.dashboard-theme {
+  min-height: 100vh;
+  transition: background-color 250ms ease, color 250ms ease;
+}
+
+/* LIGHT MODE */
+
+.dashboard-light {
+  --dash-bg: #F7F5FC;
+  --dash-surface: #FFFFFF;
+  --dash-surface-soft: #F5F1FF;
+
+  --dash-text: #292342;
+  --dash-body: #51476E;
+  --dash-muted: #77718C;
+
+  --dash-border: #E9E3F5;
+  --dash-track: #EEEAF5;
+
+  --dash-primary: #5B3DF5;
+  --dash-primary-hover: #4929D8;
+  --dash-primary-text: #FFFFFF;
+
+  --dash-secondary: #E8DEFF;
+  --dash-secondary-hover: #D9C9FF;
+  --dash-secondary-text: #392576;
+
+  background: var(--dash-bg);
+  color: var(--dash-text);
+}
+
+/* DARK MODE */
+
+.dashboard-dark {
+  --dash-bg: #17132B;
+  --dash-surface: #211B3B;
+  --dash-surface-soft: #30264F;
+
+  --dash-text: #F5F1FF;
+  --dash-body: #E5DDF7;
+  --dash-muted: #BDB3D6;
+
+  --dash-border: #40345F;
+  --dash-track: #40365C;
+
+  --dash-primary: #E8DEFF;
+  --dash-primary-hover: #D9C9FF;
+  --dash-primary-text: #30205E;
+
+  --dash-secondary: #30264F;
+  --dash-secondary-hover: #40336A;
+  --dash-secondary-text: #E8DEFF;
+
+  background: var(--dash-bg);
+  color: var(--dash-text);
+}
+
+/* =========================================
+   DASHBOARD LAYOUT
+========================================= */
+
+.dashboard-workspace {
+  min-height: 100vh;
+  background: var(--dash-bg);
+  color: var(--dash-text);
+}
+
+.dashboard-header {
+  background: var(--dash-surface);
+  border-bottom: 1px solid var(--dash-border);
+}
+
+.dashboard-heading {
+  color: var(--dash-text);
+}
+
+.dashboard-body {
+  color: var(--dash-body);
+}
+
+.dashboard-muted {
+  color: var(--dash-muted);
+}
+
+.dashboard-divider {
+  border-color: var(--dash-border);
+}
+
+/* =========================================
+   DASHBOARD SEARCH
+========================================= */
+
+.dashboard-search {
+  background: var(--dash-surface-soft);
+  border: 1px solid var(--dash-border);
+  color: var(--dash-text);
+}
+
+.dashboard-search::placeholder {
+  color: var(--dash-muted);
+}
+
+.dashboard-search:focus {
+  outline: none;
+  border-color: var(--dash-indigo, #5B3DF5);
+}
+
+/* =========================================
+   DASHBOARD CARDS
+========================================= */
+
+.dashboard-card,
+.dashboard-category-card {
+  background: var(--dash-surface);
+  border: 1px solid var(--dash-border);
+  border-radius: 18px;
+  color: var(--dash-text);
+  box-shadow: 0 4px 16px rgba(30, 20, 65, 0.04);
+  transition: background-color 220ms ease,
+    border-color 220ms ease, color 220ms ease,
+    box-shadow 220ms ease, transform 220ms ease;
+}
+
+.dashboard-card:hover,
+.dashboard-category-card:hover {
+  border-color: #8D7AF5;
+  box-shadow: 0 12px 28px rgba(91, 61, 245, 0.09);
+  transform: translateY(-2px);
+}
+
+.dashboard-inner-card {
+  background: var(--dash-surface-soft);
+  border: 1px solid var(--dash-border);
+  border-radius: 14px;
+}
+
+.dashboard-card-title {
+  color: var(--dash-text);
+}
+
+.dashboard-card-description {
+  color: var(--dash-body);
+}
+
+.dashboard-list-row:hover {
+  background: var(--dash-surface-soft);
+}
+
+/* =========================================
+   DASHBOARD BUTTONS
+========================================= */
+
+.dashboard-primary-button {
+  background: var(--dash-primary);
+  color: var(--dash-primary-text);
+  border: 1px solid transparent;
+  transition: all 200ms ease;
+}
+
+.dashboard-primary-button:hover {
+  background: var(--dash-primary-hover);
+  transform: translateY(-1px);
+}
+
+.dashboard-secondary-button {
+  background: var(--dash-secondary);
+  color: var(--dash-secondary-text);
+  border: 1px solid var(--dash-border);
+  transition: all 200ms ease;
+}
+
+.dashboard-secondary-button:hover {
+  background: var(--dash-secondary-hover);
+}
+
+/* =========================================
+   DASHBOARD BANNER
+========================================= */
+
+.dashboard-library-banner {
+  background: linear-gradient(
+    120deg,
+    #21154B 0%,
+    #392576 55%,
+    #5B3DF5 100%
+  );
+  color: #FFFFFF;
+}
+
+.dashboard-library-banner h1 {
+  color: #FFFFFF;
+}
+
+.dashboard-library-banner p {
+  color: #E8DEFF;
+}
+
+.dashboard-banner-search {
+  background: #FFFFFF;
+  border: 1px solid #E9E3F5;
+  color: #292342;
+}
+
+.dashboard-banner-search::placeholder {
+  color: #77718C;
+}
+
+.dashboard-banner-button {
+  background: #E8DEFF;
+  color: #392576;
+  border: 1px solid #E8DEFF;
+}
+
+.dashboard-banner-button:hover {
+  background: #D9C9FF;
+}
+
+/* =========================================
+   DASHBOARD BADGES AND ICONS
+========================================= */
+
+.dashboard-count-badge,
+.dashboard-question-count {
+  background: var(--dash-surface-soft);
+  color: var(--dash-body);
+}
+
+.dashboard-soft-icon {
+  background: var(--dash-secondary);
+  color: var(--dash-primary);
+}
+
+.dashboard-accent-icon {
+  color: var(--dash-primary);
+}
+
+.dashboard-progress-track {
+  background: var(--dash-track);
+}
+
+.dashboard-progress-fill {
+  background: var(--dash-primary);
+}
+
+.dashboard-demo-badge {
+  background: #FCE8E8;
+  color: #C94B4B;
+}
+
+/* =========================================
+   ACCESSIBLE MOTION
+========================================= */
+
+.dashboard-theme,
+.dashboard-theme * {
+  transition-property: background-color, border-color, color,
+    box-shadow, transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+/* Study Guides */
+.dashboard-theme {
+  --guide-border: #e8e3df;
+}
+
+.dashboard-dark {
+  --guide-border: #39334f;
+}
+
+.dashboard-dark .dashboard-card {
+  color: #f4f0ff;
+}
+
+.dashboard-dark .dashboard-body {
+  color: #d4cde8;
+}
+
+.dashboard-dark .dashboard-card table tbody tr {
+  background-color: #211d35;
+}
+
+.dashboard-dark .dashboard-card table tbody td {
+  color: #e5def5;
+  border-color: #39334f;
+}
+
+.dashboard-dark .dashboard-card table thead tr {
+  background-color: #4330a6;
+}
+
+.dashboard-dark .dashboard-card .bg-\[\#F0F0F5\] {
+  background-color: #302a46;
+}
+
+.dashboard-dark .dashboard-card .text-slate-800,
+.dashboard-dark .dashboard-card .text-slate-700 {
+  color: #e5def5;
+}
+/* =========================================
+   QNURSE STUDY GUIDES
+========================================= */
+
+/* Light mode */
+.dashboard-light {
+  --guide-border: #e8e3f5;
+  --guide-callout-bg: #f1edff;
+  --guide-callout-border: #ddd3ff;
+  --guide-callout-title: #4930b8;
+  --guide-callout-text: #40366a;
+  --guide-table-text: #37304c;
+  --guide-table-row: #ffffff;
+  --guide-table-row-alt: #f8f6ff;
+}
+
+/* Dark mode */
+.dashboard-dark {
+  --guide-border: #39334f;
+  --guide-callout-bg: #292342;
+  --guide-callout-border: #514477;
+  --guide-callout-title: #c8b9ff;
+  --guide-callout-text: #e3dcf8;
+  --guide-table-text: #e5def5;
+  --guide-table-row: #211d35;
+  --guide-table-row-alt: #292440;
+}
+
+/* Callout / short notes */
+.guide-callout {
+  background-color: var(--guide-callout-bg);
+  border-color: var(--guide-callout-border);
+}
+
+.guide-callout-title {
+  color: var(--guide-callout-title);
+}
+
+.guide-callout-text {
+  color: var(--guide-callout-text);
+}
+
+/* Study guide borders */
+.dashboard-theme {
+  --guide-border: #e8e3f5;
+}
+
+.dashboard-dark {
+  --guide-border: #39334f;
+}
+
+/* Tables */
+.dashboard-card table tbody tr {
+  background-color: var(--guide-table-row);
+}
+
+.dashboard-card table tbody tr:nth-child(even) {
+  background-color: var(--guide-table-row-alt);
+}
+
+.dashboard-card table tbody td {
+  color: var(--guide-table-text);
+  border-color: var(--guide-border);
+}
+
+.dashboard-card table thead tr {
+  background-color: #5B3DF5;
+}
+
+/* Dark mode content */
+.dashboard-dark .dashboard-body {
+  color: #d8d1eb;
+}
+
+.dashboard-dark .dashboard-heading {
+  color: #f4f0ff;
 }
