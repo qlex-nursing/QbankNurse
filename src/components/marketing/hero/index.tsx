@@ -345,7 +345,7 @@ export default function Hero() {
               </span>
 
               <span className="text-[10px] font-extrabold text-[#5B3DF5]">
-                QNurse Practice Studio
+                QbankNurse Practice Studio
               </span>
             </div>
           </div>

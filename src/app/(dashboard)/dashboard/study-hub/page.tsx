@@ -21,7 +21,7 @@ import {
   studyTools,
 } from "@/data/mock/dashboard/study-hub";
 
-const STORAGE_KEY = "qnurse-study-hub-saved-subjects";
+const STORAGE_KEY = "qbanknurse-study-hub-saved-subjects";
 
 const subjectDescriptions: Record<string, string> = {
   Fundamentals:

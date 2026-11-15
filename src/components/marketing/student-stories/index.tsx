@@ -31,7 +31,7 @@ export default function StudentStories() {
           <p className="mt-5 text-sm leading-7 text-[#777087]">
             Every learning journey is different. Here are some
             illustrative stories showing the experiences we want
-            QNurse learners to have.
+            QbankNurse learners to have.
           </p>
         </div>
 

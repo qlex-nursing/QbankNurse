@@ -62,7 +62,7 @@ export default function Footer() {
             <div className="max-w-[310px]">
               <Link
                 href="/"
-                aria-label="QNurse home"
+                aria-label="QbankNurse home"
                 className="inline-flex items-center gap-3"
               >
                 <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#E85D5D] text-white">
@@ -70,7 +70,7 @@ export default function Footer() {
                 </span>
 
                 <span className="text-2xl font-extrabold tracking-tight">
-                  QNurse
+                  QbankNurse
                   <span className="text-[#FFD6A5]">.</span>
                 </span>
               </Link>
@@ -117,7 +117,7 @@ export default function Footer() {
           {/* Bottom bar */}
           <div className="mt-14 flex flex-col gap-5 border-t border-white/10 pt-7 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-xs text-white/45">
-        © 2026 QNurse. All rights reserved.
+        © 2026 QbankNurse. All rights reserved.
             </p>
 
             <div className="flex flex-wrap gap-x-6 gap-y-3">

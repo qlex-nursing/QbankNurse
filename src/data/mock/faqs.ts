@@ -28,12 +28,12 @@ export const faqs: FAQ[] = [
     id: "real-exam",
     question: "Are these questions the same as the real ATI exam?",
     answer:
-      "No. QNurse practice questions are intended for learning and preparation. They should not be represented as actual ATI exam questions or as questions obtained from confidential exam materials.",
+      "No. QbankNurse practice questions are intended for learning and preparation. They should not be represented as actual ATI exam questions or as questions obtained from confidential exam materials.",
   },
   {
     id: "pricing",
-    question: "Is QNurse free?",
+    question: "Is QbankNurse free?",
     answer:
-      "QNurse's access options and pricing will be published once the platform's plans are finalised. We'll make it clear which study resources are available for free and which require a subscription.",
+      "QbankNurse's access options and pricing will be published once the platform's plans are finalised. We'll make it clear which study resources are available for free and which require a subscription.",
   },
 ];

@@ -1,7 +1,7 @@
 export const studentSuccess = {
   percentage: "96%",
   message: "A little progress every day can lead to a stronger exam-day mindset.",
-  disclaimer: "Illustrative demonstration statistic — not verified QNurse results.",
+  disclaimer: "Illustrative demonstration statistic — not verified QbankNurse results.",
   highlights: [
     "Detailed explanations after practice",
     "Different ways to prepare",

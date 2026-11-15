@@ -121,7 +121,7 @@ export default function StudyGuidesPage() {
             <div>
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="text-xl font-bold sm:text-2xl">
-                  QNurse Study Notes
+                  QbankNurse Study Notes
                 </h1>
 
                 <span className="rounded-full bg-white/20 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider">
@@ -324,7 +324,7 @@ export default function StudyGuidesPage() {
               </p>
 
               <p className="mt-1 text-xs leading-5 text-amber-800">
-                These notes demonstrate the QNurse reading experience.
+                These notes demonstrate the QbankNurse reading experience.
                 They are not official clinical guidance or a substitute
                 for approved nursing education materials. Reference
                 values and clinical information should be verified

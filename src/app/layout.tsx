@@ -16,14 +16,14 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "QNurse | Your Nursing Learning Companion",
-    template: "%s | QNurse",
+    default: "QbankNurse | Your Nursing Learning Companion",
+    template: "%s | QbankNurse",
   },
   description:
     "Prepare for your nursing examinations with structured practice, clinical learning resources and personalised study tools.",
-  applicationName: "QNurse",
+  applicationName: "QbankNurse",
   keywords: [
-    "QNurse",
+    "QbankNurse",
     "NCLEX",
     "Nursing Education",
     "NCLEX-RN",

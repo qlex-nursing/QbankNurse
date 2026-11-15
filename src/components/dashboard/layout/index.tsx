@@ -40,7 +40,7 @@ export default function DashboardLayout({
         <div className="text-center">
           <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-[#E8DEFF] border-t-[#5B3DF5]" />
           <p className="mt-4 text-sm font-semibold text-[#706782]">
-            Preparing your QNurse dashboard...
+            Preparing your QbankNurse dashboard...
           </p>
         </div>
       </div>

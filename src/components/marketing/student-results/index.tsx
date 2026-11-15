@@ -9,7 +9,7 @@ export default function StudentResults() {
     <div className="relative overflow-hidden pb-16 pt-8 sm:pb-20">
       <div className="mx-auto mb-8 max-w-[1440px] px-5 text-center sm:px-8">
         <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#5B3DF5]">
-          The QNurse learning experience
+          The QbankNurse learning experience
         </p>
 
         <h2 className="mt-3 text-xl font-extrabold tracking-tight text-[#2D1B68] sm:text-2xl">

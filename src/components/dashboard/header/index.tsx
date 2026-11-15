@@ -118,7 +118,7 @@ export default function DashboardHeader({
                     Demo account
                   </p>
                   <p className="dashboard-muted mt-1 text-[11px]">
-                    QNurse preview
+                    QbankNurse preview
                   </p>
                 </div>
 

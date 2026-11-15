@@ -43,9 +43,9 @@ export const initialCommunityPosts: CommunityPost[] = [
     id: "post-002",
     category: "Question",
     author: "Sunny Robin 0987",
-    title: "Is QNurse the best so far?",
+    title: "Is QbankNurse the best so far?",
     content:
-      "I find QNurse to be so helpful with my studies. I have gained so much since I started using it. I highly recommend it!",
+      "I find QbankNurse to be so helpful with my studies. I have gained so much since I started using it. I highly recommend it!",
     createdAt: "2026-10-08T09:15:00.000Z",
     replies: [],
   },

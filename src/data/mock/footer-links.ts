@@ -30,7 +30,7 @@ export const footerGroups: FooterGroup[] = [
   {
     title: "Company",
     links: [
-      { label: "About QNurse", href: "/about" },
+      { label: "About QbankNurse", href: "/about" },
       { label: "FAQ", href: "/#faq" },
       { label: "Contact", href: "/contact" },
       { label: "Privacy Policy", href: "/privacy" },

@@ -20,7 +20,7 @@ import {
   type CommunityPost,
 } from "@/data/mock/dashboard/community";
 
-const STORAGE_KEY = "qnurse-community-posts";
+const STORAGE_KEY = "qbanknurse-community-posts";
 
 type CategoryFilter = "All" | CommunityCategory;
 
@@ -135,7 +135,7 @@ export default function CommunityPage() {
     const newPost: CommunityPost = {
       id: `post-${Date.now()}`,
       category: composerCategory,
-      author: "QNurse Student",
+      author: "QbankNurse Student",
       title: cleanTitle,
       content: cleanContent,
       createdAt: new Date().toISOString(),
@@ -166,7 +166,7 @@ export default function CommunityPage() {
 
     const reply = {
       id: `reply-${Date.now()}`,
-      author: "QNurse Student",
+      author: "QbankNurse Student",
       content: cleanReply,
       createdAt: new Date().toISOString(),
     };
@@ -211,7 +211,7 @@ export default function CommunityPage() {
           >
             <Sparkles size={14} />
             <span className="text-xs font-bold uppercase tracking-widest">
-              QNurse Community
+              QbankNurse Community
             </span>
           </div>
 

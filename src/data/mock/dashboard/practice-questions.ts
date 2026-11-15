@@ -1,5 +1,5 @@
 // ============================================================
-// QNURSE PRACTICE QUESTION DATA MODEL
+// QBANKNURSE PRACTICE QUESTION DATA MODEL
 // Supports traditional nursing questions and NGN question types.
 // ============================================================
 

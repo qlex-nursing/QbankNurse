@@ -1,4 +1,4 @@
-const DEMO_SESSION_KEY = "qnurse-demo-session";
+const DEMO_SESSION_KEY = "qbanknurse-demo-session";
 
 export interface DemoUser {
   name: string;

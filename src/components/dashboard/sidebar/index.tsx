@@ -215,7 +215,7 @@ export default function DashboardSidebar({
 
             {!collapsed && (
               <span className="text-xl font-extrabold tracking-tight">
-                QNurse<span className="text-[#B9A9FF]">.</span>
+                QbankNurse<span className="text-[#B9A9FF]">.</span>
               </span>
             )}
           </Link>
@@ -272,7 +272,7 @@ export default function DashboardSidebar({
         {!collapsed && (
           <div className="shrink-0 border-t border-white/10 px-5 py-4">
             <p className="text-[10px] font-medium text-slate-500">
-              QNurse Learning Platform
+              QbankNurse Learning Platform
             </p>
             <p className="mt-1 text-xs font-semibold text-slate-300">
               Learn with purpose.

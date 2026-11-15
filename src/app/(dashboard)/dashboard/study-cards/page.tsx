@@ -27,7 +27,7 @@ interface CardProgress {
   saved: string[];
 }
 
-const STORAGE_KEY = "qnurse-study-card-progress";
+const STORAGE_KEY = "qbanknurse-study-card-progress";
 
 const emptyProgress: CardProgress = {
   known: [],

@@ -55,7 +55,7 @@ export default function DemoAuthForm({ mode }: DemoAuthFormProps) {
       name: isRegister
         ? name.trim()
         : getDemoSession()?.email === email.trim()
-          ? getDemoSession()?.name ?? "QNurse Student"
+          ? getDemoSession()?.name ?? "QbankNurse Student"
           : email.split("@")[0],
       email: email.trim(),
     };
@@ -79,7 +79,7 @@ export default function DemoAuthForm({ mode }: DemoAuthFormProps) {
             <BookOpen size={23} />
           </span>
           <span className="text-2xl font-extrabold tracking-tight">
-            QNurse
+            QbankNurse
           </span>
         </Link>
 
@@ -98,7 +98,7 @@ export default function DemoAuthForm({ mode }: DemoAuthFormProps) {
 
           <p className="mt-6 max-w-md text-sm leading-7 text-white/65">
             Build your nursing knowledge, practise clinical questions and
-            prepare for your next examination with QNurse.
+            prepare for your next examination with QbankNurse.
           </p>
 
           <div className="mt-10 grid grid-cols-2 gap-3">
@@ -119,7 +119,7 @@ export default function DemoAuthForm({ mode }: DemoAuthFormProps) {
         </div>
 
         <p className="relative text-xs text-white/40">
-         © 2026 QNurse. Learn with confidence.
+         © 2026 QbankNurse. Learn with confidence.
         </p>
       </section>
 
@@ -133,7 +133,7 @@ export default function DemoAuthForm({ mode }: DemoAuthFormProps) {
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#E8DEFF] text-[#5B3DF5]">
               <BookOpen size={20} />
             </span>
-            QNurse
+            QbankNurse
           </Link>
 
           <div className="mb-8">
@@ -142,7 +142,7 @@ export default function DemoAuthForm({ mode }: DemoAuthFormProps) {
             </p>
 
             <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-[#251B48]">
-              {isRegister ? "Join QNurse" : "Sign in to QNurse"}
+              {isRegister ? "Join QbankNurse" : "Sign in to QbankNurse"}
             </h2>
 
             <p className="mt-3 text-sm leading-6 text-[#817B91]">
@@ -278,7 +278,7 @@ export default function DemoAuthForm({ mode }: DemoAuthFormProps) {
           </div>
 
           <p className="text-center text-sm text-[#817B91]">
-            {isRegister ? "Already have an account?" : "New to QNurse?"}{" "}
+            {isRegister ? "Already have an account?" : "New to QbankNurse?"}{" "}
             <Link
               href={isRegister ? "/login" : "/register"}
               className="font-extrabold text-[#5B3DF5] hover:underline"

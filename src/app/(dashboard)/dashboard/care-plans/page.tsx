@@ -137,7 +137,7 @@ export default function CarePlansPage() {
   <div className="relative max-w-3xl">
     <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-[#F0EBFF]">
       <Sparkles size={13} />
-      QNurse Learning Resources
+      QbankNurse Learning Resources
     </div>
 
     <div className="mb-3 flex items-center gap-3">
