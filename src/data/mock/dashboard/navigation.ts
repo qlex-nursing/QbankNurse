@@ -61,7 +61,7 @@ const examSubcategories: DashboardNavItem[] = [
   {
     label: "HESI",
     children: [
-      { label: "HESI A2", href: "/dashboard/exams/hesi/a2" },
+      // { label: "HESI A2", href: "/dashboard/exams/hesi/a2" },
       { label: "HESI Specialty", href: "/dashboard/exams/hesi/specialty" },
       { label: "HESI Exit", href: "/dashboard/exams/hesi/exit" },
     ],
@@ -144,12 +144,12 @@ export const dashboardNavigation: DashboardNavGroup[] = [
     ],
   },
   {
-    title: "NCLEX & TEAS",
+    title: "NCLEX",
     items: [
       { label: "NCLEX RN", href: "/dashboard/nclex/rn", icon: ClipboardList },
       { label: "NCLEX PN (LPN)", href: "/dashboard/nclex/pn", icon: ClipboardList },
       { label: "NCLEX Practice", href: "/dashboard/nclex/practice", icon: ClipboardList },
-      { label: "TEAS", href: "/dashboard/teas", icon: ClipboardList },
+      // { label: "TEAS", href: "/dashboard/teas", icon: ClipboardList },
     ],
   },
   {

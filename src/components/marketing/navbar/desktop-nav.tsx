@@ -40,11 +40,11 @@ const examLinks = [
     description: "HESI and exit examination practice",
     href: "/dashboard/study-library",
   },
-  {
-    title: "TEAS",
-    description: "Test of Essential Academic Skills",
-    href: "/dashboard/study-library",
-  },
+  // {
+  //   title: "TEAS",
+  //   description: "Test of Essential Academic Skills",
+  //   href: "/dashboard/study-library",
+  // },
 ];
 
 export default function DesktopNav() {

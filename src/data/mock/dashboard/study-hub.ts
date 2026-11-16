@@ -23,18 +23,18 @@ export const examPreparationOptions = [
     href: "/dashboard/study-library",
     available: true,
   },
-  {
-    title: "HESI preparation",
-    description: "Practice exams and rationales",
-    href: "/dashboard/exams/hesi/a2",
-    available: false,
-  },
-  {
-    title: "TEAS preparation",
-    description: "TEAS practice and preparation",
-    href: "/dashboard/teas",
-    available: false,
-  },
+  // {
+  //   title: "HESI preparation",
+  //   description: "Practice exams and rationales",
+  //   href: "/dashboard/exams/hesi/a2",
+  //   available: false,
+  // },
+  // {
+  //   title: "TEAS preparation",
+  //   description: "TEAS practice and preparation",
+  //   href: "/dashboard/teas",
+  //   available: false,
+  // },
 ];
 
 export const studyTools = [

@@ -22,7 +22,7 @@ const exams = [
   { label: "NCLEX-PN", href: "/dashboard/custom-practice" },
   { label: "ATI Exams", href: "/dashboard/study-library" },
   { label: "HESI Exams", href: "/dashboard/study-library" },
-  { label: "TEAS", href: "/dashboard/study-library" },
+  // { label: "TEAS", href: "/dashboard/study-library" },
 ];
 
 export default function MobileNav({ open, onClose }: MobileNavProps) {
