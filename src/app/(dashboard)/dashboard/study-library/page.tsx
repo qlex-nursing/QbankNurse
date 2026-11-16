@@ -3,376 +3,225 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
-  ArrowRight,
   BookOpen,
-  CheckCircle2,
-  ChevronDown,
-  Filter,
   Search,
   SlidersHorizontal,
-  Sparkles,
   Star,
+  FileText,
+  Play,
+  Eye,
+  GraduationCap,
+  MoreHorizontal,
+  X,
+  Sparkles,
 } from "lucide-react";
+import type { ReactNode } from "react";
 
-import { studyCategories } from "@/data/mock/dashboard/overview";
+import {
+  studySets,
+  studyLibraryFilters,
+  type StudySet,
+} from "@/data/mock/dashboard/study-sets";
 
-type SortOption = "popular" | "questions" | "rating" | "alphabetical";
-
-const accentStyles = {
-  red: {
-    icon: "bg-rose-100 text-rose-600",
-    badge: "bg-rose-50 text-rose-700",
-  },
-  indigo: {
-    icon: "bg-violet-100 text-violet-600",
-    badge: "bg-violet-50 text-violet-700",
-  },
-  apricot: {
-    icon: "bg-orange-100 text-orange-600",
-    badge: "bg-orange-50 text-orange-700",
-  },
-  green: {
-    icon: "bg-emerald-100 text-emerald-600",
-    badge: "bg-emerald-50 text-emerald-700",
-  },
-};
+type LibraryFilter = (typeof studyLibraryFilters)[number];
 
 export default function StudyLibraryPage() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedProgram, setSelectedProgram] = useState("All programs");
-  const [sortBy, setSortBy] = useState<SortOption>("popular");
+  const [selectedFilter, setSelectedFilter] =
+    useState<LibraryFilter>("All");
 
-  const programs = useMemo(
-    () => [
-      "All programs",
-      ...Array.from(
-        new Set(studyCategories.map((category) => category.program)),
-      ),
-    ],
-    [],
-  );
-
-  const filteredCategories = useMemo(() => {
+  const filteredStudySets = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
 
-    const filtered = studyCategories.filter((category) => {
+    return studySets.filter((set) => {
       const matchesSearch =
-        category.title.toLowerCase().includes(query) ||
-        category.description.toLowerCase().includes(query) ||
-        category.program.toLowerCase().includes(query);
+        set.title.toLowerCase().includes(query) ||
+        set.programme.toLowerCase().includes(query) ||
+        set.description.toLowerCase().includes(query) ||
+        set.tags.some((tag) => tag.toLowerCase().includes(query));
 
-      const matchesProgram =
-        selectedProgram === "All programs" ||
-        category.program === selectedProgram;
+      let matchesFilter = true;
 
-      return matchesSearch && matchesProgram;
-    });
+      switch (selectedFilter) {
+        case "RN Exams":
+          matchesFilter = set.track === "RN";
+          break;
 
-    return [...filtered].sort((a, b) => {
-      switch (sortBy) {
-        case "questions":
-          return b.questions - a.questions;
+        case "LPN Exams":
+          matchesFilter = set.track === "LPN";
+          break;
 
-        case "rating":
-          return b.rating - a.rating;
+        case "NCLEX":
+          matchesFilter = set.track === "NCLEX";
+          break;
 
-        case "alphabetical":
-          return a.title.localeCompare(b.title);
+        case "Dosage Calculations":
+          matchesFilter = set.tags.some(
+            (tag) => tag.toLowerCase() === "dosage calculations",
+          );
+          break;
 
-        case "popular":
         default:
-          return b.reviews - a.reviews;
+          matchesFilter = true;
       }
-    });
-  }, [searchQuery, selectedProgram, sortBy]);
 
-  const totalQuestions = studyCategories.reduce(
-    (total, category) => total + category.questions,
+      return matchesSearch && matchesFilter;
+    });
+  }, [searchQuery, selectedFilter]);
+
+  const totalQuestions = studySets.reduce(
+    (total, set) => total + set.questionCount,
     0,
   );
 
+  const availableSets = studySets.filter(
+    (set) => set.status === "available",
+  ).length;
+
+  const getPracticeHref = (
+    set: StudySet,
+    mode: "exam" | "review" | "tutor",
+  ) => {
+    if (set.status !== "available" || !set.subjectSlug) {
+      return "#";
+    }
+
+    return `/dashboard/exams/ati/${set.subjectSlug}/practice?mode=${mode}`;
+  };
+
   return (
-    <div className="dashboard-content space-y-8">
-      {/* Page heading */}
-      <section className="space-y-3">
+    <main className="dashboard-content mx-auto w-full max-w-[1600px] space-y-8 px-5 py-7 sm:px-7 lg:px-9">
+
+      {/* PAGE HEADER */}
+      <section className="space-y-2">
         <div className="flex items-center gap-2">
           <div className="dashboard-accent-icon">
-            <BookOpen size={17} />
+            <BookOpen size={18} />
           </div>
 
           <span className="dashboard-section-label">
-            YOUR LEARNING LIBRARY
+            LEARNING RESOURCES
           </span>
         </div>
 
-        <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
-          <div>
-            <h1 className="dashboard-heading text-2xl font-bold md:text-3xl">
-              Study Library
-            </h1>
+        <h1 className="dashboard-heading text-3xl font-extrabold tracking-tight sm:text-4xl">
+          Study Library
+        </h1>
 
-            <p className="dashboard-muted mt-2 max-w-2xl text-sm leading-6">
-              Explore nursing subjects, practise questions and strengthen your
-              understanding one topic at a time.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2 text-sm">
-            <span className="dashboard-muted">Library</span>
-            <span className="dashboard-muted">/</span>
-            <span className="dashboard-heading font-semibold">
-              Study Library
-            </span>
-          </div>
-        </div>
+        <p className="dashboard-muted text-sm sm:text-base">
+          {studySets.length} study sets ·{" "}
+          {totalQuestions.toLocaleString()} available questions
+        </p>
       </section>
 
-      {/* Library overview */}
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        <div className="dashboard-card flex items-center gap-4 rounded-2xl p-5">
-          <div className="dashboard-accent-icon">
-            <BookOpen size={21} />
-          </div>
+      {/* SEARCH AND FILTERS */}
+      <section className="space-y-4">
 
-          <div>
-            <p className="dashboard-muted text-sm">Study categories</p>
-            <h3 className="dashboard-heading mt-1 text-2xl font-bold">
-              {studyCategories.length}
-            </h3>
-          </div>
+        {/* SEARCH */}
+        <div className="dashboard-search flex min-h-12 items-center gap-3 rounded-xl px-4">
+          <Search
+            size={19}
+            className="dashboard-muted shrink-0"
+          />
+
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+            placeholder="Search study sets, topics, or keywords..."
+            className="dashboard-heading w-full bg-transparent text-sm outline-none placeholder:opacity-60"
+          />
+
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery("")}
+              aria-label="Clear search"
+              className="dashboard-muted transition hover:opacity-60"
+            >
+              <X size={18} />
+            </button>
+          )}
         </div>
 
-        <div className="dashboard-card flex items-center gap-4 rounded-2xl p-5">
-          <div className="dashboard-accent-icon">
-            <CheckCircle2 size={21} />
-          </div>
+        {/* FILTER PILLS */}
+        <div className="flex flex-wrap items-center gap-2">
+          {studyLibraryFilters.map((filter, index) => {
+            const active = selectedFilter === filter;
 
-          <div>
-            <p className="dashboard-muted text-sm">Available questions</p>
-            <h3 className="dashboard-heading mt-1 text-2xl font-bold">
-              {totalQuestions.toLocaleString()}
-            </h3>
-          </div>
-        </div>
-
-        <div className="dashboard-card flex items-center gap-4 rounded-2xl p-5 sm:col-span-2 xl:col-span-1">
-          <div className="dashboard-accent-icon">
-            <Sparkles size={21} />
-          </div>
-
-          <div>
-            <p className="dashboard-muted text-sm">Available program</p>
-            <h3 className="dashboard-heading mt-1 text-xl font-bold">
-              RN ATI
-            </h3>
-          </div>
-        </div>
-      </section>
-
-      {/* Search and filters */}
-      <section className="dashboard-card space-y-5 rounded-2xl p-5">
-        <div>
-          <h2 className="dashboard-heading text-lg font-bold">
-            Find your next study topic
-          </h2>
-
-          <p className="dashboard-muted mt-1 text-sm">
-            Search through the available nursing categories.
-          </p>
-        </div>
-
-        <div className="flex flex-col gap-3 lg:flex-row">
-          <div className="dashboard-search flex min-h-12 flex-1 items-center gap-3 rounded-xl px-4">
-            <Search size={19} className="dashboard-muted shrink-0" />
-
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(event) => setSearchQuery(event.target.value)}
-              placeholder="Search subjects, topics or programs..."
-              className="dashboard-heading w-full bg-transparent text-sm outline-none placeholder:opacity-60"
-            />
-
-            {searchQuery && (
+            return (
               <button
+                key={filter}
                 type="button"
-                onClick={() => setSearchQuery("")}
-                className="dashboard-muted text-xs hover:opacity-70"
+                onClick={() => setSelectedFilter(filter)}
+                className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2.5 text-xs font-semibold transition-all duration-200 ${
+                  active
+                    ? "border-[#5B3DF5] bg-[#5B3DF5] text-white shadow-[0_4px_14px_rgba(91,61,245,0.2)]"
+                    : "dashboard-card dashboard-heading border-[var(--dashboard-border)] hover:border-[#5B3DF5] hover:text-[#5B3DF5]"
+                }`}
               >
-                Clear
+                {index === 0 && (
+                  <SlidersHorizontal size={15} />
+                )}
+
+                {filter}
               </button>
-            )}
-          </div>
-
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <div className="relative">
-              <Filter
-                size={16}
-                className="dashboard-muted pointer-events-none absolute left-3 top-1/2 -translate-y-1/2"
-              />
-
-              <select
-                value={selectedProgram}
-                onChange={(event) => setSelectedProgram(event.target.value)}
-                className="dashboard-search h-12 w-full appearance-none rounded-xl pl-10 pr-10 text-sm outline-none sm:min-w-44"
-              >
-                {programs.map((program) => (
-                  <option key={program} value={program}>
-                    {program}
-                  </option>
-                ))}
-              </select>
-
-              <ChevronDown
-                size={15}
-                className="dashboard-muted pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
-              />
-            </div>
-
-            <div className="relative">
-              <SlidersHorizontal
-                size={16}
-                className="dashboard-muted pointer-events-none absolute left-3 top-1/2 -translate-y-1/2"
-              />
-
-              <select
-                value={sortBy}
-                onChange={(event) =>
-                  setSortBy(event.target.value as SortOption)
-                }
-                className="dashboard-search h-12 w-full appearance-none rounded-xl pl-10 pr-10 text-sm outline-none sm:min-w-44"
-              >
-                <option value="popular">Most popular</option>
-                <option value="questions">Most questions</option>
-                <option value="rating">Highest rated</option>
-                <option value="alphabetical">A - Z</option>
-              </select>
-
-              <ChevronDown
-                size={15}
-                className="dashboard-muted pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
-              />
-            </div>
-          </div>
+            );
+          })}
         </div>
       </section>
 
-      {/* Category listing */}
-      <section className="space-y-5">
-        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+      {/* STUDY SET LISTING */}
+      <section className="space-y-5 border-t border-[var(--dashboard-border)] pt-6">
+
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 className="dashboard-heading text-xl font-bold">
-              Explore nursing categories
+              Explore study sets
             </h2>
 
             <p className="dashboard-muted mt-1 text-sm">
-              Choose a subject to explore its practice questions.
+              Choose a study set and select your preferred learning mode.
             </p>
           </div>
 
-          <span className="dashboard-count-badge w-fit">
-            {filteredCategories.length}{" "}
-            {filteredCategories.length === 1 ? "category" : "categories"}
+          <span className="dashboard-count-badge">
+            {filteredStudySets.length}{" "}
+            {filteredStudySets.length === 1 ? "study set" : "study sets"}
           </span>
         </div>
 
-        {filteredCategories.length > 0 ? (
+        {filteredStudySets.length > 0 ? (
           <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {filteredCategories.map((category) => {
-              const styles = accentStyles[category.accent];
-
-              const categorySlug = category.title
-                .toLowerCase()
-                .replaceAll(" ", "-");
-
-              return (
-                <article
-                  key={category.id}
-                  className="dashboard-card group flex flex-col rounded-2xl p-5 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div
-                      className={`flex h-12 w-12 items-center justify-center rounded-xl ${styles.icon}`}
-                    >
-                      <BookOpen size={22} />
-                    </div>
-
-                    <span className={`rounded-full px-3 py-1 text-xs font-semibold ${styles.badge}`}>
-                      {category.program}
-                    </span>
-                  </div>
-
-                  <div className="mt-5 flex-1">
-                    <h3 className="dashboard-card-title text-lg font-bold">
-                      {category.title}
-                    </h3>
-
-                    <p className="dashboard-card-description mt-2 min-h-12 text-sm leading-6">
-                      {category.description}
-                    </p>
-                  </div>
-
-                  <div className="mt-5 flex items-center justify-between border-t border-[var(--dashboard-border)] pt-4">
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-                      <div className="flex items-center gap-1.5">
-                        <BookOpen
-                          size={15}
-                          className="dashboard-muted"
-                        />
-
-                        <span className="dashboard-muted text-xs font-medium">
-                          {category.questions.toLocaleString()} questions
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-1">
-                        <Star
-                          size={14}
-                          className="fill-amber-400 text-amber-400"
-                        />
-
-                        <span className="dashboard-heading text-xs font-semibold">
-                          {category.rating.toFixed(1)}
-                        </span>
-
-                        <span className="dashboard-muted text-xs">
-                          ({category.reviews.toLocaleString()})
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <Link
-                    href={`/dashboard/exams/ati/${categorySlug}`}
-                    className="dashboard-primary-button mt-5 flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold transition-transform group-hover:gap-3"
-                  >
-                    Explore category
-                    <ArrowRight size={16} />
-                  </Link>
-                </article>
-              );
-            })}
+            {filteredStudySets.map((set) => (
+              <StudySetCard
+                key={set.id}
+                studySet={set}
+                getPracticeHref={getPracticeHref}
+              />
+            ))}
           </div>
         ) : (
           <div className="dashboard-card flex flex-col items-center justify-center rounded-2xl px-5 py-16 text-center">
+
             <div className="dashboard-accent-icon mb-4">
               <Search size={24} />
             </div>
 
             <h3 className="dashboard-heading text-lg font-bold">
-              No categories found
+              No study sets found
             </h3>
 
             <p className="dashboard-muted mt-2 max-w-sm text-sm leading-6">
-              We couldn't find a category matching your search. Try another
-              subject or clear your filters.
+              We couldn't find a study set matching your search.
+              Try another keyword or clear your filters.
             </p>
 
             <button
               type="button"
               onClick={() => {
                 setSearchQuery("");
-                setSelectedProgram("All programs");
+                setSelectedFilter("All");
               }}
               className="dashboard-primary-button mt-5 rounded-xl px-5 py-2.5 text-sm font-semibold"
             >
@@ -382,24 +231,211 @@ export default function StudyLibraryPage() {
         )}
       </section>
 
-      {/* Demo notice */}
-      <section className="dashboard-inner-card flex flex-col gap-3 rounded-2xl p-5 sm:flex-row sm:items-center">
+      {/* LIBRARY INFORMATION */}
+      <section className="dashboard-inner-card flex flex-col gap-4 rounded-2xl p-5 sm:flex-row sm:items-center">
+
         <div className="dashboard-accent-icon shrink-0">
-          <Sparkles size={19} />
+          <Sparkles size={20} />
         </div>
 
         <div>
           <h3 className="dashboard-heading text-sm font-bold">
-            Study Library Preview
+            Keep building your nursing knowledge
           </h3>
 
           <p className="dashboard-muted mt-1 text-sm leading-6">
-            This library currently uses demonstration content. Live question
-            sets and learning progress will be connected when the backend
-            integration is available.
+            Explore examination resources, practise clinical questions
+            and strengthen your understanding through guided learning.
           </p>
         </div>
       </section>
-    </div>
+    </main>
+  );
+}
+
+/* =========================================================
+   STUDY SET CARD
+========================================================= */
+
+interface StudySetCardProps {
+  studySet: StudySet;
+
+  getPracticeHref: (
+    set: StudySet,
+    mode: "exam" | "review" | "tutor",
+  ) => string;
+}
+
+function StudySetCard({
+  studySet,
+  getPracticeHref,
+}: StudySetCardProps) {
+  const available = studySet.status === "available";
+
+  return (
+    <article className="dashboard-card group flex min-h-[285px] flex-col rounded-2xl p-5 transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(91,61,245,0.09)]">
+
+      {/* PROGRAMME BADGE */}
+      <div className="flex items-center justify-between gap-3">
+
+        <span className="inline-flex items-center gap-1.5 rounded-lg border border-[#5B3DF5]/10 bg-[#E8DEFF]/60 px-3 py-1.5 text-[10px] font-bold text-[#4931B5]">
+          <GraduationCap size={13} />
+          {studySet.programme}
+        </span>
+
+        <button
+          type="button"
+          title="Study set information"
+          aria-label={`More information about ${studySet.title}`}
+          className="dashboard-muted rounded-lg p-1.5 transition hover:bg-[#E8DEFF] hover:text-[#5B3DF5]"
+        >
+          <MoreHorizontal size={19} />
+        </button>
+      </div>
+
+      {/* TITLE AND DESCRIPTION */}
+      <div className="mt-4 flex-1">
+
+        <h3 className="dashboard-heading text-base font-bold leading-snug transition-colors group-hover:text-[#5B3DF5]">
+          {studySet.title}
+        </h3>
+
+        <p className="dashboard-muted mt-2 line-clamp-2 text-xs leading-5">
+          {studySet.description}
+        </p>
+      </div>
+
+      {/* QUESTION COUNT */}
+      <div className="mt-4 flex items-center gap-2">
+        <FileText
+          size={15}
+          className="dashboard-muted shrink-0"
+        />
+
+        <span className="dashboard-muted text-xs font-medium">
+          {available
+            ? `${studySet.questionCount} questions`
+            : "Question bank coming soon"}
+        </span>
+      </div>
+
+      {/* RATINGS */}
+      <div className="mt-3 flex flex-wrap items-center gap-1">
+
+        <div className="flex items-center gap-0.5">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <Star
+              key={index}
+              size={13}
+              className="fill-amber-400 text-amber-400"
+            />
+          ))}
+        </div>
+
+        <span className="dashboard-heading text-xs font-semibold">
+          {studySet.rating.toFixed(1)}
+        </span>
+
+        <span className="dashboard-muted text-[11px]">
+          ({studySet.reviews.toLocaleString()} reviews)
+        </span>
+      </div>
+
+      {/* STUDY MODES */}
+      <div className="mt-5 grid grid-cols-3 gap-2">
+
+        <StudyAction
+          label="Exam"
+          icon={<Play size={13} fill="currentColor" />}
+          href={getPracticeHref(studySet, "exam")}
+          primary
+          enabled={available}
+        />
+
+        <StudyAction
+          label="Review"
+          icon={<Eye size={14} />}
+          href={getPracticeHref(studySet, "review")}
+          enabled={available}
+        />
+
+        <StudyAction
+          label="Tutor"
+          icon={<BookOpen size={14} />}
+          href={getPracticeHref(studySet, "tutor")}
+          enabled={available}
+        />
+
+      </div>
+
+      {!available && (
+        <p className="mt-3 text-center text-[11px] font-medium text-amber-600">
+          Coming soon
+        </p>
+      )}
+    </article>
+  );
+}
+
+/* =========================================================
+   STUDY ACTION BUTTON
+========================================================= */
+
+interface StudyActionProps {
+  label: string;
+  icon: ReactNode;
+  href: string;
+  primary?: boolean;
+  enabled: boolean;
+}
+
+function StudyAction({
+  label,
+  icon,
+  href,
+  primary = false,
+  enabled,
+}: StudyActionProps) {
+  const baseStyles =
+    "flex min-h-10 items-center justify-center gap-1.5 rounded-xl border px-2 text-[11px] font-bold transition-all duration-200";
+
+  const primaryStyles =
+    "border-[#5B3DF5] bg-[#5B3DF5] text-white shadow-[0_4px_12px_rgba(91,61,245,0.18)] hover:bg-[#4930D0] hover:shadow-md";
+
+  const secondaryStyles =
+    "dashboard-heading border-[var(--dashboard-border)] hover:border-[#5B3DF5] hover:bg-[#E8DEFF]/40 hover:text-[#5B3DF5]";
+
+  const disabledStyles =
+    "cursor-not-allowed border-[var(--dashboard-border)] opacity-40";
+
+  const className = `${baseStyles} ${
+    !enabled
+      ? disabledStyles
+      : primary
+        ? primaryStyles
+        : secondaryStyles
+  }`;
+
+  if (!enabled) {
+    return (
+      <button
+        type="button"
+        disabled
+        className={className}
+      >
+        {icon}
+        {label}
+      </button>
+    );
+  }
+
+  return (
+    <Link
+      href={href}
+      className={className}
+    >
+      {icon}
+      {label}
+    </Link>
   );
 }

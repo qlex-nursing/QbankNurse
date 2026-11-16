@@ -44,6 +44,48 @@ export interface ClozeBlank {
   options: PracticeOption[];
 }
 
+export type ClinicalExhibit =
+  | {
+      id: string;
+      type: "notes";
+      title: string;
+      description?: string;
+      content: string;
+    }
+  | {
+      id: string;
+      type: "table";
+      title: string;
+      description?: string;
+      columns: {
+        key: string;
+        label: string;
+        unit?: string;
+      }[];
+      rows: Record<string, string | number>[];
+    }
+  | {
+      id: string;
+      type: "image" | "diagram";
+      title: string;
+      description?: string;
+      src: string;
+      alt: string;
+      caption?: string;
+    }
+  | {
+      id: string;
+      type: "chart";
+      title: string;
+      description?: string;
+      xAxisLabel: string;
+      yAxisLabel: string;
+      data: {
+        label: string;
+        value: number;
+      }[];
+    };
+
 export interface ClinicalCaseReference {
   id: string;
   title: string;
@@ -53,7 +95,11 @@ export interface ClinicalCaseReference {
   patientAge: number;
   patientDetails: string;
   clinicalNotes: string;
+
+  // Additional clinical exhibits for visual learning.
+  exhibits?: ClinicalExhibit[];
 }
+
 
 export type PracticeAnswer =
   | string
@@ -110,6 +156,99 @@ export interface PracticeQuestion {
   // Six-question NGN clinical case study
   clinicalCase?: ClinicalCaseReference;
 }
+
+
+
+const postoperativeCaseExhibitsByStage: Record<number, ClinicalExhibit[]> = {
+  // STAGE 1: Initial assessment
+  1: [
+    {
+      id: "postoperative-abdominal-anatomy",
+      type: "diagram",
+      title: "Postoperative Abdominal Anatomy",
+      description: "Anatomical overview of the abdominal incision.",
+      src: "/images/clinical/postoperative-abdominal-anatomy.png",
+      alt: "Illustration of an abdominal surgical incision and abdominal wall layers.",
+      caption: "Educational anatomical illustration.",
+    },
+  ],
+
+  // STAGE 2: Further assessment
+  2: [
+    {
+      id: "postoperative-assessment",
+      type: "table",
+      title: "Additional Patient Assessment",
+      description: "Findings to investigate during clinical reassessment.",
+      columns: [
+        { key: "assessment", label: "Assessment" },
+        { key: "importance", label: "Clinical relevance" },
+      ],
+      rows: [
+        { assessment: "Mental status", importance: "Identify new confusion" },
+        { assessment: "Urine output", importance: "Evaluate renal perfusion" },
+        { assessment: "Blood pressure", importance: "Monitor haemodynamic changes" },
+        { assessment: "Respiratory status", importance: "Assess breathing and oxygenation" },
+      ],
+    },
+  ],
+
+  // STAGE 3: Identify abnormal findings
+  3: [
+    {
+      id: "postoperative-vital-trends",
+      type: "chart",
+      title: "Patient Vital Signs",
+      description: "Current observations requiring clinical review.",
+      xAxisLabel: "Vital sign",
+      yAxisLabel: "Recorded value",
+      data: [
+        { label: "Temperature (°C)", value: 38.6 },
+        { label: "Heart rate", value: 112 },
+        { label: "Respiratory rate", value: 24 },
+      ],
+    },
+  ],
+
+  // STAGE 4: Clinical judgment
+  4: [
+    {
+      id: "infection-assessment-notes",
+      type: "notes",
+      title: "Clinical Assessment",
+      description: "Summary of the patient's current condition.",
+      content:
+        "Persistent fever, tachycardia and increasing abdominal discomfort following surgery require prompt reassessment. The nurse should evaluate the complete clinical picture and escalate concerns according to facility protocols.",
+    },
+  ],
+
+  // STAGE 5: Clinical communication
+  5: [
+    {
+      id: "sbar-handover",
+      type: "notes",
+      title: "SBAR Clinical Handover",
+      description: "Communicating the patient's deterioration.",
+      content:
+        "Situation: A postoperative patient is experiencing concerning clinical changes.\n\nBackground: The patient recently underwent abdominal surgery.\n\nAssessment: Fever, tachycardia and increasing abdominal discomfort have been identified.\n\nRecommendation: Request prompt clinical review and communicate relevant assessment findings.",
+    },
+  ],
+
+  // STAGE 6: Nursing priorities
+  6: [
+    {
+      id: "nursing-response-priorities",
+      type: "notes",
+      title: "Nursing Response Priorities",
+      description: "A structured approach to responding to deterioration.",
+      content:
+        "1. Perform an immediate focused patient assessment.\n\n2. Escalate concerning findings to the appropriate healthcare professional.\n\n3. Implement appropriate prescribed interventions and protocols.\n\n4. Continue monitoring and reassessing the patient's response.",
+    },
+  ],
+};
+
+const getPostoperativeCaseExhibits = (stage: number): ClinicalExhibit[] =>
+  postoperativeCaseExhibitsByStage[stage] ?? [];
 
 // ============================================================
 // PHARMACOLOGY QUESTION BANK
@@ -632,6 +771,7 @@ export const practiceQuestions: Record<string, PracticeQuestion[]> = {
           "A 68-year-old patient admitted following abdominal surgery.",
         clinicalNotes:
           "The patient reports increasing abdominal discomfort and chills. Temperature is 38.6°C, heart rate is 112 beats/min, respiratory rate is 24 breaths/min and blood pressure is 104/66 mmHg.",
+          exhibits: getPostoperativeCaseExhibits(1),
       },
       question:
         "Which assessment finding requires the nurse's most immediate attention?",
@@ -679,6 +819,7 @@ export const practiceQuestions: Record<string, PracticeQuestion[]> = {
           "A 68-year-old patient admitted following abdominal surgery.",
         clinicalNotes:
           "The patient continues to experience chills and abdominal discomfort. The nurse is reviewing the patient's clinical condition.",
+          exhibits: getPostoperativeCaseExhibits(2),
       },
       question:
         "Which additional assessment findings should the nurse investigate when evaluating possible clinical deterioration? Select all that apply.",
@@ -730,6 +871,7 @@ export const practiceQuestions: Record<string, PracticeQuestion[]> = {
           "A 68-year-old patient admitted following abdominal surgery.",
         clinicalNotes:
           "The nurse is reviewing the patient's assessment findings to identify signs requiring further investigation.",
+        exhibits: getPostoperativeCaseExhibits(3),
       },
       question:
         "For each finding, identify whether it is within the expected range or requires further investigation in this patient's current condition.",
@@ -795,9 +937,11 @@ export const practiceQuestions: Record<string, PracticeQuestion[]> = {
           "A 68-year-old patient admitted following abdominal surgery.",
         clinicalNotes:
           "The patient has persistent fever, tachycardia and increasing abdominal discomfort.",
+          exhibits: getPostoperativeCaseExhibits(4),
       },
       question:
         "Complete the Bow-Tie by identifying the most likely clinical concern, two appropriate nursing actions and two parameters to monitor.",
+
       options: [],
       bowTieConfig: {
         conditions: [
@@ -881,6 +1025,7 @@ export const practiceQuestions: Record<string, PracticeQuestion[]> = {
           "A 68-year-old patient admitted following abdominal surgery.",
         clinicalNotes:
           "The nurse is preparing to communicate the patient's deteriorating condition to the healthcare team.",
+          exhibits: getPostoperativeCaseExhibits(5),
       },
       question:
         "Complete the clinical communication statement.",
@@ -958,9 +1103,11 @@ export const practiceQuestions: Record<string, PracticeQuestion[]> = {
           "A 68-year-old patient admitted following abdominal surgery.",
         clinicalNotes:
           "The nurse has identified concerning findings and is preparing to escalate the patient's condition.",
+          exhibits: getPostoperativeCaseExhibits(6),
       },
       question:
         "Arrange the following nursing actions in a reasonable priority sequence when responding to the patient's deterioration.",
+
       options: [
         {
           id: "A",

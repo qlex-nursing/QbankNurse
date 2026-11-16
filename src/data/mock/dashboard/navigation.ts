@@ -1,3 +1,4 @@
+
 import {
   LayoutDashboard,
   GraduationCap,
@@ -61,7 +62,6 @@ const examSubcategories: DashboardNavItem[] = [
   {
     label: "HESI",
     children: [
-      // { label: "HESI A2", href: "/dashboard/exams/hesi/a2" },
       { label: "HESI Specialty", href: "/dashboard/exams/hesi/specialty" },
       { label: "HESI Exit", href: "/dashboard/exams/hesi/exit" },
     ],
@@ -75,7 +75,10 @@ const examSubcategories: DashboardNavItem[] = [
   {
     label: "Certification",
     children: [
-      { label: "Certification Practice", href: "/dashboard/exams/certification" },
+      {
+        label: "Certification Practice",
+        href: "/dashboard/exams/certification",
+      },
     ],
   },
 ];
@@ -95,26 +98,36 @@ export const dashboardNavigation: DashboardNavGroup[] = [
     items: [
       {
         label: "RN Exams",
+        href: "/dashboard/study-library?filter=rn",
         icon: GraduationCap,
         children: examSubcategories,
       },
       {
         label: "LPN Exams",
+        href: "/dashboard/study-library?filter=lpn",
         icon: BookOpen,
         children: examSubcategories,
       },
       {
         label: "RN Exit",
+        href: "/dashboard/study-library?filter=rn-exit",
         icon: Award,
         children: [
-          { label: "RN Exit Practice", href: "/dashboard/exams/rn-exit" },
+          {
+            label: "RN Exit Practice",
+            href: "/dashboard/study-library?filter=rn-exit",
+          },
         ],
       },
       {
         label: "LPN Exit",
+        href: "/dashboard/study-library?filter=lpn-exit",
         icon: Award,
         children: [
-          { label: "LPN Exit Practice", href: "/dashboard/exams/lpn-exit" },
+          {
+            label: "LPN Exit Practice",
+            href: "/dashboard/study-library?filter=lpn-exit",
+          },
         ],
       },
     ],
@@ -122,9 +135,21 @@ export const dashboardNavigation: DashboardNavGroup[] = [
   {
     title: "Practice",
     items: [
-      { label: "Study Library", href: "/dashboard/study-library", icon: Library },
-      { label: "Performance", href: "/dashboard/performance", icon: ChartNoAxesColumnIncreasing },
-      { label: "My Library", href: "/dashboard/my-library", icon: Bookmark },
+      {
+        label: "Study Library",
+        href: "/dashboard/study-library",
+        icon: Library,
+      },
+      {
+        label: "Performance",
+        href: "/dashboard/performance",
+        icon: ChartNoAxesColumnIncreasing,
+      },
+      {
+        label: "My Library",
+        href: "/dashboard/my-library",
+        icon: Bookmark,
+      },
     ],
   },
   {
@@ -146,10 +171,21 @@ export const dashboardNavigation: DashboardNavGroup[] = [
   {
     title: "NCLEX",
     items: [
-      { label: "NCLEX RN", href: "/dashboard/nclex/rn", icon: ClipboardList },
-      { label: "NCLEX PN (LPN)", href: "/dashboard/nclex/pn", icon: ClipboardList },
-      { label: "NCLEX Practice", href: "/dashboard/nclex/practice", icon: ClipboardList },
-      // { label: "TEAS", href: "/dashboard/teas", icon: ClipboardList },
+      {
+        label: "NCLEX RN",
+        href: "/dashboard/study-library?filter=nclex-rn",
+        icon: ClipboardList,
+      },
+      {
+        label: "NCLEX PN (LPN)",
+        href: "/dashboard/study-library?filter=nclex-pn",
+        icon: ClipboardList,
+      },
+      {
+        label: "NCLEX Practice",
+        href: "/dashboard/study-library?filter=nclex",
+        icon: ClipboardList,
+      },
     ],
   },
   {

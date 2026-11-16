@@ -1,8 +1,18 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import {
+  useParams,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 import {
   ArrowDown,
   ArrowLeft,
@@ -18,6 +28,7 @@ import {
   RotateCcw,
   Send,
   X,
+  XCircle,
 } from "lucide-react";
 
 import { studyCategories } from "@/data/mock/dashboard/overview";
@@ -29,6 +40,13 @@ import {
   type BowTieAnswer,
   type MatrixAnswer,
 } from "@/data/mock/dashboard/practice-questions";
+import { savePracticeAttempt } from "@/lib/practice-attempts";
+import {
+  getPracticeSession,
+  savePracticeSession,
+  removePracticeSession,
+} from "@/lib/practice-sessions";
+import ClinicalExhibits from "@/components/dashboard/practice/clinical-exhibits";
 
 const EXAM_DURATION = 30 * 60;
 
@@ -199,9 +217,19 @@ const getQuestionTypeLabel = (type: PracticeQuestion["type"]) => {
   return labels[type];
 };
 
+type StudyMode = "exam" | "review" | "tutor";
+
 export default function PracticePage() {
   const params = useParams<{ subject: string }>();
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+const requestedMode = searchParams.get("mode");
+
+const mode: StudyMode =
+  requestedMode === "review" || requestedMode === "tutor"
+    ? requestedMode
+    : "exam";
 
   const subjectSlug = params.subject;
 
@@ -220,10 +248,26 @@ export default function PracticePage() {
   const [flaggedQuestions, setFlaggedQuestions] = useState<number[]>([]);
   const [timeRemaining, setTimeRemaining] = useState(EXAM_DURATION);
   const [submitted, setSubmitted] = useState(false);
+  const [sessionLoaded, setSessionLoaded] = useState(false);
+const [hasSavedSession, setHasSavedSession] = useState(false);
   const [showSubmitConfirmation, setShowSubmitConfirmation] =
     useState(false);
+    const [tutorChecked, setTutorChecked] = useState(false);
+    const [expandedRationales, setExpandedRationales] = useState<number[]>([]);
+
+const toggleRationale = (questionId: number) => {
+  setExpandedRationales((current) =>
+    current.includes(questionId)
+      ? current.filter((id) => id !== questionId)
+      : [...current, questionId],
+  );
+};
 
   const currentQuestion = questions[currentIndex];
+
+  useEffect(() => {
+  setTutorChecked(false);
+}, [answers, currentIndex, mode]);
 
   const answeredCount = questions.filter((question) =>
     hasAnswer(answers[question.id]),
@@ -234,6 +278,8 @@ export default function PracticePage() {
   const isFlagged = currentQuestion
     ? flaggedQuestions.includes(currentQuestion.id)
     : false;
+
+    
 
   const score = questions.reduce((total, question) => {
     return (
@@ -247,7 +293,7 @@ export default function PracticePage() {
       ? Math.round((score / questions.length) * 100)
       : 0;
 
-  const formatTime = (seconds: number) => {
+   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
 
@@ -256,28 +302,179 @@ export default function PracticePage() {
     ).padStart(2, "0")}`;
   };
 
+
+
+  // ----------------------------------------------------------
+// RESTORE SAVED PRACTICE SESSION
+// ----------------------------------------------------------
+
+useEffect(() => {
+  if (mode === "exam") {
+    const savedSession = getPracticeSession(subjectSlug);
+
+    if (savedSession) {
+      const safeIndex = Math.min(
+        Math.max(savedSession.currentIndex, 0),
+        Math.max(questions.length - 1, 0),
+      );
+
+      const safeTime = Math.min(
+        Math.max(savedSession.timeRemaining, 0),
+        EXAM_DURATION,
+      );
+
+      setCurrentIndex(safeIndex);
+      setAnswers(savedSession.answers as AnswerMap);
+      setFlaggedQuestions(savedSession.flaggedQuestions);
+      setTimeRemaining(safeTime);
+
+      timeRemainingRef.current = safeTime;
+
+      setHasSavedSession(true);
+    }
+  }
+
+  setSessionLoaded(true);
+}, [subjectSlug, questions.length, mode]);
+
+  // ----------------------------------------------------------
+  // PRACTICE ATTEMPT TRACKING
+  // ----------------------------------------------------------
+
+  const submittedRef = useRef(false);
+
+  const timeRemainingRef = useRef(EXAM_DURATION);
+
+  const attemptSnapshotRef = useRef({
+    subject: subject?.title ?? subjectSlug,
+    score,
+    totalQuestions: questions.length,
+    percentage,
+    timeRemaining: EXAM_DURATION,
+  });
+
+  // Keep the latest exam results available when submitting.
+  attemptSnapshotRef.current = {
+    subject: subject?.title ?? subjectSlug,
+    score,
+    totalQuestions: questions.length,
+    percentage,
+    timeRemaining: timeRemainingRef.current,
+  };
+
+
+  // ----------------------------------------------------------
+// AUTOMATICALLY SAVE PRACTICE SESSION
+// ----------------------------------------------------------
+
+useEffect(() => {
+  if (
+  mode !== "exam" ||
+  !sessionLoaded ||
+  submitted ||
+  questions.length === 0
+) {
+    return;
+  }
+
+  savePracticeSession({
+    subjectSlug,
+    currentIndex,
+    answers,
+    flaggedQuestions,
+    timeRemaining,
+    totalQuestions: questions.length,
+    updatedAt: new Date().toISOString(),
+  });
+
+}, [
+  sessionLoaded,
+  submitted,
+  subjectSlug,
+  currentIndex,
+  answers,
+  flaggedQuestions,
+  timeRemaining,
+  questions.length,
+]);
+
+  // ----------------------------------------------------------
+  // SUBMIT EXAM
+  // ----------------------------------------------------------
+
   const submitExam = useCallback(() => {
+
+    if (mode !== "exam") return;
+    // Prevent duplicate submissions.
+    if (submittedRef.current) return;
+
+    submittedRef.current = true;
+
+    removePracticeSession(subjectSlug);
+
+    const attempt = attemptSnapshotRef.current;
+
+    savePracticeAttempt({
+      id: `ati-${Date.now()}-${Math.random()
+        .toString(36)
+        .slice(2, 8)}`,
+
+      examType: "ATI",
+
+      subject: attempt.subject,
+
+      score: attempt.score,
+
+      totalQuestions: attempt.totalQuestions,
+
+      percentage: attempt.percentage,
+
+      correctAnswers: attempt.score,
+
+      incorrectAnswers:
+        attempt.totalQuestions - attempt.score,
+
+      durationSeconds:
+        EXAM_DURATION - attempt.timeRemaining,
+
+      completedAt: new Date().toISOString(),
+    });
+
     setSubmitted(true);
     setShowSubmitConfirmation(false);
-  }, []);
+  }, [subjectSlug, mode]);
+
+  // ----------------------------------------------------------
+  // EXAM TIMER
+  // ----------------------------------------------------------
 
   useEffect(() => {
-    if (submitted || questions.length === 0) return;
-
+    if (
+  mode !== "exam" ||
+  !sessionLoaded ||
+  submitted ||
+  questions.length === 0
+) return;
     const timer = window.setInterval(() => {
-      setTimeRemaining((previous) => {
-        if (previous <= 1) {
-          window.clearInterval(timer);
-          setSubmitted(true);
-          return 0;
-        }
+      const nextTime = Math.max(
+        timeRemainingRef.current - 1,
+        0,
+      );
 
-        return previous - 1;
-      });
+      timeRemainingRef.current = nextTime;
+
+      setTimeRemaining(nextTime);
     }, 1000);
 
     return () => window.clearInterval(timer);
-  }, [submitted, questions.length]);
+  }, [sessionLoaded, submitted, questions.length]);
+
+  // Automatically submit when the timer reaches zero.
+  useEffect(() => {
+    if (timeRemaining === 0 && !submitted) {
+      submitExam();
+    }
+  }, [timeRemaining, submitted, submitExam]);
 
   // ----------------------------------------------------------
   // ANSWER HANDLERS
@@ -285,6 +482,7 @@ export default function PracticePage() {
 
   const selectAnswer = (optionId: string) => {
     if (!currentQuestion) return;
+    if (mode === "tutor" && tutorChecked) return;
 
     setAnswers((previous) => {
       const currentAnswer = previous[currentQuestion.id];
@@ -313,6 +511,7 @@ export default function PracticePage() {
 
   const updateNumericAnswer = (value: string) => {
     if (!currentQuestion) return;
+    if (mode === "tutor" && tutorChecked) return;
 
     setAnswers((previous) => {
       if (value.trim() === "") {
@@ -337,6 +536,7 @@ export default function PracticePage() {
     direction: "up" | "down",
   ) => {
     if (!currentQuestion) return;
+    if (mode === "tutor" && tutorChecked) return;
 
     setAnswers((previous) => {
       const existingAnswer = previous[currentQuestion.id];
@@ -374,6 +574,7 @@ export default function PracticePage() {
 
   const updateMatrixAnswer = (rowId: string, columnId: string) => {
     if (!currentQuestion) return;
+    if (mode === "tutor" && tutorChecked) return;
 
     setAnswers((previous) => {
       const existing = previous[currentQuestion.id];
@@ -400,6 +601,7 @@ export default function PracticePage() {
     optionId: string,
   ) => {
     if (!currentQuestion) return;
+    if (mode === "tutor" && tutorChecked) return;
 
     setAnswers((previous) => {
       const existing = previous[currentQuestion.id];
@@ -449,6 +651,7 @@ export default function PracticePage() {
 
   const updateClozeAnswer = (blankId: string, optionId: string) => {
     if (!currentQuestion) return;
+    if (mode === "tutor" && tutorChecked) return;
 
     setAnswers((previous) => {
       const existing = previous[currentQuestion.id];
@@ -546,10 +749,63 @@ export default function PracticePage() {
   // RESULTS PAGE
   // ----------------------------------------------------------
 
-  if (submitted) {
+  if (submitted || mode === "review"){ 
     return (
       <div className="dashboard-content mx-auto w-full max-w-5xl space-y-7 px-5 py-7 sm:px-7 lg:px-9">
-        <div className="dashboard-card rounded-3xl p-6 text-center sm:p-10">
+        {mode === "review" && (
+  <div className="relative overflow-hidden rounded-3xl border border-[#E8DEFF] bg-gradient-to-br from-white via-[#F8F6FF] to-[#EEE8FF] p-6 sm:p-8">
+    <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-[#5B3DF5]/5 blur-3xl" />
+
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => router.push(`/dashboard/exams/ati/${subjectSlug}`)}
+        className="mb-7 inline-flex items-center gap-2 text-sm font-semibold text-[#5B3DF5] transition hover:gap-3"
+      >
+        <ArrowLeft size={17} />
+        Back to subject
+      </button>
+
+      <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
+        <div className="max-w-2xl">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#E8DEFF] bg-white px-3 py-1.5 text-xs font-bold text-[#5B3DF5]">
+            <BookOpen size={14} />
+            STUDY MODE
+          </div>
+
+          <h1 className="text-3xl font-extrabold tracking-tight text-[#17263F] sm:text-4xl">
+            Review & Learn
+          </h1>
+
+          <p className="mt-3 max-w-xl text-sm leading-7 text-slate-600 sm:text-base">
+            Take your time exploring each question, understanding the correct
+            answers and learning the clinical reasoning behind them.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3 rounded-2xl border border-[#E8DEFF] bg-white/80 p-4">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#5B3DF5]/10 text-[#5B3DF5]">
+            <BookOpen size={21} />
+          </div>
+
+          <div>
+            <p className="text-2xl font-extrabold text-[#17263F]">
+              {questions.length}
+            </p>
+            <p className="text-xs font-medium text-slate-500">
+              Questions to review
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+        <div
+  className={`dashboard-card rounded-3xl p-6 text-center sm:p-10 ${
+    mode === "review" ? "hidden" : ""
+  }`}
+>
           <div className="dashboard-accent-icon mx-auto flex h-16 w-16 items-center justify-center rounded-full">
             <CheckCircle2 size={34} />
           </div>
@@ -630,16 +886,24 @@ export default function PracticePage() {
 
         {/* ANSWER REVIEW */}
 
-        <section className="space-y-4">
-          <div>
-            <h2 className="dashboard-heading text-xl font-bold">
-              Review your answers
-            </h2>
+       <section className="space-y-5">
+  <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
+    <div>
+      <h2 className="dashboard-heading text-xl font-bold">
+        {mode === "review" ? "Your study questions" : "Review your answers"}
+      </h2>
 
-            <p className="dashboard-muted mt-1 text-sm">
-              Review your responses, correct answers and explanations.
-            </p>
-          </div>
+      <p className="dashboard-muted mt-1 text-sm">
+        {mode === "review"
+          ? "Explore each question and reveal its clinical rationale."
+          : "Review your responses, correct answers and explanations."}
+      </p>
+    </div>
+
+    <span className="w-fit rounded-full bg-[#5B3DF5]/10 px-3 py-1.5 text-xs font-bold text-[#5B3DF5]">
+      {questions.length} QUESTIONS
+    </span>
+  </div>
 
           {questions.map((question, index) => {
             const selectedAnswer = answers[question.id];
@@ -648,8 +912,8 @@ export default function PracticePage() {
             return (
               <article
                 key={question.id}
-                className="dashboard-card rounded-2xl p-5 sm:p-6"
-              >
+                  className="dashboard-card rounded-3xl border border-[var(--dashboard-border)] p-5 shadow-sm transition duration-200 hover:shadow-md sm:p-7">
+              
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
                     <span className="dashboard-muted text-xs font-semibold">
@@ -661,15 +925,17 @@ export default function PracticePage() {
                     </p>
                   </div>
 
-                  <span
-                    className={`rounded-full px-3 py-1 text-xs font-bold ${
-                      isCorrect
-                        ? "bg-emerald-100 text-emerald-700"
-                        : "bg-rose-100 text-rose-700"
-                    }`}
-                  >
-                    {isCorrect ? "Correct" : "Incorrect"}
-                  </span>
+                  {mode !== "review" && (
+  <span
+    className={`rounded-full px-3 py-1 text-xs font-bold ${
+      isCorrect
+        ? "bg-emerald-100 text-emerald-700"
+        : "bg-rose-100 text-rose-700"
+    }`}
+  >
+    {isCorrect ? "Correct" : "Incorrect"}
+  </span>
+)}
                 </div>
 
                 <h3 className="dashboard-heading mt-4 text-sm font-semibold leading-7">
@@ -693,6 +959,15 @@ export default function PracticePage() {
                     </p>
                   </div>
                 )}
+
+                {mode === "review" && question.clinicalCase?.exhibits?.length ? (
+  <div className="mt-5">
+    <ClinicalExhibits
+  key={`${question.clinicalCase.id}-${question.clinicalCase.stage}`}
+  clinicalCase={question.clinicalCase}
+/>
+  </div>
+) : null}
 
                 {/* Standard option review */}
 
@@ -997,21 +1272,36 @@ export default function PracticePage() {
                 {/* Rationale */}
 
                 <div className="dashboard-inner-card mt-5 rounded-xl p-4">
-                  <div className="flex items-center gap-2">
-                    <Lightbulb
-                      size={17}
-                      className="dashboard-accent-icon"
-                    />
+  <button
+    type="button"
+    onClick={() => toggleRationale(question.id)}
+    aria-expanded={expandedRationales.includes(question.id)}
+    className="flex w-full items-center justify-between gap-3 text-left"
+  >
+    <span className="flex items-center gap-2">
+      <Lightbulb
+        size={17}
+        className="dashboard-accent-icon"
+      />
 
-                    <h4 className="dashboard-heading text-sm font-bold">
-                      Rationale
-                    </h4>
-                  </div>
+      <span className="dashboard-heading text-sm font-bold">
+        Rationale
+      </span>
+    </span>
 
-                  <p className="dashboard-muted mt-2 text-sm leading-6">
-                    {question.rationale}
-                  </p>
-                </div>
+    <span className="text-xs font-semibold text-[#5B3DF5]">
+      {expandedRationales.includes(question.id)
+        ? "Hide Rationale"
+        : "View Rationale"}
+    </span>
+  </button>
+
+  {expandedRationales.includes(question.id) && (
+    <p className="dashboard-muted mt-3 text-sm leading-7">
+      {question.rationale}
+    </p>
+  )}
+</div>
               </article>
             );
           })}
@@ -1087,7 +1377,10 @@ export default function PracticePage() {
           </Link>
 
           <h1 className="dashboard-heading text-xl font-extrabold sm:text-2xl">
-            {subject.title} Practice
+            {subject.title}{" "}
+{mode === "tutor"
+  ? "Tutor"
+  : "Practice"}
           </h1>
 
           <p className="dashboard-muted mt-1 text-sm">
@@ -1095,25 +1388,27 @@ export default function PracticePage() {
           </p>
         </div>
 
-        <div
-          className={`flex items-center gap-3 rounded-2xl border px-5 py-3 ${
-            timeRemaining <= 60
-              ? "border-rose-300 bg-rose-50 text-rose-700"
-              : "border-[var(--dashboard-border)]"
-          }`}
-        >
-          <Clock3 size={20} />
+        {mode === "exam" && (
+  <div
+    className={`flex items-center gap-3 rounded-2xl border px-5 py-3 ${
+      timeRemaining <= 60
+        ? "border-rose-300 bg-rose-50 text-rose-700"
+        : "border-[var(--dashboard-border)]"
+    }`}
+  >
+    <Clock3 size={20} />
 
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-wider">
-              Time remaining
-            </p>
+    <div>
+      <p className="text-[10px] font-bold uppercase tracking-wider">
+        Time remaining
+      </p>
 
-            <p className="text-xl font-extrabold tabular-nums">
-              {formatTime(timeRemaining)}
-            </p>
-          </div>
-        </div>
+      <p className="text-xl font-extrabold tabular-nums">
+        {formatTime(timeRemaining)}
+      </p>
+    </div>
+  </div>
+)}
       </header>
 
       {/* CLINICAL CASE INFORMATION */}
@@ -1188,39 +1483,64 @@ export default function PracticePage() {
       )}
 
       {/* EXAM PROGRESS */}
+<section className="dashboard-card overflow-hidden rounded-2xl p-5 sm:p-6">
+  <div className="flex flex-wrap items-end justify-between gap-3">
+    <div>
+      <div className="flex items-center gap-2">
+        <span className="h-2 w-2 animate-pulse rounded-full bg-[#5B3DF5]" />
+        <p className="dashboard-heading text-sm font-bold">
+          {mode === "tutor" ? "Tutor progress" : "Exam progress"}
+        </p>
+      </div>
 
-      <section className="dashboard-card rounded-2xl p-5">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p className="dashboard-heading text-sm font-bold">
-              Exam progress
-            </p>
+      <p className="dashboard-muted mt-2 text-sm">
+        Question{" "}
+        <span className="font-bold text-[#5B3DF5]">
+          {currentIndex + 1}
+        </span>{" "}
+        of {questions.length}
+      </p>
+    </div>
 
-            <p className="dashboard-muted mt-1 text-xs">
-              Question {currentIndex + 1} of {questions.length}
-            </p>
-          </div>
+    <div className="flex gap-4 text-xs">
+      <span className="font-semibold text-emerald-600">
+        {answeredCount} answered
+      </span>
 
-          <div className="flex gap-4 text-xs">
-            <span className="text-emerald-600">
-              {answeredCount} answered
-            </span>
+      <span className="dashboard-muted">
+        {unansweredCount} remaining
+      </span>
+    </div>
+  </div>
 
-            <span className="dashboard-muted">
-              {unansweredCount} remaining
-            </span>
-          </div>
-        </div>
+  <div className="relative mt-5 h-3 overflow-hidden rounded-full bg-[#EDE9FE]">
+    {/* Completed progress */}
+    <div
+      className="relative h-full overflow-hidden rounded-full bg-gradient-to-r from-[#5B3DF5] via-[#7957F5] to-[#A78BFA] transition-all duration-700 ease-out"
+      style={{
+        width: `${((currentIndex + 1) / questions.length) * 100}%`,
+      }}
+    >
+      <div className="absolute inset-0 animate-pulse bg-gradient-to-r from-transparent via-white/25 to-transparent" />
+    </div>
 
-        <div className="dashboard-progress-track mt-4 h-2 overflow-hidden rounded-full">
-          <div
-            className="dashboard-progress-fill h-full rounded-full transition-all"
-            style={{
-              width: `${((currentIndex + 1) / questions.length) * 100}%`,
-            }}
-          />
-        </div>
-      </section>
+    {/* Subtle progress markings */}
+    <div
+      className="pointer-events-none absolute inset-0 opacity-30"
+      style={{
+        backgroundImage:
+          "repeating-linear-gradient(135deg, transparent, transparent 5px, white 5px, white 7px)",
+      }}
+    />
+  </div>
+
+  <div className="dashboard-muted mt-3 flex items-center justify-between text-[11px] font-medium">
+    <span>Session started</span>
+    <span>
+      {Math.round(((currentIndex + 1) / questions.length) * 100)}% complete
+    </span>
+  </div>
+</section>
 
       {/* MAIN EXAM LAYOUT */}
 
@@ -1763,6 +2083,89 @@ export default function PracticePage() {
               </div>
             )}
 
+            {/* TUTOR MODE FEEDBACK */}
+
+{mode === "tutor" && (
+  <div className="mt-8">
+    {!tutorChecked ? (
+      <button
+        type="button"
+        onClick={() => {
+          if (hasAnswer(currentAnswer)) {
+            setTutorChecked(true);
+          }
+        }}
+        disabled={!hasAnswer(currentAnswer)}
+        className="dashboard-primary-button inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-40"
+      >
+        <Lightbulb size={17} />
+        Check Answer
+      </button>
+    ) : (
+      <div
+        className={`rounded-2xl border p-5 ${
+          isAnswerCorrect(currentAnswer, currentQuestion)
+            ? "border-emerald-300 bg-emerald-50"
+            : "border-rose-300 bg-rose-50"
+        }`}
+      >
+        <div className="flex items-center gap-3">
+          {isAnswerCorrect(currentAnswer, currentQuestion) ? (
+            <CheckCircle2
+              size={25}
+              className="text-emerald-600"
+            />
+          ) : (
+            <XCircle
+              size={25}
+              className="text-rose-600"
+            />
+          )}
+
+          <div>
+            <h3
+              className={`font-bold ${
+                isAnswerCorrect(currentAnswer, currentQuestion)
+                  ? "text-emerald-700"
+                  : "text-rose-700"
+              }`}
+            >
+              {isAnswerCorrect(currentAnswer, currentQuestion)
+                ? "Correct answer!"
+                : "Not quite. Keep learning!"}
+            </h3>
+
+            <p className="mt-1 text-xs text-gray-600">
+              {isAnswerCorrect(currentAnswer, currentQuestion)
+                ? "Excellent work. You selected the correct response."
+                : "Review the explanation below to understand the correct response."}
+            </p>
+          </div>
+        </div>
+
+        
+
+        <div className="mt-5 rounded-xl border border-white/70 bg-white/80 p-4">
+          <div className="flex items-center gap-2">
+            <Lightbulb
+              size={17}
+              className="text-[#5B3DF5]"
+            />
+
+            <h4 className="text-sm font-bold text-gray-900">
+              Rationale
+            </h4>
+          </div>
+
+          <p className="mt-2 text-sm leading-7 text-gray-700">
+            {currentQuestion.rationale}
+          </p>
+        </div>
+      </div>
+    )}
+  </div>
+)}
+
           {/* NAVIGATION */}
 
           <div className="mt-8 flex flex-col justify-between gap-3 border-t border-[var(--dashboard-border)] pt-5 sm:flex-row">
@@ -1776,25 +2179,33 @@ export default function PracticePage() {
               Previous
             </button>
 
-            {currentIndex < questions.length - 1 ? (
-              <button
-                type="button"
-                onClick={() => navigateToQuestion(currentIndex + 1)}
-                className="dashboard-primary-button inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold"
-              >
-                Next question
-                <ArrowRight size={16} />
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={() => setShowSubmitConfirmation(true)}
-                className="dashboard-primary-button inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold"
-              >
-                Submit practice
-                <Send size={16} />
-              </button>
-            )}
+           {currentIndex < questions.length - 1 ? (
+  <button
+    type="button"
+    onClick={() => navigateToQuestion(currentIndex + 1)}
+    className="dashboard-primary-button inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold"
+  >
+    Next question
+    <ArrowRight size={16} />
+  </button>
+) : mode === "tutor" ? (
+  <Link
+    href="/dashboard/study-library"
+    className="dashboard-primary-button inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold"
+  >
+    Finish tutoring
+    <CheckCircle2 size={16} />
+  </Link>
+) : (
+  <button
+    type="button"
+    onClick={() => setShowSubmitConfirmation(true)}
+    className="dashboard-primary-button inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold"
+  >
+    Submit practice
+    <Send size={16} />
+  </button>
+)}
           </div>
         </section>
 
@@ -1892,6 +2303,7 @@ export default function PracticePage() {
             </div>
           </div>
 
+{mode === "exam" && (
           <button
             type="button"
             onClick={() => setShowSubmitConfirmation(true)}
@@ -1899,7 +2311,9 @@ export default function PracticePage() {
           >
             Submit exam
             <Send size={15} />
+          
           </button>
+)}
         </aside>
       </div>
 
@@ -1918,6 +2332,8 @@ export default function PracticePage() {
                 <Send size={22} />
               </div>
 
+
+{mode === "exam" && (
               <button
                 type="button"
                 onClick={() => setShowSubmitConfirmation(false)}
@@ -1926,6 +2342,7 @@ export default function PracticePage() {
               >
                 <X size={19} />
               </button>
+)}
             </div>
 
             <h2

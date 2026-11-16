@@ -1,8 +1,8 @@
-"use client";
 
+"use client";
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import {
   ChevronDown,
   PanelLeftClose,
@@ -26,6 +26,8 @@ export default function DashboardSidebar({
   onToggleCollapse,
 }: SidebarProps) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
 
   const toggleExpanded = (label: string) => {
@@ -36,10 +38,41 @@ export default function DashboardSidebar({
     );
   };
 
+  // Check whether a navigation item matches the current URL and filter.
   const isActive = (href?: string) => {
     if (!href) return false;
-    if (href === "/dashboard") return pathname === href;
-    return pathname === href || pathname.startsWith(`${href}/`);
+
+    const [targetPath, targetQuery] = href.split("?");
+
+    if (targetPath === "/dashboard") {
+      return pathname === targetPath;
+    }
+
+    if (
+      pathname !== targetPath &&
+      !pathname.startsWith(`${targetPath}/`)
+    ) {
+      return false;
+    }
+
+    // Links without query parameters.
+    if (!targetQuery) {
+      return (
+        pathname === targetPath &&
+        !searchParams.get("filter")
+      );
+    }
+
+    // Compare query parameters, including the selected library filter.
+    const targetParams = new URLSearchParams(targetQuery);
+
+    for (const [key, value] of targetParams.entries()) {
+      if (searchParams.get(key) !== value) {
+        return false;
+      }
+    }
+
+    return true;
   };
 
   const renderItem = (
@@ -54,44 +87,59 @@ export default function DashboardSidebar({
     return (
       <div key={item.label}>
         {hasChildren ? (
-          <button
-            type="button"
-            title={collapsed ? item.label : undefined}
-            onClick={() => {
-              if (collapsed) onToggleCollapse();
-              toggleExpanded(item.label);
-            }}
+          <div
             className={`group flex w-full items-center gap-3 rounded-2xl transition-all duration-200 ${
               depth === 0
                 ? "px-3 py-3"
                 : "px-3 py-2"
             } ${
-              expanded
+              expanded || active
                 ? "bg-[#263B59] text-white"
                 : "text-slate-300 hover:bg-[#263B59] hover:text-white"
             } ${collapsed && depth === 0 ? "justify-center" : ""}`}
           >
-            {Icon && (
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-[#B9A9FF]">
-                <Icon size={18} />
-              </span>
-            )}
+            {/* Parent navigation link */}
+            <Link
+              href={item.href ?? "/dashboard"}
+              onClick={onMobileClose}
+              title={collapsed ? item.label : undefined}
+              className={`flex min-w-0 flex-1 items-center gap-3 ${
+                collapsed && depth === 0 ? "justify-center" : ""
+              }`}
+            >
+              {Icon && (
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-[#B9A9FF]">
+                  <Icon size={18} />
+                </span>
+              )}
 
-            {!collapsed && (
-              <>
+              {!collapsed && (
                 <span className="min-w-0 flex-1 text-left text-sm font-semibold">
                   {item.label}
                 </span>
+              )}
+            </Link>
 
+            {/* Independent expand/collapse button */}
+            {!collapsed && (
+              <button
+                type="button"
+                aria-label={`${expanded ? "Collapse" : "Expand"} ${item.label}`}
+                aria-expanded={expanded}
+                onClick={() => toggleExpanded(item.label)}
+                className="shrink-0 rounded-lg p-1 text-slate-400 transition-colors hover:bg-white/10 hover:text-white"
+              >
                 <ChevronDown
                   size={16}
-                  className={`shrink-0 transition-transform ${
-                    expanded ? "rotate-180 text-[#B9A9FF]" : "text-slate-400"
+                  className={`transition-transform ${
+                    expanded
+                      ? "rotate-180 text-[#B9A9FF]"
+                      : "text-slate-400"
                   }`}
                 />
-              </>
+              </button>
             )}
-          </button>
+          </div>
         ) : (
           <Link
             href={item.href ?? "/dashboard"}
@@ -111,10 +159,12 @@ export default function DashboardSidebar({
           </Link>
         )}
 
+        {/* Existing nested navigation */}
         {hasChildren && expanded && !collapsed && (
           <div className="ml-5 mt-2 space-y-1 border-l border-white/10 pl-3">
             {item.children?.map((child) => {
               const childHasChildren = Boolean(child.children?.length);
+
               const childExpanded = expandedItems.includes(
                 `${item.label}-${child.label}`,
               );
@@ -258,6 +308,7 @@ export default function DashboardSidebar({
                   <span className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-slate-400">
                     {group.title}
                   </span>
+
                   <span className="h-px flex-1 bg-white/10" />
                 </div>
               )}
@@ -274,6 +325,7 @@ export default function DashboardSidebar({
             <p className="text-[10px] font-medium text-slate-500">
               QbankNurse Learning Platform
             </p>
+
             <p className="mt-1 text-xs font-semibold text-slate-300">
               Learn with purpose.
             </p>
