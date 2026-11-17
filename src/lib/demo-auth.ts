@@ -5,17 +5,22 @@ export interface DemoUser {
   email: string;
 }
 
+interface DemoSession {
+  user: DemoUser;
+  authenticated: boolean;
+  createdAt: string;
+}
+
 export function createDemoSession(user: DemoUser) {
   if (typeof window === "undefined") return;
 
-  localStorage.setItem(
-    DEMO_SESSION_KEY,
-    JSON.stringify({
-      user,
-      authenticated: true,
-      createdAt: new Date().toISOString(),
-    }),
-  );
+  const session: DemoSession = {
+    user,
+    authenticated: true,
+    createdAt: new Date().toISOString(),
+  };
+
+  localStorage.setItem(DEMO_SESSION_KEY, JSON.stringify(session));
 }
 
 export function getDemoSession(): DemoUser | null {
@@ -35,6 +40,28 @@ export function getDemoSession(): DemoUser | null {
     return session.user as DemoUser;
   } catch {
     return null;
+  }
+}
+
+export function updateDemoSession(user: DemoUser) {
+  if (typeof window === "undefined") return false;
+
+  try {
+    const stored = localStorage.getItem(DEMO_SESSION_KEY);
+
+    if (!stored) return false;
+
+    const session = JSON.parse(stored);
+
+    if (!session.authenticated) return false;
+
+    session.user = user;
+
+    localStorage.setItem(DEMO_SESSION_KEY, JSON.stringify(session));
+
+    return true;
+  } catch {
+    return false;
   }
 }
 

@@ -872,3 +872,296 @@ img {
     animation-iteration-count: 1 !important;
   }
 }
+
+/* =========================================
+   QBANKNURSE CINEMATIC 404 EXPERIENCE
+========================================= */
+
+.qn-404 {
+  isolation: isolate;
+}
+
+.qn-404-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.16;
+  background-image:
+    linear-gradient(rgba(167, 139, 250, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(167, 139, 250, 0.08) 1px, transparent 1px);
+  background-size: 55px 55px;
+  mask-image: linear-gradient(to bottom, black, transparent 85%);
+}
+
+.qn-404-glow {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 9999px;
+  filter: blur(100px);
+}
+
+.qn-404-glow-one {
+  width: 450px;
+  height: 450px;
+  top: -220px;
+  right: -100px;
+  background: rgba(91, 61, 245, 0.3);
+}
+
+.qn-404-glow-two {
+  width: 400px;
+  height: 400px;
+  bottom: -200px;
+  left: -100px;
+  background: rgba(124, 58, 237, 0.2);
+}
+
+.qn-404-orbit {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  border: 1px solid rgba(167, 139, 250, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.qn-404-orbit-one {
+  width: 85%;
+  height: 85%;
+  animation: qn-orbit-pulse 5s ease-in-out infinite;
+}
+
+.qn-404-orbit-two {
+  width: 105%;
+  height: 105%;
+  border-style: dashed;
+  border-color: rgba(167, 139, 250, 0.12);
+  animation: qn-orbit-rotate 35s linear infinite;
+}
+
+.qn-float {
+  animation: qn-float 5s ease-in-out infinite;
+}
+
+.qn-float-delayed {
+  animation: qn-float 6s ease-in-out infinite;
+  animation-delay: 1.2s;
+}
+
+.qn-particle {
+  animation: qn-particle-glow 2.5s ease-in-out infinite;
+}
+
+.qn-particle-delayed {
+  animation: qn-particle-glow 3s ease-in-out infinite;
+  animation-delay: 1s;
+}
+
+.qn-ecg {
+  stroke-dasharray: 350;
+  stroke-dashoffset: 350;
+  animation: qn-ecg-draw 2.4s ease-in-out infinite;
+}
+
+.qn-monitor {
+  animation: qn-monitor-glow 3s ease-in-out infinite;
+}
+
+@keyframes qn-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes qn-orbit-pulse {
+  0%, 100% {
+    opacity: 0.4;
+    scale: 0.98;
+  }
+  50% {
+    opacity: 0.9;
+    scale: 1.02;
+  }
+}
+
+@keyframes qn-orbit-rotate {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes qn-particle-glow {
+  0%, 100% {
+    opacity: 0.3;
+    box-shadow: 0 0 4px rgba(167, 139, 250, 0.3);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 15px rgba(167, 139, 250, 0.9);
+  }
+}
+
+@keyframes qn-ecg-draw {
+  0% {
+    stroke-dashoffset: 350;
+  }
+  65%, 100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes qn-monitor-glow {
+  0%, 100% {
+    box-shadow:
+      0 0 25px rgba(139, 92, 246, 0.35),
+      inset 0 0 25px rgba(139, 92, 246, 0.1);
+  }
+  50% {
+    box-shadow:
+      0 0 50px rgba(139, 92, 246, 0.7),
+      inset 0 0 35px rgba(139, 92, 246, 0.25);
+  }
+}
+
+@media (max-width: 640px) {
+  .qn-404-scene {
+    max-width: 380px;
+  }
+
+  .qn-404-orbit-two {
+    width: 95%;
+    height: 95%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qn-404 *,
+  .qn-404 *::before,
+  .qn-404 *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
+/* =========================================
+   NURSING CALCULATORS
+========================================= */
+
+.calculator-formula-box {
+  background: var(--dash-surface-soft);
+  color: var(--dash-text);
+  border: 1px solid var(--dash-border);
+}
+
+/* Remove native number input spinner controls */
+.calculator-number-input::-webkit-inner-spin-button,
+.calculator-number-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.calculator-number-input {
+  -moz-appearance: textfield;
+  appearance: textfield;
+} 
+
+/* =========================================
+   CALCULATOR SAFETY NOTICE
+========================================= */
+
+.calculator-safety-notice {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+}
+
+.calculator-safety-icon {
+  color: #ec0509;
+}
+
+.calculator-safety-title {
+  color: #1e3a8a;
+}
+
+.calculator-safety-description {
+  color: #334155;
+}
+
+/* Dark mode */
+.dashboard-dark .calculator-safety-notice {
+  background: #172b45;
+  border-color: #ff1100;
+}
+
+.dashboard-dark .calculator-safety-icon {
+  color: #ff0000;
+}
+
+.dashboard-dark .calculator-safety-title {
+  color: #e1e4e7;
+}
+
+.dashboard-dark .calculator-safety-description {
+  color: #dbeafe;
+}
+
+/* =========================================
+   CUSTOM CALCULATOR NUMBER INPUTS
+========================================= */
+
+.calculator-number-input {
+  padding-right: 8rem !important;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.calculator-number-input::-webkit-inner-spin-button,
+.calculator-number-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.calculator-input-unit {
+  right: 3rem;
+  z-index: 2;
+  white-space: nowrap;
+}
+
+.calculator-spinner {
+  z-index: 3;
+  overflow: hidden;
+  border: 1px solid var(--dash-border);
+  border-radius: 7px;
+  background: var(--dash-surface-soft);
+}
+
+.calculator-spinner-button {
+  color: var(--dash-muted);
+  cursor: pointer;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.calculator-spinner-button:hover {
+  background: #E8DEFF;
+  color: #5B3DF5;
+}
+
+.dashboard-dark .calculator-spinner-button:hover {
+  background: #40336b;
+  color: #c4b5fd;
+}
+
+.calculator-spinner-button:active {
+  background: #D8CCFF;
+}
+
+.calculator-spinner-button:focus-visible {
+  outline: 2px solid #5B3DF5;
+  outline-offset: -2px;
+}

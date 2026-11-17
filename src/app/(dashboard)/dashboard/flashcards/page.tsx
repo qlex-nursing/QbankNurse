@@ -12,17 +12,20 @@ import {
   CheckCircle2,
   ChevronDown,
   CircleHelp,
+  Clock3,
+  Layers,
   RotateCcw,
   Sparkles,
-  Layers,
+  Target,
+  Trophy,
   X,
+  Zap,
 } from "lucide-react";
 
 import {
   examFlashcards,
   flashcardSubjects,
   getFlashcardsBySubject,
-  type ExamFlashcard,
 } from "@/data/mock/dashboard/flashcards";
 
 import {
@@ -39,21 +42,65 @@ import {
 } from "@/lib/saved-items";
 
 type FlashcardView = "study" | "saved";
+type Confidence = "low" | "medium" | "high";
+
+const CONFIDENCE_KEY = "qbanknurse-flashcard-confidence";
+
+const confidenceOptions: {
+  id: Confidence;
+  label: string;
+  description: string;
+}[] = [
+  {
+    id: "low",
+    label: "Not confident",
+    description: "I need to study this again.",
+  },
+  {
+    id: "medium",
+    label: "Somewhat confident",
+    description: "I understand part of it.",
+  },
+  {
+    id: "high",
+    label: "Very confident",
+    description: "I understand this concept.",
+  },
+];
 
 export default function FlashcardsPage() {
   const [subject, setSubject] = useState(flashcardSubjects[0] ?? "");
   const [view, setView] = useState<FlashcardView>("study");
+
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isFlipped, setIsFlipped] = useState(false);
+  const [revealed, setRevealed] = useState(false);
+  const [completed, setCompleted] = useState(false);
+
   const [progress, setProgress] = useState<FlashcardProgress>({
     known: [],
     review: [],
   });
+
   const [savedIds, setSavedIds] = useState<string[]>([]);
+  const [confidence, setConfidence] = useState<
+    Record<string, Confidence>
+  >({});
+
   const [showSubjectMenu, setShowSubjectMenu] = useState(false);
+  const [storageReady, setStorageReady] = useState(false);
 
   useEffect(() => {
     setProgress(getFlashcardProgress());
+
+    try {
+      const storedConfidence = localStorage.getItem(CONFIDENCE_KEY);
+
+      if (storedConfidence) {
+        setConfidence(JSON.parse(storedConfidence));
+      }
+    } catch {
+      setConfidence({});
+    }
 
     const syncSaved = () => {
       setSavedIds(
@@ -64,6 +111,7 @@ export default function FlashcardsPage() {
     };
 
     syncSaved();
+    setStorageReady(true);
 
     return subscribeToSavedItems(syncSaved);
   }, []);
@@ -88,51 +136,97 @@ export default function FlashcardsPage() {
     progress.review.includes(card.id),
   ).length;
 
+  const savedCount = savedIds.length;
+
+  const highConfidenceCount = cards.filter(
+    (card) => confidence[card.id] === "high",
+  ).length;
+
+  const reviewedCount = cards.filter(
+    (card) =>
+      progress.known.includes(card.id) ||
+      progress.review.includes(card.id),
+  ).length;
+
+  const progressPercentage = cards.length
+    ? Math.round((reviewedCount / cards.length) * 100)
+    : 0;
+
   const isSaved = currentCard
     ? savedIds.includes(currentCard.id)
     : false;
 
-  const progressPercentage = cards.length
-    ? Math.round((knownCount / cards.length) * 100)
-    : 0;
+  const currentConfidence = currentCard
+    ? confidence[currentCard.id]
+    : undefined;
 
   const selectSubject = (value: string) => {
     setSubject(value);
     setCurrentIndex(0);
-    setIsFlipped(false);
+    setRevealed(false);
+    setCompleted(false);
     setShowSubjectMenu(false);
     setView("study");
+  };
+
+  const selectSavedDeck = () => {
+    setView("saved");
+    setCurrentIndex(0);
+    setRevealed(false);
+    setCompleted(false);
+    setShowSubjectMenu(false);
+  };
+
+  const selectSubjectDeck = () => {
+    setView("study");
+    setCurrentIndex(0);
+    setRevealed(false);
+    setCompleted(false);
   };
 
   const nextCard = () => {
     if (currentIndex < cards.length - 1) {
       setCurrentIndex((index) => index + 1);
-      setIsFlipped(false);
+      setRevealed(false);
+      return;
     }
+
+    setCompleted(true);
   };
 
   const previousCard = () => {
     if (currentIndex > 0) {
       setCurrentIndex((index) => index - 1);
-      setIsFlipped(false);
+      setRevealed(false);
+      setCompleted(false);
     }
   };
 
-  const handleKnowIt = () => {
+  const handleConfidence = (value: Confidence) => {
     if (!currentCard) return;
 
-    const updated = markFlashcardKnown(currentCard.id);
+    const updatedConfidence = {
+      ...confidence,
+      [currentCard.id]: value,
+    };
 
-    setProgress(updated);
-    nextCard();
-  };
+    setConfidence(updatedConfidence);
 
-  const handleReview = () => {
-    if (!currentCard) return;
+    try {
+      localStorage.setItem(
+        CONFIDENCE_KEY,
+        JSON.stringify(updatedConfidence),
+      );
+    } catch {
+      // Continue the current session if local storage is unavailable.
+    }
 
-    const updated = markFlashcardForReview(currentCard.id);
+    if (value === "high") {
+      setProgress(markFlashcardKnown(currentCard.id));
+    } else {
+      setProgress(markFlashcardForReview(currentCard.id));
+    }
 
-    setProgress(updated);
     nextCard();
   };
 
@@ -151,69 +245,106 @@ export default function FlashcardsPage() {
 
   const restartCards = () => {
     setCurrentIndex(0);
-    setIsFlipped(false);
+    setRevealed(false);
+    setCompleted(false);
   };
 
+  if (!storageReady) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="flex items-center gap-3 dashboard-muted text-sm">
+          <div className="h-5 w-5 animate-spin rounded-full border-2 border-[#5B3DF5] border-t-transparent" />
+          Preparing your flashcards...
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="dashboard-content mx-auto w-full min-w-0 max-w-[1440px] space-y-8 px-4 py-2 sm:px-6 lg:px-8">
+    <div className="dashboard-content mx-auto w-full min-w-0 max-w-[1440px] space-y-7 px-4 py-3 sm:px-6 lg:px-8">
 
-      {/* PAGE HEADER */}
+      {/* HEADER */}
 
-      <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+      <section className="relative overflow-hidden rounded-[26px] bg-[#17263F] p-6 text-white sm:p-9">
+        <div className="pointer-events-none absolute -right-16 -top-24 h-72 w-72 rounded-full bg-[#5B3DF5]/40 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-28 left-1/3 h-64 w-64 rounded-full bg-blue-500/20 blur-3xl" />
 
-        <div>
-          <div className="mb-3 flex items-center gap-2 text-xs font-semibold text-[#5B3DF5]">
-            <Sparkles size={15} />
-            <span>ACTIVE LEARNING</span>
+        <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+          <div className="max-w-2xl">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-[#C8BFFF]">
+              <Zap size={14} />
+              Exam preparation mode
+            </div>
+
+            <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
+              Exam Flashcards
+            </h1>
+
+            <p className="mt-3 max-w-xl text-sm leading-7 text-slate-300">
+              Challenge your nursing knowledge, reveal clinical
+              explanations and build the confidence you need for
+              your next examination.
+            </p>
+
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-xs font-semibold">
+                <Target size={15} className="text-[#B7A7FF]" />
+                Active recall
+              </div>
+
+              <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-xs font-semibold">
+                <BookOpen size={15} className="text-[#B7A7FF]" />
+                Clinical rationale
+              </div>
+
+              <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-xs font-semibold">
+                <Trophy size={15} className="text-[#B7A7FF]" />
+                Confidence tracking
+              </div>
+            </div>
           </div>
 
-          <h1 className="dashboard-heading text-3xl font-bold tracking-tight">
-            Flashcards
-          </h1>
-
-          <p className="dashboard-muted mt-2 max-w-xl text-sm leading-6">
-            Strengthen your nursing knowledge with active recall.
-            Flip each card, test yourself and track your progress.
-          </p>
+          <Link
+            href="/dashboard/my-library"
+            className="inline-flex shrink-0 items-center justify-center gap-2 self-start rounded-xl border border-white/20 bg-white/10 px-5 py-3 text-sm font-bold text-white transition hover:bg-white/20 lg:self-center"
+          >
+            <Layers size={17} />
+            My Library
+          </Link>
         </div>
+      </section>
 
-        <Link
-          href="/dashboard/my-library"
-          className="inline-flex items-center gap-2 self-start rounded-xl border border-[var(--dashboard-border)] px-4 py-3 text-sm font-semibold dashboard-heading transition hover:border-[#5B3DF5]/40 hover:text-[#5B3DF5] sm:self-center"
-        >
-          <Layers size={17} />
-          My Library
-        </Link>
+      {/* DECK SELECTOR */}
 
-      </div>
-
-      {/* SUBJECT SELECTOR AND SAVED DECK */}
-
-      <section className="dashboard-card rounded-2xl p-4 sm:p-5">
-
+      <section className="dashboard-card rounded-2xl border p-4 sm:p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <p className="dashboard-section-label">
+              YOUR QUESTION DECK
+            </p>
 
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-
-            <span className="dashboard-muted text-xs font-semibold uppercase tracking-wider">
-              Select subject
-            </span>
-
-            <div className="relative">
-
+            <div className="relative mt-2">
               <button
                 type="button"
-                onClick={() => setShowSubjectMenu((value) => !value)}
-                className="flex w-full min-w-[210px] items-center justify-between gap-4 rounded-xl border border-[var(--dashboard-border)] px-4 py-3 text-sm font-semibold dashboard-heading transition hover:border-[#5B3DF5]/40 sm:w-auto"
+                onClick={() =>
+                  setShowSubjectMenu((value) => !value)
+                }
+                className="flex min-w-[220px] items-center justify-between gap-4 rounded-xl border border-[var(--dashboard-border)] px-4 py-3 text-sm font-bold dashboard-heading transition hover:border-[#5B3DF5]/50"
               >
-                <span>{view === "saved" ? "Saved Deck" : subject}</span>
+                <span>
+                  {view === "saved" ? "My Saved Questions" : subject}
+                </span>
 
-                <ChevronDown size={17} />
+                <ChevronDown
+                  size={17}
+                  className={`transition-transform ${
+                    showSubjectMenu ? "rotate-180" : ""
+                  }`}
+                />
               </button>
 
               {showSubjectMenu && (
-                <div className="absolute left-0 top-full z-30 mt-2 w-full min-w-[230px] overflow-hidden rounded-xl border border-[var(--dashboard-border)] bg-[var(--dashboard-card)] p-1 shadow-xl">
-
+                <div className="absolute left-0 top-full z-30 mt-2 max-h-72 w-full min-w-[240px] overflow-y-auto rounded-xl border border-[var(--dashboard-border)] bg-[var(--dashboard-card)] p-1 shadow-xl">
                   {flashcardSubjects.map((item) => (
                     <button
                       key={item}
@@ -221,443 +352,556 @@ export default function FlashcardsPage() {
                       onClick={() => selectSubject(item)}
                       className={`w-full rounded-lg px-3 py-3 text-left text-sm transition hover:bg-[#5B3DF5]/10 ${
                         subject === item && view === "study"
-                          ? "bg-[#5B3DF5]/10 font-semibold text-[#5B3DF5]"
+                          ? "bg-[#5B3DF5]/10 font-bold text-[#5B3DF5]"
                           : "dashboard-heading"
                       }`}
                     >
                       {item}
                     </button>
                   ))}
-
                 </div>
               )}
-
             </div>
-
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={selectSubjectDeck}
+              className={`rounded-xl px-4 py-3 text-sm font-bold transition ${
+                view === "study"
+                  ? "bg-[#5B3DF5] text-white shadow-lg shadow-[#5B3DF5]/20"
+                  : "border border-[var(--dashboard-border)] dashboard-heading hover:border-[#5B3DF5]/40"
+              }`}
+            >
+              Study Questions
+            </button>
 
             <button
               type="button"
-              onClick={() => {
-                setView("saved");
-                setCurrentIndex(0);
-                setIsFlipped(false);
-                setShowSubjectMenu(false);
-              }}
-              className={`inline-flex items-center gap-2 rounded-xl border px-4 py-3 text-sm font-semibold transition ${
+              onClick={selectSavedDeck}
+              className={`inline-flex items-center gap-2 rounded-xl border px-4 py-3 text-sm font-bold transition ${
                 view === "saved"
                   ? "border-[#5B3DF5]/30 bg-[#5B3DF5]/10 text-[#5B3DF5]"
                   : "border-[var(--dashboard-border)] dashboard-heading hover:border-[#5B3DF5]/40"
               }`}
             >
-              <BookmarkCheck size={17} />
-              Saved Deck
+              <BookmarkCheck size={16} />
+              Saved
               <span className="rounded-full bg-[#5B3DF5]/10 px-2 py-0.5 text-xs text-[#5B3DF5]">
-                {savedIds.length}
+                {savedCount}
               </span>
             </button>
-
-            {view === "saved" && (
-              <button
-                type="button"
-                onClick={() => {
-                  setView("study");
-                  setCurrentIndex(0);
-                  setIsFlipped(false);
-                }}
-                className="rounded-xl border border-[var(--dashboard-border)] px-4 py-3 text-sm font-semibold dashboard-muted transition hover:text-[#5B3DF5]"
-              >
-                Back to subjects
-              </button>
-            )}
-
           </div>
-
         </div>
-
       </section>
 
-      {/* PROGRESS SUMMARY */}
+      {/* PERFORMANCE SUMMARY */}
 
-      <section className="grid gap-4 sm:grid-cols-3">
-
-        <div className="dashboard-card rounded-2xl p-5">
-
-          <div className="flex items-center justify-between">
-            <span className="dashboard-muted text-xs font-semibold">
-              TOTAL CARDS
+      <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <div className="dashboard-card rounded-2xl border p-4 sm:p-5">
+          <div className="flex items-center justify-between gap-2">
+            <span className="dashboard-muted text-[10px] font-bold uppercase tracking-wider">
+              Total questions
             </span>
-
             <BookOpen size={18} className="text-[#5B3DF5]" />
           </div>
 
-          <p className="dashboard-heading mt-3 text-3xl font-bold">
+          <p className="dashboard-heading mt-3 text-3xl font-extrabold">
             {cards.length}
           </p>
 
           <p className="dashboard-muted mt-1 text-xs">
-            Available for revision
+            In this deck
           </p>
-
         </div>
 
-        <div className="dashboard-card rounded-2xl p-5">
-
-          <div className="flex items-center justify-between">
-            <span className="dashboard-muted text-xs font-semibold">
-              KNOWN
+        <div className="dashboard-card rounded-2xl border p-4 sm:p-5">
+          <div className="flex items-center justify-between gap-2">
+            <span className="dashboard-muted text-[10px] font-bold uppercase tracking-wider">
+              Reviewed
             </span>
-
-            <CheckCircle2 size={18} className="text-emerald-500" />
+            <CheckCircle2 size={18} className="text-blue-500" />
           </div>
 
-          <p className="mt-3 text-3xl font-bold text-emerald-500">
+          <p className="mt-3 text-3xl font-extrabold text-blue-500">
+            {reviewedCount}
+          </p>
+
+          <p className="dashboard-muted mt-1 text-xs">
+            Questions attempted
+          </p>
+        </div>
+
+        <div className="dashboard-card rounded-2xl border p-4 sm:p-5">
+          <div className="flex items-center justify-between gap-2">
+            <span className="dashboard-muted text-[10px] font-bold uppercase tracking-wider">
+              Confident
+            </span>
+            <Trophy size={18} className="text-emerald-500" />
+          </div>
+
+          <p className="mt-3 text-3xl font-extrabold text-emerald-500">
             {knownCount}
           </p>
 
           <p className="dashboard-muted mt-1 text-xs">
-            Cards mastered
+            Marked as mastered
           </p>
-
         </div>
 
-        <div className="dashboard-card rounded-2xl p-5">
-
-          <div className="flex items-center justify-between">
-            <span className="dashboard-muted text-xs font-semibold">
-              NEED REVIEW
+        <div className="dashboard-card rounded-2xl border p-4 sm:p-5">
+          <div className="flex items-center justify-between gap-2">
+            <span className="dashboard-muted text-[10px] font-bold uppercase tracking-wider">
+              Review again
             </span>
-
             <CircleHelp size={18} className="text-amber-500" />
           </div>
 
-          <p className="mt-3 text-3xl font-bold text-amber-500">
+          <p className="mt-3 text-3xl font-extrabold text-amber-500">
             {reviewCount}
           </p>
 
           <p className="dashboard-muted mt-1 text-xs">
-            Cards to practise again
+            Need more practice
           </p>
-
         </div>
-
       </section>
 
-      {/* PROGRESS BAR */}
+      {/* PROGRESS */}
 
-      <section className="dashboard-card rounded-2xl p-5">
-
-        <div className="flex items-center justify-between gap-3">
-
+      <section className="dashboard-card rounded-2xl border p-5 sm:p-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="dashboard-heading text-sm font-bold">
-              Your learning progress
-            </p>
+            <div className="flex items-center gap-2">
+              <Target size={18} className="text-[#5B3DF5]" />
+              <h2 className="dashboard-heading text-sm font-extrabold">
+                Deck completion
+              </h2>
+            </div>
 
-            <p className="dashboard-muted mt-1 text-xs">
-              {knownCount} of {cards.length} cards mastered
+            <p className="dashboard-muted mt-2 text-xs">
+              {reviewedCount} of {cards.length} questions reviewed
             </p>
           </div>
 
-          <span className="text-sm font-bold text-[#5B3DF5]">
+          <p className="text-2xl font-extrabold text-[#5B3DF5]">
             {progressPercentage}%
-          </span>
-
+          </p>
         </div>
 
-        <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-[#5B3DF5]/10">
-
+        <div className="mt-4 h-3 overflow-hidden rounded-full bg-[#5B3DF5]/10">
           <div
             className="h-full rounded-full bg-gradient-to-r from-[#5B3DF5] to-[#A78BFA] transition-all duration-500"
             style={{ width: `${progressPercentage}%` }}
           />
-
         </div>
 
+        <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-[11px]">
+          <span className="flex items-center gap-2 dashboard-muted">
+            <span className="h-2 w-2 rounded-full bg-emerald-500" />
+            Mastered: {knownCount}
+          </span>
+
+          <span className="flex items-center gap-2 dashboard-muted">
+            <span className="h-2 w-2 rounded-full bg-amber-500" />
+            Needs review: {reviewCount}
+          </span>
+
+          <span className="flex items-center gap-2 dashboard-muted">
+            <span className="h-2 w-2 rounded-full bg-[#5B3DF5]" />
+            High confidence: {highConfidenceCount}
+          </span>
+        </div>
       </section>
 
-      {/* FLASHCARD */}
+      {/* QUESTION EXPERIENCE */}
 
-      {currentCard ? (
+      {currentCard && !completed ? (
+        <section className="mx-auto w-full max-w-5xl space-y-5">
 
-        <section className="mx-auto w-full max-w-4xl space-y-5">
-
-          <div className="flex items-center justify-between gap-3">
-
-            <div>
-              <p className="dashboard-heading text-sm font-bold">
-                {view === "saved" ? "Your saved flashcards" : subject}
-              </p>
-
-              <p className="dashboard-muted mt-1 text-xs">
-                {currentCard.category} · {currentCard.difficulty}
-              </p>
-            </div>
-
-            <span className="rounded-full bg-[#5B3DF5]/10 px-3 py-2 text-xs font-bold text-[#5B3DF5]">
-              Card {currentIndex + 1} of {cards.length}
-            </span>
-
-          </div>
-
-          <button
-            type="button"
-            onClick={() => setIsFlipped((value) => !value)}
-            className="group block w-full text-left [perspective:1400px]"
-            aria-label={isFlipped ? "Show question" : "Reveal answer"}
-          >
-
-            <div
-              className={`relative min-h-[440px] w-full transition-transform duration-700 [transform-style:preserve-3d] ${
-                isFlipped ? "[transform:rotateY(180deg)]" : ""
-              }`}
-            >
-
-              {/* FRONT */}
-
-              <div className="absolute inset-0 flex flex-col rounded-[28px] border border-[var(--dashboard-border)] bg-[var(--dashboard-card)] p-6 shadow-sm [backface-visibility:hidden] sm:p-10">
-
-                <div className="flex items-center justify-between gap-3">
-
-                  <span className="rounded-full bg-[#5B3DF5]/10 px-3 py-2 text-xs font-bold text-[#5B3DF5]">
-                    {currentCard.questionType}
-                  </span>
-
-                  <span className="dashboard-muted text-xs font-semibold">
-                    QUESTION
-                  </span>
-
-                </div>
-
-                <div className="flex flex-1 flex-col items-center justify-center py-10 text-center">
-
-                  <span className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#5B3DF5]/10 text-[#5B3DF5]">
-                    <BookOpen size={25} />
-                  </span>
-
-                  <h2 className="dashboard-heading max-w-2xl text-xl font-bold leading-relaxed sm:text-2xl">
-                    {currentCard.question}
-                  </h2>
-
-                  <p className="dashboard-muted mt-8 text-sm">
-                    Think about your answer before revealing it.
-                  </p>
-
-                </div>
-
-                <div className="flex items-center justify-center gap-2 border-t border-[var(--dashboard-border)] pt-5 text-sm font-semibold text-[#5B3DF5]">
-
-                  <RotateCcw size={16} />
-                  Click to reveal answer
-
-                </div>
-
-              </div>
-
-              {/* BACK */}
-
-              <div className="absolute inset-0 flex flex-col overflow-y-auto rounded-[28px] border border-emerald-200 bg-emerald-50 p-6 [backface-visibility:hidden] [transform:rotateY(180deg)] sm:p-10">
-
-                <div className="flex items-center justify-between gap-3">
-
-                  <span className="inline-flex items-center gap-2 rounded-full bg-emerald-100 px-3 py-2 text-xs font-bold text-emerald-700">
-
-                    <CheckCircle2 size={15} />
-                    CORRECT ANSWER
-
-                  </span>
-
-                  <span className="text-xs font-semibold text-emerald-700">
-                    ANSWER
-                  </span>
-
-                </div>
-
-                <div className="flex-1 py-7">
-
-                  <h2 className="whitespace-pre-line text-lg font-bold leading-relaxed text-emerald-900 sm:text-xl">
-                    {currentCard.answer}
-                  </h2>
-
-                  <div className="mt-8 rounded-2xl border border-emerald-200 bg-white/80 p-5">
-
-                    <div className="mb-3 flex items-center gap-2 text-sm font-bold text-emerald-800">
-
-                      <Sparkles size={17} />
-                      Rationale
-
-                    </div>
-
-                    <p className="whitespace-pre-line text-sm leading-7 text-slate-700">
-                      {currentCard.rationale}
-                    </p>
-
-                  </div>
-
-                </div>
-
-                <div className="flex items-center justify-center gap-2 border-t border-emerald-200 pt-5 text-sm font-semibold text-emerald-700">
-
-                  <RotateCcw size={16} />
-                  Click to see question
-
-                </div>
-
-              </div>
-
-            </div>
-
-          </button>
-
-          {/* SAVE */}
-
-          <div className="flex justify-center">
-
-            <button
-              type="button"
-              onClick={handleSave}
-              className={`inline-flex items-center gap-2 rounded-xl border px-5 py-3 text-sm font-semibold transition ${
-                isSaved
-                  ? "border-[#5B3DF5]/30 bg-[#5B3DF5]/10 text-[#5B3DF5]"
-                  : "border-[var(--dashboard-border)] dashboard-heading hover:border-[#5B3DF5]/40 hover:text-[#5B3DF5]"
-              }`}
-            >
-
-              {isSaved ? (
-                <BookmarkCheck size={17} />
-              ) : (
-                <Bookmark size={17} />
-              )}
-
-              {isSaved ? "Saved to My Library" : "Save flashcard"}
-
-            </button>
-
-          </div>
-
-          {/* NAVIGATION */}
+          {/* Question navigation header */}
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="rounded-lg bg-[#5B3DF5]/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[#5B3DF5]">
+                  {currentCard.questionType}
+                </span>
 
+                <span className="dashboard-muted text-xs">
+                  {currentCard.difficulty}
+                </span>
+
+                <span className="dashboard-muted text-xs">
+                  · {currentCard.category}
+                </span>
+              </div>
+
+              <h2 className="dashboard-heading mt-3 text-lg font-extrabold">
+                {view === "saved" ? "Saved question practice" : subject}
+              </h2>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 rounded-xl border border-[var(--dashboard-border)] px-3 py-2">
+                <Clock3 size={15} className="dashboard-muted" />
+                <span className="dashboard-heading text-xs font-bold">
+                  {currentIndex + 1} / {cards.length}
+                </span>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleSave}
+                aria-label={isSaved ? "Remove saved question" : "Save question"}
+                className={`flex h-10 w-10 items-center justify-center rounded-xl border transition ${
+                  isSaved
+                    ? "border-[#5B3DF5]/30 bg-[#5B3DF5]/10 text-[#5B3DF5]"
+                    : "border-[var(--dashboard-border)] dashboard-muted hover:border-[#5B3DF5]/40 hover:text-[#5B3DF5]"
+                }`}
+              >
+                {isSaved ? (
+                  <BookmarkCheck size={18} />
+                ) : (
+                  <Bookmark size={18} />
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Question panel */}
+
+          <div className="dashboard-card overflow-hidden rounded-[26px] border">
+            <div className="flex items-center justify-between gap-3 border-b border-[var(--dashboard-border)] px-5 py-4 sm:px-7">
+              <div className="flex items-center gap-2">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#5B3DF5]/10 text-[#5B3DF5]">
+                  <BookOpen size={18} />
+                </div>
+
+                <div>
+                  <p className="dashboard-heading text-xs font-extrabold">
+                    EXAM QUESTION
+                  </p>
+                  <p className="dashboard-muted mt-0.5 text-[10px]">
+                    Read carefully before revealing the answer
+                  </p>
+                </div>
+              </div>
+
+              <span className="rounded-full bg-blue-500/10 px-3 py-1.5 text-[10px] font-bold text-blue-500">
+                {currentCard.subject}
+              </span>
+            </div>
+
+            <div className="px-5 py-9 sm:px-9 sm:py-12">
+              <div className="mx-auto max-w-3xl">
+                <p className="dashboard-muted mb-4 text-[10px] font-bold uppercase tracking-[0.18em]">
+                  Question {currentIndex + 1}
+                </p>
+
+                <h3 className="dashboard-heading text-xl font-bold leading-[1.8] sm:text-2xl">
+                  {currentCard.question}
+                </h3>
+
+                {!revealed && (
+                  <div className="mt-9 rounded-2xl border border-dashed border-[#5B3DF5]/30 bg-[#5B3DF5]/[0.04] p-5 sm:p-6">
+                    <div className="flex items-start gap-3">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#5B3DF5]/10 text-[#5B3DF5]">
+                        <Sparkles size={18} />
+                      </div>
+
+                      <div>
+                        <p className="dashboard-heading text-sm font-bold">
+                          Think it through
+                        </p>
+
+                        <p className="dashboard-muted mt-1 text-xs leading-6">
+                          Take a moment to formulate your answer.
+                          Consider the clinical situation and the
+                          nursing principles involved.
+                        </p>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setRevealed(true)}
+                      className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-[#5B3DF5] px-5 py-4 text-sm font-extrabold text-white shadow-lg shadow-[#5B3DF5]/20 transition hover:-translate-y-0.5 hover:bg-[#4930D6] sm:w-auto"
+                    >
+                      Reveal Answer
+                      <ArrowRight size={17} />
+                    </button>
+                  </div>
+                )}
+
+                {revealed && (
+                  <div className="mt-9 space-y-6">
+
+                    {/* Correct answer */}
+
+                    <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 dark:border-emerald-900 dark:bg-emerald-950/30 sm:p-6">
+                      <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
+                        <CheckCircle2 size={19} />
+                        <span className="text-xs font-extrabold uppercase tracking-wider">
+                          Correct answer
+                        </span>
+                      </div>
+
+                      <p className="mt-4 whitespace-pre-line text-lg font-extrabold leading-8 text-emerald-950 dark:text-emerald-200">
+                        {currentCard.answer}
+                      </p>
+                    </div>
+
+                    {/* Rationale */}
+
+                    <div className="rounded-2xl border border-[var(--dashboard-border)] bg-[var(--dashboard-surface)] p-5 sm:p-6">
+                      <div className="flex items-center gap-2">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#5B3DF5]/10 text-[#5B3DF5]">
+                          <Sparkles size={18} />
+                        </div>
+
+                        <div>
+                          <h4 className="dashboard-heading text-sm font-extrabold">
+                            Clinical Rationale
+                          </h4>
+
+                          <p className="dashboard-muted mt-0.5 text-[10px]">
+                            Understand the reasoning behind the answer
+                          </p>
+                        </div>
+                      </div>
+
+                      <p className="dashboard-heading mt-5 whitespace-pre-line text-sm leading-8">
+                        {currentCard.rationale}
+                      </p>
+                    </div>
+
+                    {/* Confidence selection */}
+
+                    <div className="rounded-2xl border border-[#5B3DF5]/20 bg-[#5B3DF5]/[0.04] p-5 sm:p-6">
+                      <div className="flex items-start gap-3">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#5B3DF5]/10 text-[#5B3DF5]">
+                          <Target size={19} />
+                        </div>
+
+                        <div>
+                          <h4 className="dashboard-heading text-sm font-extrabold">
+                            How confident are you?
+                          </h4>
+
+                          <p className="dashboard-muted mt-1 text-xs leading-5">
+                            Be honest. Your confidence rating helps
+                            identify what you should revise.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                        {confidenceOptions.map((option) => {
+                          const selected =
+                            currentConfidence === option.id;
+
+                          return (
+                            <button
+                              key={option.id}
+                              type="button"
+                              onClick={() =>
+                                handleConfidence(option.id)
+                              }
+                              className={`rounded-xl border p-4 text-left transition hover:-translate-y-0.5 ${
+                                selected
+                                  ? "border-[#5B3DF5] bg-[#5B3DF5]/10"
+                                  : "border-[var(--dashboard-border)] bg-[var(--dashboard-card)] hover:border-[#5B3DF5]/40"
+                              }`}
+                            >
+                              <div className="flex items-center justify-between gap-2">
+                                <span className="dashboard-heading text-xs font-extrabold">
+                                  {option.label}
+                                </span>
+
+                                {selected && (
+                                  <Check
+                                    size={15}
+                                    className="text-[#5B3DF5]"
+                                  />
+                                )}
+                              </div>
+
+                              <p className="dashboard-muted mt-2 text-[10px] leading-5">
+                                {option.description}
+                              </p>
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      <p className="dashboard-muted mt-4 text-[10px]">
+                        Select a confidence level to save your result
+                        and continue to the next question.
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Navigation */}
+
+          <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
             <button
               type="button"
               onClick={previousCard}
               disabled={currentIndex === 0}
-              className="inline-flex items-center justify-center gap-2 rounded-xl border border-[var(--dashboard-border)] px-5 py-3 text-sm font-semibold dashboard-heading transition hover:border-[#5B3DF5]/40 disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-[var(--dashboard-border)] px-5 py-3 text-sm font-bold dashboard-heading transition hover:border-[#5B3DF5]/40 disabled:cursor-not-allowed disabled:opacity-40"
             >
               <ArrowLeft size={17} />
-              Back
+              Previous
             </button>
 
-            <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-1 sm:justify-center">
-
-              <button
-                type="button"
-                onClick={handleReview}
-                className="inline-flex items-center justify-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-700 transition hover:bg-amber-100"
-              >
-                <X size={16} />
-                Don't know
-              </button>
-
-              <button
-                type="button"
-                onClick={handleKnowIt}
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700"
-              >
-                <Check size={16} />
-                Know it
-              </button>
-
+            <div className="flex items-center justify-center gap-2 dashboard-muted text-xs">
+              <span className="h-2 w-2 rounded-full bg-[#5B3DF5]" />
+              {revealed
+                ? "Review the rationale and rate your confidence"
+                : "Answer mentally before revealing"}
             </div>
 
             <button
               type="button"
               onClick={nextCard}
-              disabled={currentIndex === cards.length - 1}
-              className="inline-flex items-center justify-center gap-2 rounded-xl border border-[var(--dashboard-border)] px-5 py-3 text-sm font-semibold dashboard-heading transition hover:border-[#5B3DF5]/40 disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#17263F] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#263C5D]"
             >
-              Skip
+              Skip question
               <ArrowRight size={17} />
             </button>
+          </div>
+        </section>
+      ) : completed ? (
 
+        /* COMPLETION SCREEN */
+
+        <section className="dashboard-card mx-auto max-w-3xl rounded-[26px] border p-7 text-center sm:p-12">
+          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-[#5B3DF5]/10 text-[#5B3DF5]">
+            <Trophy size={36} />
           </div>
 
-          {currentIndex === cards.length - 1 && (
-            <div className="rounded-2xl border border-[#5B3DF5]/20 bg-[#5B3DF5]/5 p-5 text-center">
+          <p className="mt-6 text-xs font-extrabold uppercase tracking-[0.18em] text-[#5B3DF5]">
+            Deck completed
+          </p>
 
-              <p className="dashboard-heading text-sm font-bold">
-                You've reached the end of this deck.
+          <h2 className="dashboard-heading mt-3 text-2xl font-extrabold sm:text-3xl">
+            Great work. Keep going!
+          </h2>
+
+          <p className="dashboard-muted mx-auto mt-3 max-w-lg text-sm leading-7">
+            You've reached the end of this question deck. Review
+            your progress and revisit the questions that need more
+            attention.
+          </p>
+
+          <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3">
+            <div className="rounded-xl border p-4">
+              <p className="dashboard-muted text-[10px] font-bold uppercase">
+                Reviewed
               </p>
-
-              <button
-                type="button"
-                onClick={restartCards}
-                className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-[#5B3DF5]"
-              >
-                <RotateCcw size={15} />
-                Start again
-              </button>
-
+              <p className="dashboard-heading mt-2 text-2xl font-extrabold">
+                {reviewedCount}
+              </p>
             </div>
-          )}
 
+            <div className="rounded-xl border p-4">
+              <p className="dashboard-muted text-[10px] font-bold uppercase">
+                Mastered
+              </p>
+              <p className="mt-2 text-2xl font-extrabold text-emerald-500">
+                {knownCount}
+              </p>
+            </div>
+
+            <div className="col-span-2 rounded-xl border p-4 sm:col-span-1">
+              <p className="dashboard-muted text-[10px] font-bold uppercase">
+                Need review
+              </p>
+              <p className="mt-2 text-2xl font-extrabold text-amber-500">
+                {reviewCount}
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+            <button
+              type="button"
+              onClick={restartCards}
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#5B3DF5] px-6 py-3 text-sm font-bold text-white transition hover:bg-[#4930D6]"
+            >
+              <RotateCcw size={17} />
+              Restart deck
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setCurrentIndex(0);
+                setRevealed(false);
+                setCompleted(false);
+              }}
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-[var(--dashboard-border)] px-6 py-3 text-sm font-bold dashboard-heading transition hover:border-[#5B3DF5]/40"
+            >
+              Review questions
+            </button>
+          </div>
         </section>
 
       ) : (
 
-        <section className="dashboard-card mx-auto max-w-2xl rounded-2xl p-10 text-center">
+        /* EMPTY STATE */
 
-          <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#5B3DF5]/10 text-[#5B3DF5]">
-            <Bookmark size={27} />
-          </span>
+        <section className="dashboard-card mx-auto max-w-2xl rounded-[26px] border p-8 text-center sm:p-12">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#5B3DF5]/10 text-[#5B3DF5]">
+            <BookOpen size={28} />
+          </div>
 
-          <h2 className="dashboard-heading mt-5 text-xl font-bold">
+          <h2 className="dashboard-heading mt-5 text-xl font-extrabold">
             {view === "saved"
-              ? "Your saved deck is empty"
-              : "No flashcards available"}
+              ? "Your saved question deck is empty"
+              : "No questions available yet"}
           </h2>
 
-          <p className="dashboard-muted mx-auto mt-3 max-w-md text-sm leading-6">
+          <p className="dashboard-muted mx-auto mt-3 max-w-md text-sm leading-7">
             {view === "saved"
-              ? "Save flashcards while studying and they'll appear here for quick revision."
-              : "There are no flashcards available for this subject yet."}
+              ? "Save questions while practising. They'll be collected here for focused revision."
+              : "There are currently no flashcards available for this subject."}
           </p>
 
           {view === "saved" && (
             <button
               type="button"
-              onClick={() => {
-                setView("study");
-                setCurrentIndex(0);
-                setIsFlipped(false);
-              }}
-              className="mt-6 rounded-xl bg-[#5B3DF5] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#4930D0]"
+              onClick={selectSubjectDeck}
+              className="mt-6 rounded-xl bg-[#5B3DF5] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#4930D6]"
             >
-              Explore flashcards
+              Explore question decks
             </button>
           )}
-
         </section>
-
       )}
 
-      {/* DEMO NOTICE */}
+      {/* FOOTER NOTICE */}
 
-      <div className="mx-auto flex max-w-4xl items-start gap-3 rounded-xl border border-[#5B3DF5]/15 bg-[#5B3DF5]/5 p-4">
-
-        <Sparkles size={18} className="mt-0.5 shrink-0 text-[#5B3DF5]" />
+      <div className="mx-auto flex max-w-4xl items-start gap-3 rounded-2xl border border-[#5B3DF5]/15 bg-[#5B3DF5]/[0.04] p-4">
+        <Sparkles
+          size={18}
+          className="mt-0.5 shrink-0 text-[#5B3DF5]"
+        />
 
         <p className="dashboard-muted text-xs leading-6">
-          Flashcards currently use demonstration question-bank content.
-          Your saved cards and learning progress are stored locally on
-          this device until account-based synchronization is connected.
+          Exam Flashcards currently use demonstration question-bank
+          content. Your saved questions, confidence ratings and
+          learning progress are stored locally on this device.
+          Account-based synchronization and live exam analytics
+          will be connected when the backend API is integrated.
         </p>
-
       </div>
-
     </div>
   );
 }
