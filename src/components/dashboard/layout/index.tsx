@@ -36,7 +36,7 @@ export default function DashboardLayout({
   const timer = window.setTimeout(() => {
     setAuthenticated(true);
     setCheckingSession(false);
-  }, 700);
+  }, 1300);
 
   return () => window.clearTimeout(timer);
 }, [router]);
