@@ -19,6 +19,8 @@ import {
   ArrowRight,
   ArrowUp,
   BookOpen,
+  Bookmark,
+  BookmarkCheck,
   Check,
   CheckCircle2,
   Circle,
@@ -30,6 +32,12 @@ import {
   X,
   XCircle,
 } from "lucide-react";
+
+import {
+  isItemSaved,
+  toggleSavedItem,
+  subscribeToSavedItems,
+} from "@/lib/saved-items";
 
 import { studyCategories } from "@/data/mock/dashboard/overview";
 
@@ -246,6 +254,7 @@ const mode: StudyMode =
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<AnswerMap>({});
   const [flaggedQuestions, setFlaggedQuestions] = useState<number[]>([]);
+  const [isQuestionSaved, setIsQuestionSaved] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(EXAM_DURATION);
   const [submitted, setSubmitted] = useState(false);
   const [sessionLoaded, setSessionLoaded] = useState(false);
@@ -264,6 +273,24 @@ const toggleRationale = (questionId: number) => {
 };
 
   const currentQuestion = questions[currentIndex];
+
+  // Keep the bookmark state synchronized with My Library.
+useEffect(() => {
+  if (!currentQuestion) {
+    setIsQuestionSaved(false);
+    return;
+  }
+
+  const syncSavedState = () => {
+    setIsQuestionSaved(
+      isItemSaved(String(currentQuestion.id), "question"),
+    );
+  };
+
+  syncSavedState();
+
+  return subscribeToSavedItems(syncSavedState);
+}, [currentQuestion]);
 
   useEffect(() => {
   setTutorChecked(false);
@@ -692,6 +719,25 @@ useEffect(() => {
       setCurrentIndex(index);
     }
   };
+
+  const toggleQuestionBookmark = () => {
+  if (!currentQuestion) return;
+
+  const saved = toggleSavedItem({
+    id: String(currentQuestion.id),
+    type: "question",
+    title: `Question ${currentIndex + 1}: ${currentQuestion.question}`,
+    description: `${subject?.title ?? subjectSlug} • ${currentQuestion.category}`,
+    href: `/dashboard/exams/ati/${subjectSlug}/practice`,
+    metadata: {
+      subject: subject?.title ?? subjectSlug,
+      category: currentQuestion.category,
+      questionId: String(currentQuestion.id),
+    },
+  });
+
+  setIsQuestionSaved(saved);
+};
 
   // ----------------------------------------------------------
   // EMPTY STATES
@@ -1559,18 +1605,41 @@ useEffect(() => {
               </span>
             </div>
 
-            <button
-              type="button"
-              onClick={toggleFlag}
-              className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-semibold transition ${
-                isFlagged
-                  ? "border-amber-400 bg-amber-50 text-amber-700"
-                  : "border-[var(--dashboard-border)] dashboard-muted"
-              }`}
-            >
-              <Flag size={15} />
-              {isFlagged ? "Flagged" : "Flag question"}
-            </button>
+            <div className="flex flex-wrap items-center gap-2">
+  <button
+    type="button"
+    onClick={toggleQuestionBookmark}
+    aria-label={
+      isQuestionSaved ? "Remove saved question" : "Save question"
+    }
+    className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-semibold transition ${
+      isQuestionSaved
+        ? "border-[#5B3DF5]/30 bg-[#5B3DF5]/10 text-[#5B3DF5]"
+        : "border-[var(--dashboard-border)] dashboard-muted hover:border-[#5B3DF5]/40 hover:text-[#5B3DF5]"
+    }`}
+  >
+    {isQuestionSaved ? (
+      <BookmarkCheck size={15} />
+    ) : (
+      <Bookmark size={15} />
+    )}
+
+    {isQuestionSaved ? "Saved" : "Save question"}
+  </button>
+
+  <button
+    type="button"
+    onClick={toggleFlag}
+    className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-semibold transition ${
+      isFlagged
+        ? "border-amber-400 bg-amber-50 text-amber-700"
+        : "border-[var(--dashboard-border)] dashboard-muted"
+    }`}
+  >
+    <Flag size={15} />
+    {isFlagged ? "Flagged" : "Flag question"}
+  </button>
+</div>
           </div>
 
           <div className="mt-6">

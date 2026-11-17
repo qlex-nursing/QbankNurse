@@ -578,80 +578,297 @@ img {
 .dashboard-dark .dashboard-card .text-slate-700 {
   color: #e5def5;
 }
+
 /* =========================================
-   QBANKNURSE STUDY GUIDES
+   QBANKNURSE GLOBAL HEARTBEAT LOADER
 ========================================= */
 
-/* Light mode */
-.dashboard-light {
-  --guide-border: #e8e3f5;
-  --guide-callout-bg: #f1edff;
-  --guide-callout-border: #ddd3ff;
-  --guide-callout-title: #4930b8;
-  --guide-callout-text: #40366a;
-  --guide-table-text: #37304c;
-  --guide-table-row: #ffffff;
-  --guide-table-row-alt: #f8f6ff;
+.qn-loader {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100svh;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      ellipse at 50% 43%,
+      rgba(39, 43, 103, 0.48),
+      transparent 55%
+    ),
+    linear-gradient(
+      145deg,
+      #10152f 0%,
+      #090d20 55%,
+      #10152c 100%
+    );
+  color: #fff;
 }
 
-/* Dark mode */
-.dashboard-dark {
-  --guide-border: #39334f;
-  --guide-callout-bg: #292342;
-  --guide-callout-border: #514477;
-  --guide-callout-title: #c8b9ff;
-  --guide-callout-text: #e3dcf8;
-  --guide-table-text: #e5def5;
-  --guide-table-row: #211d35;
-  --guide-table-row-alt: #292440;
+.qn-loader::before,
+.qn-loader::after {
+  position: absolute;
+  z-index: -1;
+  width: 70vw;
+  height: 70vw;
+  max-width: 750px;
+  max-height: 750px;
+  border: 1px solid rgba(91, 61, 245, 0.1);
+  border-radius: 50%;
+  content: "";
+  pointer-events: none;
 }
 
-/* Callout / short notes */
-.guide-callout {
-  background-color: var(--guide-callout-bg);
-  border-color: var(--guide-callout-border);
+.qn-loader::before {
+  top: -48%;
+  left: -28%;
 }
 
-.guide-callout-title {
-  color: var(--guide-callout-title);
+.qn-loader::after {
+  right: -30%;
+  bottom: -55%;
 }
 
-.guide-callout-text {
-  color: var(--guide-callout-text);
+.qn-loader__glow {
+  position: absolute;
+  z-index: -1;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  filter: blur(100px);
+  pointer-events: none;
 }
 
-/* Study guide borders */
-.dashboard-theme {
-  --guide-border: #e8e3f5;
+.qn-loader__glow--top {
+  top: 15%;
+  left: 12%;
+  background: rgba(91, 61, 245, 0.16);
 }
 
-.dashboard-dark {
-  --guide-border: #39334f;
+.qn-loader__glow--bottom {
+  right: 10%;
+  bottom: 8%;
+  background: rgba(239, 35, 58, 0.12);
 }
 
-/* Tables */
-.dashboard-card table tbody tr {
-  background-color: var(--guide-table-row);
+.qn-loader__content {
+  display: flex;
+  width: min(100% - 32px, 620px);
+  flex-direction: column;
+  align-items: center;
+  padding: 36px 12px;
+  text-align: center;
 }
 
-.dashboard-card table tbody tr:nth-child(even) {
-  background-color: var(--guide-table-row-alt);
+/* HEART CONTAINER */
+
+.qn-loader__heart {
+  position: relative;
+  display: flex;
+  width: min(100%, 390px);
+  aspect-ratio: 1136 / 1385;
+  align-items: center;
+  justify-content: center;
+  margin: 4px 0 12px;
 }
 
-.dashboard-card table tbody td {
-  color: var(--guide-table-text);
-  border-color: var(--guide-border);
+/* HEART GLOW */
+
+.qn-loader__heart-glow {
+  position: absolute;
+  z-index: 0;
+  width: 58%;
+  height: 58%;
+  border-radius: 50%;
+  background: rgba(255, 35, 55, 0.23);
+  filter: blur(65px);
+  animation: qn-heart-glow 1.2s ease-in-out infinite;
 }
 
-.dashboard-card table thead tr {
-  background-color: #5B3DF5;
+/* ECG BEHIND HEART */
+
+.qn-loader__ecg {
+  position: absolute;
+  z-index: 1;
+  top: 43%;
+  left: -25%;
+  width: 150%;
+  height: 18%;
+  overflow: visible;
+  pointer-events: none;
+  opacity: 0.9;
 }
 
-/* Dark mode content */
-.dashboard-dark .dashboard-body {
-  color: #d8d1eb;
+.qn-loader__ecg-line {
+  stroke-dasharray: 600;
+  stroke-dashoffset: 600;
+  animation: qn-ecg-travel 2s linear infinite;
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.9));
 }
 
-.dashboard-dark .dashboard-heading {
-  color: #f4f0ff;
+/* ANATOMICAL HEART IMAGE */
+
+.qn-loader__heart-image {
+  position: relative;
+  z-index: 2;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 0 14px rgba(255, 35, 55, 0.2))
+    drop-shadow(0 0 35px rgba(255, 35, 55, 0.12));
+  animation: qn-heartbeat 1.2s ease-in-out infinite;
+}
+
+/* BRANDING */
+
+.qn-loader__brand {
+  margin-top: 8px;
+  font-size: clamp(32px, 6vw, 48px);
+  font-weight: 900;
+  letter-spacing: -2px;
+  line-height: 1;
+}
+
+.qn-loader__brand-accent {
+  color: #ff334d;
+}
+
+.qn-loader__brand-dot {
+  color: #ff334d;
+}
+
+/* LOADING MESSAGE */
+
+.qn-loader__message {
+  margin-top: 18px;
+  color: #c6c8dc;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+}
+
+/* PROGRESS BAR */
+
+.qn-loader__progress {
+  width: min(280px, 75%);
+  height: 5px;
+  overflow: hidden;
+  margin-top: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.qn-loader__progress span {
+  display: block;
+  width: 42%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    #e91e3b,
+    #ff5268,
+    #ffc1c9
+  );
+  box-shadow: 0 0 12px rgba(255, 50, 75, 0.65);
+  animation: qn-progress-travel 1.6s ease-in-out infinite;
+}
+
+/* FOOTER CAPTION */
+
+.qn-loader__caption {
+  margin-top: 19px;
+  color: #777e9d;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+/* ANIMATIONS */
+
+@keyframes qn-heartbeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+
+  12% {
+    transform: scale(1.035);
+  }
+
+  25% {
+    transform: scale(1);
+  }
+
+  38% {
+    transform: scale(1.02);
+  }
+
+  52% {
+    transform: scale(1);
+  }
+}
+
+@keyframes qn-heart-glow {
+  0%, 100% {
+    opacity: 0.45;
+    transform: scale(0.94);
+  }
+
+  50% {
+    opacity: 0.85;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes qn-ecg-travel {
+  0% {
+    stroke-dashoffset: 600;
+  }
+
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes qn-progress-travel {
+  0% {
+    transform: translateX(-110%);
+  }
+
+  100% {
+    transform: translateX(260%);
+  }
+}
+
+/* MOBILE */
+
+@media (max-width: 480px) {
+  .qn-loader__content {
+    width: min(100% - 24px, 420px);
+  }
+
+  .qn-loader__heart {
+    width: min(100%, 310px);
+  }
+
+  .qn-loader__caption {
+    font-size: 8px;
+    letter-spacing: 1.5px;
+  }
+}
+
+/* ACCESSIBILITY */
+
+@media (prefers-reduced-motion: reduce) {
+  .qn-loader *,
+  .qn-loader *::before,
+  .qn-loader *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }

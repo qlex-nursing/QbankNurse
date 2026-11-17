@@ -1,12 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   Activity,
   Baby,
   Bone,
   BookOpen,
+  BookBookmark,
+  Bookmark,
   Brain,
   Bug,
   CheckCircle2,
@@ -37,6 +39,13 @@ import {
   type CarePlanCategory,
 } from "@/data/mock/dashboard/care-plans";
 
+import {
+  getSavedItems,
+  subscribeToSavedItems,
+  toggleSavedItem,
+} from "@/lib/saved-items";
+
+
 const categoryIcons: Record<string, React.ElementType> = {
   stethoscope: Stethoscope,
   heart: HeartPulse,
@@ -56,6 +65,35 @@ const categoryIcons: Record<string, React.ElementType> = {
 type SortMode = "category" | "alphabetical";
 
 export default function CarePlansPage() {
+
+
+  const [savedPlanIds, setSavedPlanIds] = useState<string[]>([]);
+
+useEffect(() => {
+  const syncSavedPlans = () => {
+    const savedIds = getSavedItems()
+      .filter((item) => item.type === "care-plan")
+      .map((item) => item.id);
+
+    setSavedPlanIds(savedIds);
+  };
+
+  syncSavedPlans();
+
+  return subscribeToSavedItems(syncSavedPlans);
+}, []);
+
+const handleToggleSavePlan = (plan: CarePlan) => {
+  const id = String(plan.id);
+
+  toggleSavedItem({
+    id,
+    type: "care-plan",
+    title: plan.title,
+    description: plan.description,
+    href: "/dashboard/care-plans",
+  });
+};
   const [searchQuery, setSearchQuery] = useState("");
   const [sortMode, setSortMode] = useState<SortMode>("category");
   const [activePlan, setActivePlan] = useState<CarePlan | null>(null);
@@ -382,6 +420,8 @@ export default function CarePlansPage() {
                   expanded={expandedCategories.includes(category.id)}
                   onToggle={() => toggleCategory(category.id)}
                   onSelectPlan={setActivePlan}
+                  savedPlanIds={savedPlanIds}
+  onToggleSave={handleToggleSavePlan}
                 />
               ))}
             </div>
@@ -546,11 +586,15 @@ function CategorySection({
   expanded,
   onToggle,
   onSelectPlan,
+  savedPlanIds,
+  onToggleSave,
 }: {
   category: CarePlanCategory;
   expanded: boolean;
   onToggle: () => void;
   onSelectPlan: (plan: CarePlan) => void;
+  savedPlanIds: string[];
+  onToggleSave: (plan: CarePlan) => void;
 }) {
   const Icon = categoryIcons[category.icon] ?? HeartPulse;
 
@@ -594,31 +638,60 @@ function CategorySection({
 
       {expanded && (
         <div className="grid gap-3 px-4 pb-5 sm:grid-cols-2 sm:px-6 sm:pb-6">
-          {category.plans.map((plan) => (
-            <button
-              key={plan.id}
-              type="button"
-              onClick={() => onSelectPlan(plan)}
-              className="group flex min-w-0 items-start gap-3 rounded-2xl border border-[var(--dash-border)] bg-[var(--dash-surface)] p-4 text-left transition-all hover:-translate-y-0.5 hover:border-[#9B88F5] hover:shadow-md"
-            >
-              <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-[#8065E8]" />
+         {category.plans.map((plan) => {
+  const isSaved = savedPlanIds.includes(String(plan.id));
 
-              <span className="min-w-0 flex-1">
-                <span className="block text-sm font-bold text-[var(--dash-text)] transition-colors group-hover:text-[#8065E8]">
-                  {plan.title}
-                </span>
+  return (
+    <div
+      key={plan.id}
+      className="group flex min-w-0 items-start gap-3 rounded-2xl border border-[var(--dash-border)] bg-[var(--dash-surface)] p-4 transition-all hover:-translate-y-0.5 hover:border-[#9B88F5] hover:shadow-md"
+    >
+      <button
+        type="button"
+        onClick={() => onSelectPlan(plan)}
+        className="flex min-w-0 flex-1 items-start gap-3 text-left"
+      >
+        <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-[#8065E8]" />
 
-                <span className="mt-1 block text-xs leading-5 text-[var(--dash-muted)]">
-                  {plan.description}
-                </span>
-              </span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-sm font-bold text-[var(--dash-text)] transition-colors group-hover:text-[#8065E8]">
+            {plan.title}
+          </span>
 
-              <ChevronRight
-                size={17}
-                className="mt-1 shrink-0 text-[var(--dash-muted)] transition group-hover:translate-x-1 group-hover:text-[#8065E8]"
-              />
-            </button>
-          ))}
+          <span className="mt-1 block text-xs leading-5 text-[var(--dash-muted)]">
+            {plan.description}
+          </span>
+        </span>
+
+        <ChevronRight
+          size={17}
+          className="mt-1 shrink-0 text-[var(--dash-muted)] transition group-hover:translate-x-1 group-hover:text-[#8065E8]"
+        />
+      </button>
+
+      <button
+        type="button"
+        onClick={() => onToggleSave(plan)}
+        aria-label={
+          isSaved
+            ? `Remove ${plan.title} from My Library`
+            : `Save ${plan.title} to My Library`
+        }
+        title={isSaved ? "Remove from My Library" : "Save to My Library"}
+        className={`shrink-0 rounded-xl p-2 transition ${
+          isSaved
+            ? "bg-[#E8DEFF] text-[#5B3DF5]"
+            : "text-[var(--dash-muted)] hover:bg-[#F4F0FF] hover:text-[#5B3DF5]"
+        }`}
+      >
+        <Bookmark
+          size={18}
+          fill={isSaved ? "currentColor" : "none"}
+        />
+      </button>
+    </div>
+  );
+})}
         </div>
       )}
     </section>

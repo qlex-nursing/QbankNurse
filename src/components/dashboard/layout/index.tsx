@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 
 import DashboardSidebar from "@/components/dashboard/sidebar";
 import DashboardHeader from "@/components/dashboard/header";
+import HeartbeatLoader from "@/components/dashboard/heartbeat-loader";
+
 import { getDemoSession } from "@/lib/demo-auth";
 
 interface DashboardLayoutProps {
@@ -22,28 +24,26 @@ export default function DashboardLayout({
   const [checkingSession, setCheckingSession] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
 
-  useEffect(() => {
-    const session = getDemoSession();
+ useEffect(() => {
+  const session = getDemoSession();
 
-    if (!session) {
-      router.replace("/login");
-      return;
-    }
+  if (!session) {
+    router.replace("/login");
+    return;
+  }
 
+  // Keep the loader visible briefly for a polished transition.
+  const timer = window.setTimeout(() => {
     setAuthenticated(true);
     setCheckingSession(false);
-  }, [router]);
+  }, 700);
+
+  return () => window.clearTimeout(timer);
+}, [router]);
 
   if (checkingSession || !authenticated) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#F8F7FC]">
-        <div className="text-center">
-          <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-[#E8DEFF] border-t-[#5B3DF5]" />
-          <p className="mt-4 text-sm font-semibold text-[#706782]">
-            Preparing your QbankNurse dashboard...
-          </p>
-        </div>
-      </div>
+      <HeartbeatLoader message="Preparing your QbankNurse dashboard" />
     );
   }
 

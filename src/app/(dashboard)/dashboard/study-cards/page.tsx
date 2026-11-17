@@ -10,8 +10,8 @@ import {
   CheckCircle2,
   ChevronDown,
   RotateCcw,
-  Sparkles,
   RotateCw,
+  Sparkles,
 } from "lucide-react";
 
 import {
@@ -19,7 +19,13 @@ import {
   studyCardSubjects,
 } from "@/data/mock/dashboard/study-cards";
 
+import {
+  saveItem,
+  toggleSavedItem,
+} from "@/lib/saved-items";
+
 type LearningStatus = "known" | "review";
+type ActiveFilter = "all" | "review" | "saved";
 
 interface CardProgress {
   known: string[];
@@ -39,17 +45,18 @@ export default function StudyCardsPage() {
   const [selectedSubject, setSelectedSubject] =
     useState("All subjects");
 
-  const [activeFilter, setActiveFilter] = useState<
-    "all" | "review" | "saved"
-  >("all");
+  const [activeFilter, setActiveFilter] =
+    useState<ActiveFilter>("all");
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
+
   const [progress, setProgress] =
     useState<CardProgress>(emptyProgress);
 
   const [storageReady, setStorageReady] = useState(false);
 
+  // Load saved progress and migrate previously saved cards.
   useEffect(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
@@ -57,10 +64,32 @@ export default function StudyCardsPage() {
       if (stored) {
         const parsed = JSON.parse(stored) as CardProgress;
 
-        setProgress({
+        const loadedProgress: CardProgress = {
           known: Array.isArray(parsed.known) ? parsed.known : [],
           review: Array.isArray(parsed.review) ? parsed.review : [],
           saved: Array.isArray(parsed.saved) ? parsed.saved : [],
+        };
+
+        setProgress(loadedProgress);
+
+        loadedProgress.saved.forEach((cardId) => {
+          const card = studyCards.find(
+            (item) => item.id === cardId,
+          );
+
+          if (card) {
+            saveItem({
+              id: card.id,
+              type: "study-card",
+              title: card.question,
+              description: card.answer,
+              href: "/dashboard/study-cards",
+              metadata: {
+                subject: card.subject,
+                topic: card.topic,
+              },
+            });
+          }
         });
       }
     } catch {
@@ -70,12 +99,17 @@ export default function StudyCardsPage() {
     setStorageReady(true);
   }, []);
 
+  // Persist progress.
   useEffect(() => {
     if (!storageReady) return;
 
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(progress),
+    );
   }, [progress, storageReady]);
 
+  // Filter cards by subject and learning mode.
   const filteredCards = useMemo(() => {
     return studyCards.filter((card) => {
       const matchesSubject =
@@ -95,6 +129,7 @@ export default function StudyCardsPage() {
 
   const currentCard = filteredCards[currentIndex];
 
+  // Progress statistics.
   const knownCount = studyCards.filter((card) =>
     progress.known.includes(card.id),
   ).length;
@@ -107,10 +142,12 @@ export default function StudyCardsPage() {
     progress.saved.includes(card.id),
   ).length;
 
-  const progressPercentage = Math.round(
-    (knownCount / studyCards.length) * 100,
-  );
+  const progressPercentage =
+    studyCards.length > 0
+      ? Math.round((knownCount / studyCards.length) * 100)
+      : 0;
 
+  // Card navigation.
   const goToCard = (index: number) => {
     if (filteredCards.length === 0) return;
 
@@ -121,9 +158,7 @@ export default function StudyCardsPage() {
     setIsFlipped(false);
   };
 
-  const changeFilter = (
-    filter: "all" | "review" | "saved",
-  ) => {
+  const changeFilter = (filter: ActiveFilter) => {
     setActiveFilter(filter);
     setCurrentIndex(0);
     setIsFlipped(false);
@@ -135,6 +170,7 @@ export default function StudyCardsPage() {
     setIsFlipped(false);
   };
 
+  // Update learning status.
   const updateStatus = (status: LearningStatus) => {
     if (!currentCard) return;
 
@@ -162,6 +198,7 @@ export default function StudyCardsPage() {
 
     if (activeFilter !== "all") {
       setIsFlipped(false);
+
       setCurrentIndex((index) =>
         Math.min(index, Math.max(filteredCards.length - 2, 0)),
       );
@@ -170,25 +207,39 @@ export default function StudyCardsPage() {
     }
   };
 
+  // Save or remove a card from My Library.
   const toggleSaved = () => {
     if (!currentCard) return;
+
+    toggleSavedItem({
+      id: currentCard.id,
+      type: "study-card",
+      title: currentCard.question,
+      description: currentCard.answer,
+      href: "/dashboard/study-cards",
+      metadata: {
+        subject: currentCard.subject,
+        topic: currentCard.topic,
+      },
+    });
 
     setProgress((previous) => ({
       ...previous,
       saved: previous.saved.includes(currentCard.id)
-        ? previous.saved.filter((id) => id !== currentCard.id)
+        ? previous.saved.filter(
+            (id) => id !== currentCard.id,
+          )
         : [...previous.saved, currentCard.id],
     }));
   };
 
+  // Reset learning progress.
   const resetProgress = () => {
-    if (
-      !window.confirm(
-        "Reset all your Study Cards progress? This will clear mastered, review and saved cards.",
-      )
-    ) {
-      return;
-    }
+    const confirmed = window.confirm(
+      "Reset all your Study Cards progress? This will clear mastered, review and saved cards.",
+    );
+
+    if (!confirmed) return;
 
     setProgress(emptyProgress);
     setCurrentIndex(0);
@@ -205,12 +256,13 @@ export default function StudyCardsPage() {
     : false;
 
   return (
-    <div className="dashboard-content space-y-8">
-      {/* Heading */}
-      <section className="space-y-3">
+    <div className="dashboard-content mx-auto w-full min-w-0 max-w-[1440px] space-y-8 px-4 py-2 sm:px-6 lg:px-8">
+
+      {/* Page heading */}
+      <section className="mx-auto flex max-w-3xl flex-col items-center space-y-4 text-center">
         <div className="flex items-center gap-2">
           <div className="dashboard-accent-icon">
-            <BookOpen size={18} />
+            <BookOpen size={19} />
           </div>
 
           <span className="dashboard-section-label">
@@ -218,15 +270,15 @@ export default function StudyCardsPage() {
           </span>
         </div>
 
-        <div>
-          <h1 className="dashboard-heading text-2xl font-bold md:text-3xl">
+        <div className="space-y-3">
+          <h1 className="dashboard-heading text-3xl font-bold tracking-tight sm:text-4xl">
             Study Cards
           </h1>
 
-          <p className="dashboard-muted mt-2 max-w-2xl text-sm leading-6">
+          <p className="dashboard-muted mx-auto max-w-2xl text-sm leading-7 sm:text-base">
             Strengthen your nursing knowledge with interactive
-            flashcards. Review important concepts, test your memory
-            and track what you have mastered.
+            study cards. Review important concepts, test your
+            memory and track what you have mastered.
           </p>
         </div>
       </section>
@@ -259,7 +311,7 @@ export default function StudyCardsPage() {
       </section>
 
       {/* Learning progress */}
-      <section className="dashboard-card rounded-2xl p-5">
+      <section className="dashboard-card rounded-2xl p-5 sm:p-6">
         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
           <div>
             <h2 className="dashboard-heading font-bold">
@@ -276,24 +328,26 @@ export default function StudyCardsPage() {
           </span>
         </div>
 
-        <div className="mt-4 h-3 overflow-hidden rounded-full bg-violet-100">
+        <div className="mt-5 h-3 overflow-hidden rounded-full bg-violet-100">
           <div
             className="h-full rounded-full bg-[#5B3DF5] transition-all duration-500"
-            style={{ width: `${progressPercentage}%` }}
+            style={{
+              width: `${progressPercentage}%`,
+            }}
           />
         </div>
 
-        <div className="dashboard-muted mt-2 flex justify-between text-xs">
+        <div className="dashboard-muted mt-3 flex justify-between text-xs">
           <span>{knownCount} mastered</span>
           <span>{studyCards.length - knownCount} remaining</span>
         </div>
       </section>
 
-      {/* Filters */}
-      <section className="dashboard-card space-y-5 rounded-2xl p-5">
+      {/* Filters and collection */}
+      <section className="dashboard-card space-y-5 rounded-2xl p-5 sm:p-6">
         <div>
           <h2 className="dashboard-heading font-bold">
-            Your flashcard collection
+            Your Study Cards collection
           </h2>
 
           <p className="dashboard-muted mt-1 text-sm">
@@ -361,6 +415,7 @@ export default function StudyCardsPage() {
       <section className="mx-auto w-full max-w-3xl space-y-5">
         {currentCard ? (
           <>
+            {/* Card information */}
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <p className="dashboard-muted text-sm">
@@ -380,12 +435,14 @@ export default function StudyCardsPage() {
             {/* Flip card */}
             <button
               type="button"
-              onClick={() => setIsFlipped((value) => !value)}
+              onClick={() =>
+                setIsFlipped((value) => !value)
+              }
               className="group w-full text-left"
               aria-label={
                 isFlipped
-                  ? "Show flashcard question"
-                  : "Reveal flashcard answer"
+                  ? "Show study card question"
+                  : "Reveal study card answer"
               }
             >
               <div
@@ -439,11 +496,13 @@ export default function StudyCardsPage() {
               </div>
             </button>
 
-            {/* Flip and save */}
+            {/* Flip and save actions */}
             <div className="flex flex-wrap justify-center gap-3">
               <button
                 type="button"
-                onClick={() => setIsFlipped((value) => !value)}
+                onClick={() =>
+                  setIsFlipped((value) => !value)
+                }
                 className="dashboard-search flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold transition hover:opacity-80"
               >
                 <RotateCw size={16} />
@@ -463,6 +522,7 @@ export default function StudyCardsPage() {
                   size={16}
                   fill={isSaved ? "currentColor" : "none"}
                 />
+
                 {isSaved ? "Saved" : "Save card"}
               </button>
             </div>
@@ -502,7 +562,7 @@ export default function StudyCardsPage() {
               </div>
             )}
 
-            {/* Navigation */}
+            {/* Card navigation */}
             <div className="flex items-center justify-between gap-3">
               <button
                 type="button"
@@ -540,8 +600,8 @@ export default function StudyCardsPage() {
             </h2>
 
             <p className="dashboard-muted mt-2 text-sm">
-              There are no cards in this collection yet. Try another
-              subject or learning filter.
+              There are no cards in this collection yet. Try
+              another subject or learning filter.
             </p>
 
             <button
@@ -560,7 +620,10 @@ export default function StudyCardsPage() {
 
       {/* Demo notice */}
       <section className="dashboard-card flex items-start gap-3 rounded-2xl border border-violet-200 bg-violet-50/70 p-5">
-        <Sparkles size={20} className="mt-0.5 shrink-0 text-violet-600" />
+        <Sparkles
+          size={20}
+          className="mt-0.5 shrink-0 text-violet-600"
+        />
 
         <div>
           <h3 className="dashboard-heading text-sm font-bold">
@@ -568,9 +631,10 @@ export default function StudyCardsPage() {
           </h3>
 
           <p className="dashboard-muted mt-1 text-sm leading-6">
-            This version uses demonstration flashcards. Your learning
-            progress and saved cards are stored in this browser.
-            Backend synchronization will be added during API integration.
+            This version uses demonstration study cards. Your
+            learning progress and saved cards are stored in this
+            browser. Backend synchronization will be added during
+            API integration.
           </p>
         </div>
       </section>
@@ -578,6 +642,7 @@ export default function StudyCardsPage() {
   );
 }
 
+// Statistics card.
 function StatCard({
   label,
   value,
@@ -589,10 +654,15 @@ function StatCard({
 }) {
   return (
     <div className="dashboard-card flex items-center gap-4 rounded-2xl p-5">
-      <div className="dashboard-accent-icon">{icon}</div>
+      <div className="dashboard-accent-icon">
+        {icon}
+      </div>
 
       <div>
-        <p className="dashboard-muted text-sm">{label}</p>
+        <p className="dashboard-muted text-sm">
+          {label}
+        </p>
+
         <h3 className="dashboard-heading mt-1 text-2xl font-bold">
           {value}
         </h3>
@@ -601,6 +671,7 @@ function StatCard({
   );
 }
 
+// Filter button.
 function FilterButton({
   active,
   onClick,
