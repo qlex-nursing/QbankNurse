@@ -149,356 +149,380 @@ export default function PerformancePage() {
   if (isLoading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-indigo-100 border-t-indigo-600" />
+        <div className="h-9 w-9 animate-spin rounded-full border-4 border-indigo-100 border-t-indigo-600" />
       </div>
     );
   }
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 pb-12 pt-6 sm:px-6 sm:pt-8 lg:px-10">
-      {/* PAGE HEADER */}
-      <header className="mx-auto mb-10 max-w-3xl text-center">
-        <div className="mx-auto mb-4 flex w-fit items-center gap-2 rounded-full border border-indigo-100 bg-indigo-50 px-4 py-2 text-xs font-bold tracking-wider text-indigo-600">
-          <Activity size={15} />
-          YOUR LEARNING JOURNEY
-        </div>
+    <main className="w-full pb-8">
+      {/* SLIM PERFORMANCE HERO */}
+      <section className="relative isolate flex min-h-[175px] w-full items-center overflow-hidden bg-[#17263F] px-5 py-6 text-white sm:px-8 lg:px-11">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_80%_50%,rgba(91,61,245,0.22),transparent_55%)]" />
 
-        <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
-          Your Performance
-        </h1>
+        <div className="pointer-events-none absolute -right-16 -top-28 h-64 w-64 rounded-full border border-white/[0.05]" />
 
-        <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-slate-500 sm:text-base">
-          Every practice session brings you closer to your goal. Track your
-          progress, discover your strengths, and identify where to focus next.
-        </p>
+        <div className="pointer-events-none absolute -right-4 -bottom-32 h-56 w-56 rounded-full border border-white/[0.04]" />
 
-        <div className="mx-auto mt-6 flex w-fit items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-medium text-slate-500 shadow-sm">
-          <CalendarDays size={15} className="text-indigo-500" />
-          All-time performance overview
-        </div>
-      </header>
+        <div className="relative z-10 w-full max-w-4xl">
+          <span className="inline-flex items-center gap-2 text-[10px] font-extrabold tracking-[0.2em] text-[#B9A9FF]">
+            <Activity size={13} />
+            YOUR LEARNING JOURNEY
+          </span>
 
-      {attempts.length === 0 ? (
-        <section className="mx-auto max-w-3xl rounded-3xl border border-dashed border-indigo-200 bg-gradient-to-br from-indigo-50 via-white to-purple-50 px-6 py-20 text-center">
-          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-white text-indigo-600 shadow-lg shadow-indigo-100">
-            <ChartColumnIncreasing size={34} />
-          </div>
+          <h1 className="mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">
+            Your Performance
+            <span className="text-[#B9A9FF]"> overview</span>
+          </h1>
 
-          <h2 className="mt-7 text-2xl font-bold text-slate-900">
-            Your journey starts here
-          </h2>
-
-          <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-slate-500">
-            Complete your first practice exam to unlock your performance
-            insights, track your scores, and discover your strongest nursing
-            subjects.
+          <p className="mt-1.5 max-w-2xl text-sm leading-6 text-white/65">
+            Track your progress, discover your strengths and identify where
+            to focus next.
           </p>
 
-          <a
-            href="/dashboard/exams/ati"
-            className="mt-8 inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-indigo-600/20 transition hover:-translate-y-0.5 hover:bg-indigo-700"
-          >
-            <BookOpen size={18} />
-            Start practicing
-            <ArrowUpRight size={16} />
-          </a>
-        </section>
-      ) : (
-        <>
-          {/* STATISTICS */}
-          <section className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
-            <StatCard
-              title="Exams completed"
-              value={stats.totalExams.toString()}
-              description="Total completed attempts"
-              icon={<Award size={22} />}
-              color="indigo"
-            />
+          <div className="mt-3 flex items-center gap-2 text-[11px] font-semibold text-white/65">
+            <CalendarDays size={13} className="text-[#B9A9FF]" />
+            All-time performance overview
+          </div>
+        </div>
+      </section>
 
-            <StatCard
-              title="Questions practiced"
-              value={stats.totalQuestions.toLocaleString()}
-              description={`${stats.totalCorrect} correct answers`}
-              icon={<BookOpen size={22} />}
-              color="blue"
-            />
+      {/* PAGE CONTENT */}
+      <div className="dashboard-content mx-auto w-full max-w-[1600px] space-y-7 px-5 py-7 sm:px-7 lg:px-9">
+        {attempts.length === 0 ? (
+          /* EMPTY STATE */
+          <section className="dashboard-card mx-auto max-w-3xl rounded-xl border border-dashed px-6 py-12 text-center">
+            <div className="dashboard-accent-icon mx-auto flex h-12 w-12 items-center justify-center rounded-xl">
+              <ChartColumnIncreasing size={23} />
+            </div>
 
-            <StatCard
-              title="Average score"
-              value={`${stats.averageScore}%`}
-              description="Across all attempts"
-              icon={<Target size={22} />}
-              color="purple"
-            />
+            <h2 className="dashboard-heading mt-4 text-xl font-extrabold">
+              Your journey starts here
+            </h2>
 
-            <StatCard
-              title="Personal best"
-              value={`${stats.bestScore}%`}
-              description="Your highest score"
-              icon={<Trophy size={22} />}
-              color="amber"
-            />
+            <p className="dashboard-muted mx-auto mt-2 max-w-md text-sm leading-6">
+              Complete your first practice exam to unlock your performance
+              insights, track your scores and discover your strongest nursing
+              subjects.
+            </p>
+
+            <a
+              href="/dashboard/exams/ati"
+              className="dashboard-primary-button mt-5 inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-xs font-bold transition hover:-translate-y-0.5"
+            >
+              <BookOpen size={15} />
+              Start practicing
+              <ArrowUpRight size={14} />
+            </a>
           </section>
+        ) : (
+          <>
+            {/* STATISTICS */}
+            <section>
+              <div className="mb-4">
+                <h2 className="dashboard-heading text-lg font-extrabold sm:text-xl">
+                  Performance summary
+                </h2>
 
-          {/* PERFORMANCE CHART */}
-          <section className="mt-8 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div>
+                <p className="dashboard-muted mt-1 text-xs">
+                  A quick overview of your practice activity and results.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                <StatCard
+                  title="Exams completed"
+                  value={stats.totalExams.toString()}
+                  description="Total completed attempts"
+                  icon={<Award size={18} />}
+                  color="indigo"
+                />
+
+                <StatCard
+                  title="Questions practiced"
+                  value={stats.totalQuestions.toLocaleString()}
+                  description={`${stats.totalCorrect.toLocaleString()} correct answers`}
+                  icon={<BookOpen size={18} />}
+                  color="blue"
+                />
+
+                <StatCard
+                  title="Average score"
+                  value={`${stats.averageScore}%`}
+                  description="Across all attempts"
+                  icon={<Target size={18} />}
+                  color="purple"
+                />
+
+                <StatCard
+                  title="Personal best"
+                  value={`${stats.bestScore}%`}
+                  description="Your highest score"
+                  icon={<Trophy size={18} />}
+                  color="amber"
+                />
+              </div>
+            </section>
+
+            {/* PERFORMANCE CHART */}
+            <section className="dashboard-card rounded-xl border p-4 sm:p-5">
+              <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
-                    <TrendingUp size={22} />
+                  <div className="dashboard-accent-icon flex h-9 w-9 items-center justify-center rounded-lg">
+                    <TrendingUp size={17} />
                   </div>
 
                   <div>
-                    <h2 className="text-lg font-bold text-slate-900">
+                    <h2 className="dashboard-heading text-base font-extrabold">
                       Performance trend
                     </h2>
-                    <p className="mt-1 text-sm text-slate-500">
+
+                    <p className="dashboard-muted mt-1 text-xs">
                       Follow your progress across practice exams.
                     </p>
                   </div>
                 </div>
+
+                <span className="dashboard-count-badge rounded-full px-3 py-1.5 text-[10px] font-semibold">
+                  Last {chartAttempts.length} attempts
+                </span>
               </div>
 
-              <span className="w-fit rounded-full bg-indigo-50 px-4 py-2 text-xs font-semibold text-indigo-700">
-                Last {chartAttempts.length} attempts
-              </span>
-            </div>
+              <div className="mt-7">
+                <div className="relative ml-8">
+                  <div className="pointer-events-none absolute inset-0 flex flex-col justify-between">
+                    {[100, 75, 50, 25, 0].map((value) => (
+                      <div key={value} className="flex items-center gap-3">
+                        <div className="absolute -left-8 w-6 text-right text-[10px] text-[var(--dashboard-muted)]">
+                          {value}
+                        </div>
 
-            <div className="mt-10">
-              <div className="relative ml-8">
-                <div className="pointer-events-none absolute inset-0 flex flex-col justify-between">
-                  {[100, 75, 50, 25, 0].map((value) => (
-                    <div key={value} className="flex items-center gap-3">
-                      <div className="absolute -left-8 w-6 text-right text-[10px] text-slate-400">
-                        {value}
+                        <div className="h-px flex-1 border-t border-dashed border-[var(--dashboard-border)]" />
                       </div>
+                    ))}
+                  </div>
 
-                      <div className="h-px flex-1 border-t border-dashed border-slate-200" />
-                    </div>
-                  ))}
-                </div>
-
-                <div className="relative flex h-60 items-end justify-around gap-3 sm:gap-6">
-                  {chartAttempts.map((attempt, index) => (
-                    <div
-                      key={attempt.id}
-                      className="group flex h-full min-w-0 flex-1 flex-col items-center justify-end"
-                    >
-                      <span className="mb-2 text-xs font-bold text-slate-700 transition group-hover:text-indigo-600">
-                        {attempt.percentage}%
-                      </span>
-
+                  <div className="relative flex h-52 items-end justify-around gap-3 sm:gap-6">
+                    {chartAttempts.map((attempt, index) => (
                       <div
-                        className="w-full max-w-16 rounded-t-xl bg-gradient-to-t from-indigo-600 to-violet-400 shadow-md shadow-indigo-200/50 transition duration-300 group-hover:from-indigo-700 group-hover:to-violet-500"
-                        style={{
-                          height: `${Math.max(attempt.percentage, 3)}%`,
-                        }}
-                        title={`${attempt.subject}: ${attempt.percentage}%`}
-                      />
-
-                      <span className="mt-3 text-[10px] font-medium text-slate-400">
-                        #{index + 1}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-6 flex items-center justify-center gap-2 text-xs text-slate-500">
-              <span className="h-2.5 w-2.5 rounded-full bg-indigo-500" />
-              Practice exam scores
-            </div>
-          </section>
-
-          {/* SUBJECT PERFORMANCE */}
-          <section className="mt-8 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
-            <div className="mb-8 flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-purple-50 text-purple-600">
-                <Target size={22} />
-              </div>
-
-              <div>
-                <h2 className="text-lg font-bold text-slate-900">
-                  Subject performance
-                </h2>
-
-                <p className="mt-1 text-sm text-slate-500">
-                  Understand how you're performing in each subject.
-                </p>
-              </div>
-            </div>
-
-            <div className="space-y-7">
-              {subjectPerformance.map((subject) => (
-                <div key={subject.subject}>
-                  <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                      <h3 className="text-sm font-semibold text-slate-800">
-                        {subject.subject}
-                      </h3>
-
-                      <p className="mt-1 text-xs text-slate-400">
-                        {subject.attempts}{" "}
-                        {subject.attempts === 1 ? "attempt" : "attempts"}
-                        {" · "}Best score: {subject.best}%
-                      </p>
-                    </div>
-
-                    <span
-                      className={`text-sm font-bold ${getScoreColor(subject.average)}`}
-                    >
-                      {subject.average}%
-                    </span>
-                  </div>
-
-                  <div className="h-3 overflow-hidden rounded-full bg-slate-100">
-                    <div
-                      className="h-full rounded-full bg-gradient-to-r from-indigo-600 to-violet-400 transition-all duration-700"
-                      style={{
-                        width: `${Math.min(subject.average, 100)}%`,
-                      }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* RECENT ATTEMPTS */}
-          <section className="mt-8 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-            <div className="flex flex-col gap-3 border-b border-slate-100 p-5 sm:flex-row sm:items-center sm:justify-between sm:px-8 sm:py-6">
-              <div>
-                <h2 className="text-lg font-bold text-slate-900">
-                  Recent attempts
-                </h2>
-
-                <p className="mt-1 text-sm text-slate-500">
-                  Your completed practice exam history.
-                </p>
-              </div>
-
-              <span className="w-fit rounded-full bg-slate-100 px-4 py-2 text-xs font-semibold text-slate-600">
-                {attempts.length} attempts
-              </span>
-            </div>
-
-            <div className="divide-y divide-slate-100">
-              {recentAttempts.map((attempt) => (
-                <div
-                  key={attempt.id}
-                  className="flex flex-col gap-4 p-5 transition hover:bg-slate-50/70 sm:flex-row sm:items-center sm:justify-between sm:px-8"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
-                      <BookOpen size={21} />
-                    </div>
-
-                    <div>
-                      <h3 className="font-semibold text-slate-900">
-                        {attempt.subject}
-                      </h3>
-
-                      <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-slate-400">
-                        <span>{attempt.examType}</span>
-
-                        <span className="flex items-center gap-1">
-                          <CalendarDays size={13} />
-                          {formatDate(attempt.completedAt)}
+                        key={attempt.id}
+                        className="group flex h-full min-w-0 flex-1 flex-col items-center justify-end"
+                      >
+                        <span className="mb-2 text-[10px] font-bold text-[var(--dashboard-text)] transition group-hover:text-[#5B3DF5]">
+                          {attempt.percentage}%
                         </span>
 
-                        <span className="flex items-center gap-1">
-                          <Clock3 size={13} />
-                          {formatDuration(attempt.durationSeconds)}
+                        <div
+                          className="w-full max-w-14 rounded-t-lg bg-gradient-to-t from-[#5B3DF5] to-[#A99AFF] transition duration-300 group-hover:from-indigo-700 group-hover:to-violet-500"
+                          style={{
+                            height: `${Math.max(attempt.percentage, 3)}%`,
+                          }}
+                          title={`${attempt.subject}: ${attempt.percentage}%`}
+                        />
+
+                        <span className="mt-2.5 text-[10px] font-medium text-[var(--dashboard-muted)]">
+                          #{index + 1}
                         </span>
                       </div>
-                    </div>
+                    ))}
                   </div>
+                </div>
+              </div>
 
-                  <div className="flex items-center justify-between gap-4 sm:justify-end">
-                    <div className="text-right">
-                      <p
-                        className={`text-xl font-bold ${getScoreColor(attempt.percentage)}`}
+              <div className="mt-5 flex items-center justify-center gap-2 text-[11px] text-[var(--dashboard-muted)]">
+                <span className="h-2 w-2 rounded-full bg-[#5B3DF5]" />
+                Practice exam scores
+              </div>
+            </section>
+
+            {/* SUBJECT PERFORMANCE */}
+            <section className="dashboard-card rounded-xl border p-4 sm:p-5">
+              <div className="mb-5 flex items-center gap-3">
+                <div className="dashboard-accent-icon flex h-9 w-9 items-center justify-center rounded-lg">
+                  <Target size={17} />
+                </div>
+
+                <div>
+                  <h2 className="dashboard-heading text-base font-extrabold">
+                    Subject performance
+                  </h2>
+
+                  <p className="dashboard-muted mt-1 text-xs">
+                    Understand how you're performing in each subject.
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-5">
+                {subjectPerformance.map((subject) => (
+                  <div key={subject.subject}>
+                    <div className="mb-2 flex flex-wrap items-center justify-between gap-3">
+                      <div>
+                        <h3 className="dashboard-heading text-sm font-semibold">
+                          {subject.subject}
+                        </h3>
+
+                        <p className="dashboard-muted mt-1 text-[10px]">
+                          {subject.attempts}{" "}
+                          {subject.attempts === 1 ? "attempt" : "attempts"}
+                          {" · "}Best score: {subject.best}%
+                        </p>
+                      </div>
+
+                      <span
+                        className={`text-sm font-extrabold ${getScoreColor(subject.average)}`}
                       >
-                        {attempt.percentage}%
-                      </p>
-
-                      <p className="text-xs text-slate-400">
-                        {attempt.correctAnswers}/{attempt.totalQuestions}{" "}
-                        correct
-                      </p>
+                        {subject.average}%
+                      </span>
                     </div>
 
-                    <span className="rounded-full bg-indigo-50 px-3 py-2 text-[11px] font-semibold text-indigo-700">
-                      {getScoreMessage(attempt.percentage)}
-                    </span>
+                    <div className="dashboard-progress-track h-2 overflow-hidden rounded-full">
+                      <div
+                        className="dashboard-progress-fill h-full rounded-full transition-all duration-700"
+                        style={{
+                          width: `${Math.min(subject.average, 100)}%`,
+                        }}
+                      />
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* STUDY INSIGHTS */}
-          <section className="mt-8 overflow-hidden rounded-3xl border border-indigo-100 bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-5 sm:p-8">
-            <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-indigo-600 shadow-sm">
-                <Sparkles size={23} />
+                ))}
               </div>
+            </section>
 
-              <div>
-                <h2 className="text-lg font-bold text-slate-900">
-                  Your study insights
-                </h2>
+            {/* RECENT ATTEMPTS */}
+            <section className="dashboard-card overflow-hidden rounded-xl border">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--dashboard-border)] p-4 sm:p-5">
+                <div>
+                  <h2 className="dashboard-heading text-base font-extrabold">
+                    Recent attempts
+                  </h2>
 
-                <p className="mt-1 text-sm text-slate-500">
-                  A snapshot of your learning progress.
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-7 grid gap-4 sm:grid-cols-2">
-              <div className="rounded-2xl border border-white bg-white/80 p-5">
-                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-400">
-                  <Activity size={14} />
-                  Overall performance
+                  <p className="dashboard-muted mt-1 text-xs">
+                    Your completed practice exam history.
+                  </p>
                 </div>
 
-                <p className="mt-3 text-3xl font-extrabold text-indigo-700">
-                  {stats.averageScore}%
-                </p>
-
-                <p className="mt-2 text-sm text-slate-500">
-                  {getScoreMessage(stats.averageScore)}. Keep working towards
-                  your target score.
-                </p>
+                <span className="dashboard-count-badge rounded-full px-3 py-1.5 text-[10px] font-semibold">
+                  {attempts.length} attempts
+                </span>
               </div>
 
-              <div className="rounded-2xl border border-white bg-white/80 p-5">
-                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-400">
-                  <Flame size={14} />
-                  Strongest subject
+              <div className="divide-y divide-[var(--dashboard-border)]">
+                {recentAttempts.map((attempt) => (
+                  <div
+                    key={attempt.id}
+                    className="flex flex-col gap-3 p-4 transition hover:bg-[var(--dashboard-hover)] sm:flex-row sm:items-center sm:justify-between"
+                  >
+                    <div className="flex min-w-0 items-center gap-3">
+                      <div className="dashboard-soft-icon flex h-9 w-9 shrink-0 items-center justify-center rounded-lg">
+                        <BookOpen size={17} />
+                      </div>
+
+                      <div className="min-w-0">
+                        <h3 className="dashboard-heading truncate text-sm font-semibold">
+                          {attempt.subject}
+                        </h3>
+
+                        <div className="dashboard-muted mt-1 flex flex-wrap items-center gap-3 text-[10px]">
+                          <span>{attempt.examType}</span>
+
+                          <span className="flex items-center gap-1">
+                            <CalendarDays size={11} />
+                            {formatDate(attempt.completedAt)}
+                          </span>
+
+                          <span className="flex items-center gap-1">
+                            <Clock3 size={11} />
+                            {formatDuration(attempt.durationSeconds)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-3 sm:justify-end">
+                      <div className="text-right">
+                        <p
+                          className={`text-base font-extrabold ${getScoreColor(attempt.percentage)}`}
+                        >
+                          {attempt.percentage}%
+                        </p>
+
+                        <p className="dashboard-muted text-[10px]">
+                          {attempt.correctAnswers}/{attempt.totalQuestions}{" "}
+                          correct
+                        </p>
+                      </div>
+
+                      <span className="rounded-full bg-[#E8DEFF] px-2.5 py-1.5 text-[9px] font-bold text-[#392576]">
+                        {getScoreMessage(attempt.percentage)}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* STUDY INSIGHTS */}
+            <section className="dashboard-inner-card rounded-xl border p-4 sm:p-5">
+              <div className="flex items-center gap-3">
+                <div className="dashboard-accent-icon flex h-9 w-9 items-center justify-center rounded-lg">
+                  <Sparkles size={17} />
                 </div>
 
-                <p className="mt-3 text-xl font-extrabold text-indigo-700">
-                  {subjectPerformance[0]?.subject ?? "Not available"}
-                </p>
+                <div>
+                  <h2 className="dashboard-heading text-base font-extrabold">
+                    Your study insights
+                  </h2>
 
-                <p className="mt-2 text-sm text-slate-500">
-                  Average score: {subjectPerformance[0]?.average ?? 0}%
-                </p>
+                  <p className="dashboard-muted mt-1 text-xs">
+                    A snapshot of your learning progress.
+                  </p>
+                </div>
               </div>
-            </div>
 
-            <p className="mt-6 text-xs leading-6 text-slate-500">
-              Your insights are calculated from your saved practice attempts.
-              Use them to guide your revision and identify areas that deserve
-              more attention. These scores do not predict your actual NCLEX
-              examination result.
-            </p>
-          </section>
-        </>
-      )}
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <div className="rounded-lg border border-[var(--dashboard-border)] bg-[var(--dashboard-surface)] p-3.5">
+                  <div className="dashboard-muted flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider">
+                    <Activity size={13} />
+                    Overall performance
+                  </div>
+
+                  <p className="dashboard-heading mt-2 text-2xl font-extrabold text-[#5B3DF5]">
+                    {stats.averageScore}%
+                  </p>
+
+                  <p className="dashboard-muted mt-1.5 text-xs leading-5">
+                    {getScoreMessage(stats.averageScore)}. Keep working towards
+                    your target score.
+                  </p>
+                </div>
+
+                <div className="rounded-lg border border-[var(--dashboard-border)] bg-[var(--dashboard-surface)] p-3.5">
+                  <div className="dashboard-muted flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider">
+                    <Flame size={13} />
+                    Strongest subject
+                  </div>
+
+                  <p className="dashboard-heading mt-2 text-lg font-extrabold text-[#5B3DF5]">
+                    {subjectPerformance[0]?.subject ?? "Not available"}
+                  </p>
+
+                  <p className="dashboard-muted mt-1.5 text-xs">
+                    Average score: {subjectPerformance[0]?.average ?? 0}%
+                  </p>
+                </div>
+              </div>
+
+              <p className="dashboard-muted mt-4 text-[11px] leading-5">
+                Your insights are calculated from your saved practice attempts.
+                Use them to guide your revision and identify areas that deserve
+                more attention. These scores do not predict your actual NCLEX
+                examination result.
+              </p>
+            </section>
+          </>
+        )}
+      </div>
     </main>
   );
 }
@@ -530,22 +554,24 @@ function StatCard({
   };
 
   return (
-    <div className="group rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-indigo-200 hover:shadow-xl hover:shadow-indigo-100/40">
-      <div className="flex items-center justify-between">
-        <p className="text-sm font-medium text-slate-500">{title}</p>
+    <div className="dashboard-card group rounded-xl border p-4 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
+      <div className="flex items-center justify-between gap-2">
+        <p className="dashboard-muted text-xs font-semibold">{title}</p>
 
         <div
-          className={`flex h-11 w-11 items-center justify-center rounded-2xl ${colors[color]}`}
+          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${colors[color]}`}
         >
           {icon}
         </div>
       </div>
 
-      <p className="mt-6 text-3xl font-extrabold tracking-tight text-slate-900">
+      <p className="dashboard-heading mt-3 text-2xl font-extrabold tracking-tight">
         {value}
       </p>
 
-      <p className="mt-2 text-xs text-slate-400">{description}</p>
+      <p className="dashboard-muted mt-1 text-[11px]">
+        {description}
+      </p>
     </div>
   );
 }
