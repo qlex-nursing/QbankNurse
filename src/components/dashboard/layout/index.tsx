@@ -37,6 +37,8 @@ export default function DashboardLayout({
       return;
     }
 
+    
+
     // Keep the loader visible briefly for a polished transition.
     const timer = window.setTimeout(() => {
       setAuthenticated(true);

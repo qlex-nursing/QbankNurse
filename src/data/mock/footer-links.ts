@@ -14,31 +14,32 @@ export const footerGroups: FooterGroup[] = [
     links: [
       { label: "Create Account", href: "/register" },
       { label: "Browse Exams", href: "/#study-library" },
-      { label: "Practice Questions", href: "/study" },
+      { label: "Practice Questions", href: "/dashboard/custom-practice" },
       { label: "Dashboard", href: "/dashboard" },
     ],
   },
   {
     title: "Resources",
     links: [
-      { label: "ATI Preparation", href: "/exams/ati" },
-      { label: "HESI Preparation", href: "/exams/hesi" },
-      { label: "NCLEX Preparation", href: "/exams/nclex" },
+      { label: "ATI Preparation", href: "/dashboard/exams/rn/ati" },
+      { label: "HESI Preparation", href: "/dashboard/study-library" },
+      { label: "NCLEX Preparation", href: "/dashboard/exams/rn" },
       { label: "Study Library", href: "/#study-library" },
     ],
   },
   {
     title: "Company",
     links: [
-      { label: "About QbankNurse", href: "/about" },
+      { label: "About QbankNurse", href: "/" },
       { label: "FAQ", href: "/#faq" },
-      { label: "Contact", href: "/contact" },
-      { label: "Privacy Policy", href: "/privacy" },
+      { label: "Contact", href: "/" },
+      { label: "Privacy Policy", href: "/" },
     ],
   },
 ];
 
 export const footerLegalLinks: FooterLink[] = [
-  { label: "Privacy Policy", href: "/privacy" },
-  { label: "Terms of Service", href: "/terms" },
+  { label: "Privacy Policy", href: "/" },
+  { label: "Terms of Service", href: "/" },
 ];
+

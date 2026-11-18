@@ -31,7 +31,7 @@ function FinalCTA() {
 
         <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link
-            href="/study"
+            href="/dashboard/custom-practice"
             className="inline-flex min-h-13 w-full items-center justify-center gap-2 rounded-xl bg-[#5B3DF5] px-7 py-3.5 text-sm font-extrabold text-white shadow-[0_10px_25px_rgba(91,61,245,0.18)] transition-all hover:-translate-y-0.5 hover:bg-[#492BD8] sm:w-auto"
           >
             Try a Practice Set
