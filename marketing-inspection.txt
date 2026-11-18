@@ -1,0 +1,589 @@
+========== GIT STATUS ==========
+ M src/app/(dashboard)/dashboard/ai-tutor/page.tsx
+ M src/app/(dashboard)/dashboard/calculators/page.tsx
+ M src/app/(dashboard)/dashboard/care-plans/page.tsx
+ M src/app/(dashboard)/dashboard/custom-practice/page.tsx
+ M src/app/(dashboard)/dashboard/flashcards/page.tsx
+ M src/app/(dashboard)/dashboard/study-cards/page.tsx
+ M src/app/(dashboard)/dashboard/study-hub/page.tsx
+ M src/app/(dashboard)/dashboard/study-library/page.tsx
+ M src/app/(dashboard)/dashboard/study-planner/page.tsx
+ M src/app/(dashboard)/dashboard/subjects/page.tsx
+?? marketing-inspection.txt
+
+========== ALL APP ROUTES ==========
+src/app/(dashboard)/dashboard/account/page.tsx
+src/app/(dashboard)/dashboard/ai-tutor/page.tsx
+src/app/(dashboard)/dashboard/calculators/page.tsx
+src/app/(dashboard)/dashboard/care-plans/page.tsx
+src/app/(dashboard)/dashboard/community/page.tsx
+src/app/(dashboard)/dashboard/custom-practice/page.tsx
+src/app/(dashboard)/dashboard/exams/ati/[subject]/page.tsx
+src/app/(dashboard)/dashboard/exams/ati/[subject]/practice/page.tsx
+src/app/(dashboard)/dashboard/exams/lpn/page.tsx
+src/app/(dashboard)/dashboard/exams/rn/ati/page.tsx
+src/app/(dashboard)/dashboard/exams/rn/page.tsx
+src/app/(dashboard)/dashboard/flashcards/page.tsx
+src/app/(dashboard)/dashboard/my-library/page.tsx
+src/app/(dashboard)/dashboard/page.tsx
+src/app/(dashboard)/dashboard/performance/page.tsx
+src/app/(dashboard)/dashboard/study-cards/page.tsx
+src/app/(dashboard)/dashboard/study-guides/page.tsx
+src/app/(dashboard)/dashboard/study-hub/page.tsx
+src/app/(dashboard)/dashboard/study-library/page.tsx
+src/app/(dashboard)/dashboard/study-planner/page.tsx
+src/app/(dashboard)/dashboard/subjects/page.tsx
+src/app/(dashboard)/layout.tsx
+src/app/layout.tsx
+src/app/(marketing)/layout.tsx
+src/app/(marketing)/login/page.tsx
+src/app/(marketing)/page.tsx
+src/app/(marketing)/register/page.tsx
+
+========== MARKETING FILES ==========
+src/app/(dashboard)/dashboard/exams/ati/[subject]/page.tsx
+src/app/(dashboard)/dashboard/exams/ati/[subject]/practice/page.tsx
+src/app/(dashboard)/dashboard/exams/lpn/page.tsx
+src/app/(dashboard)/dashboard/exams/rn/ati/page.tsx
+src/app/(dashboard)/dashboard/exams/rn/page.tsx
+src/app/(dashboard)/dashboard/my-library/page.tsx
+src/app/(dashboard)/dashboard/study-library/page.tsx
+src/app/(dashboard)/dashboard/subjects/page.tsx
+src/app/(marketing)/layout.tsx
+src/app/(marketing)/login/page.tsx
+src/app/(marketing)/page.tsx
+src/app/(marketing)/register/page.tsx
+src/components/dashboard/exams/track-landing.tsx
+src/components/marketing/exam-categories.tsx
+src/components/marketing/exam-library/index.tsx
+src/components/marketing/faq/index.tsx
+src/components/marketing/footer/index.tsx
+src/components/marketing/hero/index.tsx
+src/components/marketing/learning-approach/index.tsx
+src/components/marketing/navbar/desktop-nav.tsx
+src/components/marketing/navbar/index.tsx
+src/components/marketing/navbar/mobile-nav.tsx
+src/components/marketing/student-learning-benefits/index.tsx
+src/components/marketing/student-results/index.tsx
+src/components/marketing/student-stories/index.tsx
+src/components/marketing/student-success/index.tsx
+src/components/marketing/study-benefits/index.tsx
+src/data/mock/dashboard/subject-details.ts
+src/data/mock/exam-categories.ts
+src/data/mock/exam-library.ts
+src/data/mock/footer-links.ts
+
+========== MARKETING NAVIGATION ==========
+src/components/dashboard/header/index.tsx:4:import Link from "next/link";
+src/components/dashboard/header/index.tsx:125:                <Link
+src/components/dashboard/header/index.tsx:126:                  href="/dashboard/account"
+src/components/dashboard/header/index.tsx:133:                </Link>
+src/components/dashboard/header/index.tsx:135:                <Link
+src/components/dashboard/header/index.tsx:136:                  href="/dashboard/settings"
+src/components/dashboard/header/index.tsx:143:                </Link>
+src/components/dashboard/exams/track-landing.tsx:1:import Link from "next/link";
+src/components/dashboard/exams/track-landing.tsx:124:                <Link
+src/components/dashboard/exams/track-landing.tsx:126:                  href={`/dashboard/exams/${shortTitle.toLowerCase()}/${category.href}`}
+src/components/dashboard/exams/track-landing.tsx:177:                </Link>
+src/components/dashboard/sidebar/index.tsx:3:import Link from "next/link";
+src/components/dashboard/sidebar/index.tsx:76:          <Link
+src/components/dashboard/sidebar/index.tsx:77:            href="/dashboard"
+src/components/dashboard/sidebar/index.tsx:90:          </Link>
+src/components/dashboard/sidebar/index.tsx:140:                    <Link
+src/components/dashboard/sidebar/index.tsx:142:                      href={item.href ?? "/dashboard"}
+src/components/dashboard/sidebar/index.tsx:187:                    </Link>
+src/components/ui/logo.tsx:1:import Link from "next/link";
+src/components/ui/logo.tsx:6:    <Link
+src/components/ui/logo.tsx:7:      href="/"
+src/components/ui/logo.tsx:18:    </Link>
+src/components/auth/demo-auth-form.tsx:4:import Link from "next/link";
+src/components/auth/demo-auth-form.tsx:66:      router.push("/dashboard");
+src/components/auth/demo-auth-form.tsx:77:        <Link href="/" className="relative flex items-center gap-3">
+src/components/auth/demo-auth-form.tsx:84:        </Link>
+src/components/auth/demo-auth-form.tsx:129:          <Link
+src/components/auth/demo-auth-form.tsx:130:            href="/"
+src/components/auth/demo-auth-form.tsx:137:          </Link>
+src/components/auth/demo-auth-form.tsx:282:            <Link
+src/components/auth/demo-auth-form.tsx:283:              href={isRegister ? "/login" : "/register"}
+src/components/auth/demo-auth-form.tsx:287:            </Link>
+src/components/marketing/footer/index.tsx:1:import Link from "next/link";
+src/components/marketing/footer/index.tsx:6:  footerLegalLinks,
+src/components/marketing/footer/index.tsx:33:          <Link
+src/components/marketing/footer/index.tsx:34:            href="/study"
+src/components/marketing/footer/index.tsx:39:          </Link>
+src/components/marketing/footer/index.tsx:41:          <Link
+src/components/marketing/footer/index.tsx:42:            href="/#study-library"
+src/components/marketing/footer/index.tsx:46:          </Link>
+src/components/marketing/footer/index.tsx:63:              <Link
+src/components/marketing/footer/index.tsx:64:                href="/"
+src/components/marketing/footer/index.tsx:76:              </Link>
+src/components/marketing/footer/index.tsx:89:            {/* Link groups */}
+src/components/marketing/footer/index.tsx:99:                      <Link
+src/components/marketing/footer/index.tsx:100:                        href={link.href}
+src/components/marketing/footer/index.tsx:109:                      </Link>
+src/components/marketing/footer/index.tsx:124:              {footerLegalLinks.map((link) => (
+src/components/marketing/footer/index.tsx:125:                <Link
+src/components/marketing/footer/index.tsx:127:                  href={link.href}
+src/components/marketing/footer/index.tsx:131:                </Link>
+src/components/marketing/navbar/mobile-nav.tsx:4:import Link from "next/link";
+src/components/marketing/navbar/mobile-nav.tsx:46:              <Link
+src/components/marketing/navbar/mobile-nav.tsx:48:                href={link.href}
+src/components/marketing/navbar/mobile-nav.tsx:54:              </Link>
+src/components/marketing/navbar/mobile-nav.tsx:76:                    <Link
+src/components/marketing/navbar/mobile-nav.tsx:78:                      href={exam.href}
+src/components/marketing/navbar/mobile-nav.tsx:83:                    </Link>
+src/components/marketing/navbar/mobile-nav.tsx:91:            <Link
+src/components/marketing/navbar/mobile-nav.tsx:92:              href="/login"
+src/components/marketing/navbar/mobile-nav.tsx:97:            </Link>
+src/components/marketing/navbar/mobile-nav.tsx:99:            <Link
+src/components/marketing/navbar/mobile-nav.tsx:100:              href="/register"
+src/components/marketing/navbar/mobile-nav.tsx:106:            </Link>
+src/components/marketing/navbar/index.tsx:4:import Link from "next/link";
+src/components/marketing/navbar/index.tsx:22:          <Link
+src/components/marketing/navbar/index.tsx:23:            href="/login"
+src/components/marketing/navbar/index.tsx:27:          </Link>
+src/components/marketing/navbar/index.tsx:29:          <Link
+src/components/marketing/navbar/index.tsx:30:            href="/register"
+src/components/marketing/navbar/index.tsx:38:          </Link>
+src/components/marketing/navbar/desktop-nav.tsx:4:import Link from "next/link";
+src/components/marketing/navbar/desktop-nav.tsx:7:const navigationLinks = [
+src/components/marketing/navbar/desktop-nav.tsx:22:const examLinks = [
+src/components/marketing/navbar/desktop-nav.tsx:85:      <Link
+src/components/marketing/navbar/desktop-nav.tsx:86:        href="/"
+src/components/marketing/navbar/desktop-nav.tsx:90:      </Link>
+src/components/marketing/navbar/desktop-nav.tsx:121:            {examLinks.map((exam) => (
+src/components/marketing/navbar/desktop-nav.tsx:122:              <Link
+src/components/marketing/navbar/desktop-nav.tsx:124:                href={exam.href}
+src/components/marketing/navbar/desktop-nav.tsx:142:              </Link>
+src/components/marketing/navbar/desktop-nav.tsx:149:      {navigationLinks.slice(1).map((link) => (
+src/components/marketing/navbar/desktop-nav.tsx:150:        <Link
+src/components/marketing/navbar/desktop-nav.tsx:152:          href={link.href}
+src/components/marketing/navbar/desktop-nav.tsx:156:        </Link>
+src/components/marketing/navbar/desktop-nav.tsx:160:     <Link
+src/components/marketing/navbar/desktop-nav.tsx:161:  href="/dashboard/custom-practice"
+src/components/marketing/navbar/desktop-nav.tsx:165:      </Link>
+src/components/marketing/hero/index.tsx:4:import Link from "next/link";
+src/components/marketing/hero/index.tsx:93:  <Link
+src/components/marketing/hero/index.tsx:94:    href="#practice-preview"
+src/components/marketing/hero/index.tsx:102:  </Link>
+src/components/marketing/hero/index.tsx:104:  <Link
+src/components/marketing/hero/index.tsx:105:    href="#exam-categories"
+src/components/marketing/hero/index.tsx:110:  </Link>
+src/components/marketing/exam-library/index.tsx:4:import Link from "next/link";
+src/components/marketing/exam-library/index.tsx:101:          <Link
+src/components/marketing/exam-library/index.tsx:102:            href={exam.href}
+src/components/marketing/exam-library/index.tsx:108:          </Link>
+src/components/marketing/exam-library/index.tsx:282:                  <Link
+src/components/marketing/exam-library/index.tsx:283:                    href={exam.href}
+src/components/marketing/exam-library/index.tsx:288:                  </Link>
+src/components/marketing/exam-categories.tsx:1:import Link from "next/link";
+src/components/marketing/exam-categories.tsx:120:                <Link
+src/components/marketing/exam-categories.tsx:121:                  href={exam.href}
+src/components/marketing/exam-categories.tsx:130:                </Link>
+
+========== EXAM / SUBJECT DATA ==========
+src/data/mock/student-success.ts:26:    exam: "ATI Comprehensive Predictor",
+src/data/mock/student-success.ts:35:    exam: "HESI Exit Exam",
+src/data/mock/student-success.ts:44:    exam: "ATI Medical-Surgical",
+src/data/mock/student-success.ts:53:    exam: "NCLEX-RN Preparation",
+src/data/mock/student-success.ts:62:    exam: "ATI Pharmacology",
+src/data/mock/student-success.ts:71:    exam: "HESI Specialty Practice",
+src/data/mock/student-success.ts:73:      "Being able to practise different subjects in one place gives me a clearer structure for my study sessions.",
+src/data/mock/study-benefits.ts:23:    title: "Practice with Next Generation NCLEX formats",
+src/data/mock/dashboard/study-hub.ts:15:    title: "NCLEX preparation",
+src/data/mock/dashboard/study-hub.ts:21:    title: "ATI preparation",
+src/data/mock/dashboard/study-hub.ts:27:  //   title: "HESI preparation",
+src/data/mock/dashboard/study-hub.ts:33:  //   title: "TEAS preparation",
+src/data/mock/dashboard/study-hub.ts:34:  //   description: "TEAS practice and preparation",
+src/data/mock/dashboard/study-cards.ts:122:  "All subjects",
+src/data/mock/dashboard/navigation.ts:137:        href: "/dashboard/subjects",
+src/data/mock/dashboard/navigation.ts:143:    title: "NCLEX",
+src/data/mock/dashboard/navigation.ts:146:        label: "NCLEX RN",
+src/data/mock/dashboard/navigation.ts:151:        label: "NCLEX PN (LPN)",
+src/data/mock/dashboard/navigation.ts:156:        label: "NCLEX Practice",
+src/data/mock/dashboard/practice-questions.ts:536:    // 9. NUMERIC ENTRY / DOSAGE CALCULATION
+src/data/mock/dashboard/study-sets.ts:3:export type StudyTrack = "RN" | "LPN" | "NCLEX";
+src/data/mock/dashboard/study-sets.ts:27:    title: "ATI RN Pharmacology Practice",
+src/data/mock/dashboard/study-sets.ts:28:    programme: "RN ATI",
+src/data/mock/dashboard/study-sets.ts:37:    tags: ["ATI", "RN", "Pharmacology"],
+src/data/mock/dashboard/study-sets.ts:42:    programme: "RN Exit ATI",
+src/data/mock/dashboard/study-sets.ts:50:    tags: ["ATI", "RN", "Exit"],
+src/data/mock/dashboard/study-sets.ts:54:    title: "ATI RN Vati Comprehensive Predictor",
+src/data/mock/dashboard/study-sets.ts:55:    programme: "RN Exit ATI",
+src/data/mock/dashboard/study-sets.ts:63:    tags: ["ATI", "RN", "VATI"],
+src/data/mock/dashboard/study-sets.ts:67:    title: "HESI RN Exit Examination",
+src/data/mock/dashboard/study-sets.ts:68:    programme: "RN Exit HESI",
+src/data/mock/dashboard/study-sets.ts:71:      "Prepare for the HESI RN exit examination and strengthen clinical judgment.",
+src/data/mock/dashboard/study-sets.ts:76:    tags: ["HESI", "RN", "Exit"],
+src/data/mock/dashboard/study-sets.ts:80:    title: "ATI PN Comprehensive Predictor 2026",
+src/data/mock/dashboard/study-sets.ts:81:    programme: "LPN Exit ATI",
+src/data/mock/dashboard/study-sets.ts:89:    tags: ["ATI", "LPN", "PN"],
+src/data/mock/dashboard/study-sets.ts:93:    title: "HESI PN Exit Examination",
+src/data/mock/dashboard/study-sets.ts:94:    programme: "LPN Exit HESI",
+src/data/mock/dashboard/study-sets.ts:97:      "Review practical nursing concepts and prepare for the HESI PN exit examination.",
+src/data/mock/dashboard/study-sets.ts:102:    tags: ["HESI", "LPN", "PN"],
+src/data/mock/dashboard/study-sets.ts:106:    title: "NCLEX-RN Readiness Test",
+src/data/mock/dashboard/study-sets.ts:107:    programme: "NCLEX RN",
+src/data/mock/dashboard/study-sets.ts:108:    track: "NCLEX",
+src/data/mock/dashboard/study-sets.ts:110:      "Prepare for the NCLEX-RN examination with nursing knowledge and clinical judgment practice.",
+src/data/mock/dashboard/study-sets.ts:115:    tags: ["NCLEX", "RN"],
+src/data/mock/dashboard/study-sets.ts:119:    title: "NCLEX-PN Readiness Test",
+src/data/mock/dashboard/study-sets.ts:120:    programme: "NCLEX PN",
+src/data/mock/dashboard/study-sets.ts:121:    track: "NCLEX",
+src/data/mock/dashboard/study-sets.ts:123:      "Strengthen practical nursing knowledge and prepare for the NCLEX-PN examination.",
+src/data/mock/dashboard/study-sets.ts:128:    tags: ["NCLEX", "PN", "LPN"],
+src/data/mock/dashboard/study-sets.ts:136:  "NCLEX",
+src/data/mock/dashboard/overview.ts:29:    title: "ATI Medical-Surgical Practice",
+src/data/mock/dashboard/overview.ts:36:    title: "ATI Maternal-Newborn Practice",
+src/data/mock/dashboard/overview.ts:43:    title: "NCLEX-RN Readiness Test",
+src/data/mock/dashboard/overview.ts:50:export const studyCategories: StudyCategory[] = [
+src/data/mock/dashboard/overview.ts:54:    program: "RN ATI",
+src/data/mock/dashboard/overview.ts:65:    program: "RN ATI",
+src/data/mock/dashboard/overview.ts:76:    program: "RN ATI",
+src/data/mock/dashboard/overview.ts:87:    program: "RN ATI",
+src/data/mock/dashboard/overview.ts:98:    program: "RN ATI",
+src/data/mock/dashboard/overview.ts:109:    program: "RN ATI",
+src/data/mock/dashboard/overview.ts:120:    program: "RN ATI",
+src/data/mock/dashboard/overview.ts:131:    program: "RN ATI",
+src/data/mock/dashboard/overview.ts:142:    program: "RN ATI",
+src/data/mock/dashboard/overview.ts:153:    program: "RN ATI",
+src/data/mock/dashboard/overview.ts:164:    program: "RN ATI",
+src/data/mock/dashboard/overview.ts:175:    program: "RN ATI",
+src/data/mock/dashboard/community.ts:4:  "NCLEX",
+src/data/mock/dashboard/community.ts:5:  "ATI",
+src/data/mock/dashboard/community.ts:6:  "HESI",
+src/data/mock/dashboard/community.ts:34:    category: "HESI",
+src/data/mock/dashboard/community.ts:36:    title: "HESI",
+src/data/mock/dashboard/community.ts:38:      "Questions were spot on! I made a 91 on my HESI. This is your sign to join.",
+src/data/mock/footer-links.ts:24:      { label: "ATI Preparation", href: "/exams/ati" },
+src/data/mock/footer-links.ts:25:      { label: "HESI Preparation", href: "/exams/hesi" },
+src/data/mock/footer-links.ts:26:      { label: "NCLEX Preparation", href: "/exams/nclex" },
+src/data/mock/exam-library.ts:18:    title: "ATI Fundamentals",
+src/data/mock/exam-library.ts:32:    title: "ATI Adult Medical-Surgical",
+src/data/mock/exam-library.ts:46:    title: "ATI Pharmacology",
+src/data/mock/exam-library.ts:60:    title: "ATI Dosage Calculations",
+src/data/mock/exam-library.ts:74:    title: "ATI Maternal Newborn",
+src/data/mock/exam-library.ts:88:    title: "ATI Pediatrics",
+src/data/mock/exam-library.ts:102:    title: "ATI Mental Health",
+src/data/mock/exam-library.ts:116:    title: "ATI Community Health",
+src/data/mock/exam-library.ts:130:    title: "ATI Leadership",
+src/data/mock/exam-library.ts:144:    title: "ATI Nutrition",
+src/data/mock/exam-library.ts:158:    title: "ATI Comprehensive Predictor",
+src/data/mock/faqs.ts:10:    question: "What ATI exams do nursing students take?",
+src/data/mock/faqs.ts:12:      "ATI offers assessments across several nursing subjects, including Fundamentals, Medical-Surgical Nursing, Pharmacology, Maternal Newborn, Pediatrics, Mental Health, and more. The assessments required depend on your nursing programme.",
+src/data/mock/faqs.ts:16:    question: "What's a passing score on an ATI proctored exam?",
+src/data/mock/faqs.ts:18:      "There isn't one universal passing score for every ATI proctored assessment. Performance expectations and required proficiency levels can vary by assessment and nursing programme. Check your school's guidelines for the requirements that apply to you.",
+src/data/mock/faqs.ts:23:      "What's the difference between ATI proctored exams and the Comprehensive Predictor?",
+src/data/mock/faqs.ts:25:      "ATI proctored assessments generally focus on particular nursing subjects or courses. The Comprehensive Predictor is designed to assess readiness across a broader range of nursing content. Your programme determines when and how these assessments are used.",
+src/data/mock/faqs.ts:29:    question: "Are these questions the same as the real ATI exam?",
+src/data/mock/faqs.ts:31:      "No. QbankNurse practice questions are intended for learning and preparation. They should not be represented as actual ATI exam questions or as questions obtained from confidential exam materials.",
+src/data/mock/exam-categories.ts:14:export const examCategories: ExamCategory[] = [
+src/data/mock/exam-categories.ts:17:    title: "ATI Exams",
+src/data/mock/exam-categories.ts:20:      "Follow your ATI course sequence, strengthen clinical judgment, and use answer rationales to understand the decisions behind each answer.",
+src/data/mock/exam-categories.ts:24:      "ATI-style practice",
+src/data/mock/exam-categories.ts:28:    buttonLabel: "Open ATI Practice",
+src/data/mock/exam-categories.ts:30:    tag: "ATI PREPARATION",
+src/data/mock/exam-categories.ts:34:    title: "HESI & Exit Exams",
+src/data/mock/exam-categories.ts:45:    buttonLabel: "Open HESI Practice",
+src/data/mock/exam-categories.ts:47:    tag: "HESI PREPARATION",
+src/components/dashboard/header/index.tsx:57:          placeholder="Search exams, subjects, or study resources..."
+src/components/dashboard/header/index.tsx:58:          aria-label="Search exams, subjects, or study resources"
+src/components/dashboard/exams/track-landing.tsx:17:    title: "ATI Exams",
+src/components/dashboard/exams/track-landing.tsx:19:      "Explore subject-based ATI practice, review nursing concepts and strengthen your clinical knowledge.",
+src/components/dashboard/exams/track-landing.tsx:28:    title: "HESI Exams",
+src/components/dashboard/exams/track-landing.tsx:30:      "Prepare with HESI specialty assessments and comprehensive exit examination practice.",
+src/components/dashboard/exams/track-landing.tsx:79:            {shortTitle} EXAM PREPARATION
+src/components/dashboard/exams/track-landing.tsx:183:        {/* BOTTOM INFORMATION */}
+src/components/marketing/navbar/mobile-nav.tsx:21:  { label: "NCLEX-RN", href: "/dashboard/custom-practice" },
+src/components/marketing/navbar/mobile-nav.tsx:22:  { label: "NCLEX-PN", href: "/dashboard/custom-practice" },
+src/components/marketing/navbar/mobile-nav.tsx:23:  { label: "ATI Exams", href: "/dashboard/study-library" },
+src/components/marketing/navbar/mobile-nav.tsx:24:  { label: "HESI Exams", href: "/dashboard/study-library" },
+src/components/marketing/navbar/mobile-nav.tsx:25:  // { label: "TEAS", href: "/dashboard/study-library" },
+src/components/marketing/navbar/desktop-nav.tsx:24:    title: "NCLEX-RN",
+src/components/marketing/navbar/desktop-nav.tsx:29:    title: "NCLEX-PN",
+src/components/marketing/navbar/desktop-nav.tsx:34:    title: "ATI Exams",
+src/components/marketing/navbar/desktop-nav.tsx:39:    title: "HESI Exams",
+src/components/marketing/navbar/desktop-nav.tsx:40:    description: "HESI and exit examination practice",
+src/components/marketing/navbar/desktop-nav.tsx:44:  //   title: "TEAS",
+src/components/marketing/navbar/desktop-nav.tsx:159:      {/* NCLEX */}
+src/components/marketing/navbar/desktop-nav.tsx:164:        NCLEX
+src/components/marketing/hero/index.tsx:72:            <span className="text-[#5B3DF5]">ATI</span>
+src/components/marketing/hero/index.tsx:77:              <span className="relative z-10 text-[#E85D5D]">HESI</span>
+src/components/marketing/exam-categories.tsx:8:import { examCategories } from "@/data/mock/exam-categories";
+src/components/marketing/exam-categories.tsx:58:          {examCategories.map((exam) => {
+src/app/(dashboard)/dashboard/account/page.tsx:538:              Practice and review your subjects
+src/app/(dashboard)/dashboard/ai-tutor/page.tsx:24:import { studyCategories } from "@/data/mock/dashboard/overview";
+src/app/(dashboard)/dashboard/ai-tutor/page.tsx:66:      "Give me a simple strategy for answering NCLEX-style questions.",
+src/app/(dashboard)/dashboard/ai-tutor/page.tsx:140:    response: `## A Strategy for NCLEX-Style Questions
+src/app/(dashboard)/dashboard/ai-tutor/page.tsx:621:              {studyCategories.map((subject) => (
+src/app/(dashboard)/dashboard/ai-tutor/page.tsx:860:      {/* CONVERSATION HISTORY DRAWER */}
+src/app/(dashboard)/dashboard/my-library/page.tsx:84:      "Save subjects from your Study Hub to find them here.",
+src/app/(dashboard)/dashboard/study-hub/page.tsx:18:import { studyCategories } from "@/data/mock/dashboard/overview";
+src/app/(dashboard)/dashboard/study-hub/page.tsx:30:const STORAGE_KEY = "qbanknurse-study-hub-saved-subjects";
+src/app/(dashboard)/dashboard/study-hub/page.tsx:64:  // Load existing saved subjects and migrate them to shared storage.
+src/app/(dashboard)/dashboard/study-hub/page.tsx:80:            const subject = studyCategories.find(
+src/app/(dashboard)/dashboard/study-hub/page.tsx:118:    if (!showSavedOnly) return studyCategories;
+src/app/(dashboard)/dashboard/study-hub/page.tsx:120:    return studyCategories.filter((subject) =>
+src/app/(dashboard)/dashboard/study-hub/page.tsx:127:    const subject = studyCategories.find(
+src/app/(dashboard)/dashboard/study-hub/page.tsx:152:  const totalQuestions = studyCategories.reduce(
+src/app/(dashboard)/dashboard/study-hub/page.tsx:205:              {studyCategories.length} nursing subjects
+src/app/(dashboard)/dashboard/study-hub/page.tsx:265:              {showSavedOnly ? "Show all subjects" : "Saved subjects"}
+src/app/(dashboard)/dashboard/study-hub/page.tsx:310:                              ? `Remove ${subject.title} from saved subjects`
+src/app/(dashboard)/dashboard/study-hub/page.tsx:315:                              ? "Remove from saved subjects"
+src/app/(dashboard)/dashboard/study-hub/page.tsx:412:                No saved subjects yet
+src/app/(dashboard)/dashboard/study-hub/page.tsx:424:                Explore subjects
+src/app/(dashboard)/dashboard/study-hub/page.tsx:434:            EXAM PREPARATION
+src/app/(dashboard)/dashboard/study-hub/page.tsx:667:            INFORMATION PANEL
+src/app/(dashboard)/dashboard/subjects/page.tsx:20:import { studyCategories } from "@/data/mock/dashboard/overview";
+src/app/(dashboard)/dashboard/subjects/page.tsx:59:  const subjects = useMemo(() => {
+src/app/(dashboard)/dashboard/subjects/page.tsx:60:    return studyCategories.map((subject) => {
+src/app/(dashboard)/dashboard/subjects/page.tsx:76:    return subjects.filter((subject) => {
+src/app/(dashboard)/dashboard/subjects/page.tsx:90:  }, [subjects, search, filter]);
+src/app/(dashboard)/dashboard/subjects/page.tsx:92:  const availableCount = subjects.filter(
+src/app/(dashboard)/dashboard/subjects/page.tsx:96:  const totalQuestions = subjects.reduce(
+src/app/(dashboard)/dashboard/subjects/page.tsx:101:  const handleBookmark = (subject: (typeof subjects)[number]) => {
+src/app/(dashboard)/dashboard/subjects/page.tsx:150:              Explore nursing subjects, discover important study topics,
+src/app/(dashboard)/dashboard/subjects/page.tsx:165:                {subjects.length} subjects to explore
+src/app/(dashboard)/dashboard/subjects/page.tsx:176:          label="Total subjects"
+src/app/(dashboard)/dashboard/subjects/page.tsx:177:          value={subjects.length.toString()}
+src/app/(dashboard)/dashboard/subjects/page.tsx:194:          detail="Questions across all subjects"
+src/app/(dashboard)/dashboard/subjects/page.tsx:213:              placeholder="Search nursing subjects..."
+src/app/(dashboard)/dashboard/subjects/page.tsx:226:              { value: "all", label: "All subjects" },
+src/app/(dashboard)/dashboard/subjects/page.tsx:252:        {/* RESULTS INFORMATION */}
+src/app/(dashboard)/dashboard/subjects/page.tsx:266:              Showing {filteredSubjects.length} of {subjects.length} subjects
+src/app/(dashboard)/dashboard/subjects/page.tsx:326:                {/* SUBJECT INFORMATION */}
+src/app/(dashboard)/dashboard/subjects/page.tsx:439:            No subjects found
+src/app/(dashboard)/dashboard/subjects/page.tsx:443:            We couldn't find any subjects matching your search.
+src/app/(dashboard)/dashboard/subjects/page.tsx:457:      {/* BOTTOM INFORMATION */}
+src/app/(dashboard)/dashboard/subjects/page.tsx:472:              Save subjects to your personal library and return to
+src/app/(dashboard)/dashboard/page.tsx:27:  studyCategories,
+src/app/(dashboard)/dashboard/page.tsx:135:    if (!query) return studyCategories;
+src/app/(dashboard)/dashboard/page.tsx:137:    return studyCategories.filter(
+src/app/(dashboard)/dashboard/page.tsx:563:                            ATI practice exam
+src/app/(dashboard)/dashboard/exams/rn/ati/page.tsx:17:import { studyCategories } from "@/data/mock/dashboard/overview";
+src/app/(dashboard)/dashboard/exams/rn/ati/page.tsx:32:export default function ATISubjectsPage() {
+src/app/(dashboard)/dashboard/exams/rn/ati/page.tsx:36:  const subjects = useMemo(
+src/app/(dashboard)/dashboard/exams/rn/ati/page.tsx:38:      studyCategories.map((subject) => {
+src/app/(dashboard)/dashboard/exams/rn/ati/page.tsx:55:    return subjects.filter((subject) => {
+src/app/(dashboard)/dashboard/exams/rn/ati/page.tsx:68:  }, [subjects, search, filter]);
+src/app/(dashboard)/dashboard/exams/rn/ati/page.tsx:70:  const availableCount = subjects.filter(
+src/app/(dashboard)/dashboard/exams/rn/ati/page.tsx:74:  const totalQuestions = subjects.reduce(
+src/app/(dashboard)/dashboard/exams/rn/ati/page.tsx:80:    { label: "All subjects", value: "all" },
+src/app/(dashboard)/dashboard/exams/rn/ati/page.tsx:107:            RN · ATI PREPARATION
+src/app/(dashboard)/dashboard/exams/rn/ati/page.tsx:111:            Explore your ATI{" "}
+src/app/(dashboard)/dashboard/exams/rn/ati/page.tsx:112:            <span className="text-[#B9A9FF]">subjects</span>
+src/app/(dashboard)/dashboard/exams/rn/ati/page.tsx:121:            <span>{subjects.length} subjects</span>
+src/app/(dashboard)/dashboard/exams/rn/ati/page.tsx:136:              Explore ATI subjects
+src/app/(dashboard)/dashboard/exams/rn/ati/page.tsx:152:              placeholder="Search nursing subjects..."
+src/app/(dashboard)/dashboard/exams/rn/ati/page.tsx:197:                Nursing subjects
+src/app/(dashboard)/dashboard/exams/rn/ati/page.tsx:207:              {filteredSubjects.length === 1 ? "subject" : "subjects"}
+src/app/(dashboard)/dashboard/exams/rn/ati/page.tsx:288:                No subjects found
+src/app/(dashboard)/dashboard/exams/rn/ati/page.tsx:292:                No subjects match your search and selected filter. Try another
+src/app/(dashboard)/dashboard/exams/rn/ati/page.tsx:310:        {/* INFORMATION PANEL */}
+src/app/(dashboard)/dashboard/exams/rn/ati/page.tsx:322:              Your subject library brings your ATI preparation resources
+src/app/(dashboard)/dashboard/exams/ati/[subject]/practice/page.tsx:42:import { studyCategories } from "@/data/mock/dashboard/overview";
+src/app/(dashboard)/dashboard/exams/ati/[subject]/practice/page.tsx:59:const EXAM_DURATION = 30 * 60;
+src/app/(dashboard)/dashboard/exams/ati/[subject]/practice/page.tsx:244:  const subject = studyCategories.find(
+src/app/(dashboard)/dashboard/exams/ati/[subject]/practice/page.tsx:258:  const [timeRemaining, setTimeRemaining] = useState(EXAM_DURATION);
+src/app/(dashboard)/dashboard/exams/ati/[subject]/practice/page.tsx:350:        EXAM_DURATION,
+src/app/(dashboard)/dashboard/exams/ati/[subject]/practice/page.tsx:373:  const timeRemainingRef = useRef(EXAM_DURATION);
+src/app/(dashboard)/dashboard/exams/ati/[subject]/practice/page.tsx:380:    timeRemaining: EXAM_DURATION,
+src/app/(dashboard)/dashboard/exams/ati/[subject]/practice/page.tsx:394:// AUTOMATICALLY SAVE PRACTICE SESSION
+src/app/(dashboard)/dashboard/exams/ati/[subject]/practice/page.tsx:449:      examType: "ATI",
+src/app/(dashboard)/dashboard/exams/ati/[subject]/practice/page.tsx:465:        EXAM_DURATION - attempt.timeRemaining,
+src/app/(dashboard)/dashboard/exams/ati/[subject]/practice/page.tsx:704:  // NAVIGATION
+src/app/(dashboard)/dashboard/exams/ati/[subject]/practice/page.tsx:1460:      {/* CLINICAL CASE INFORMATION */}
+src/app/(dashboard)/dashboard/exams/ati/[subject]/practice/page.tsx:2238:          {/* NAVIGATION */}
+src/app/(dashboard)/dashboard/exams/ati/[subject]/practice/page.tsx:2389:      {/* SUBMIT CONFIRMATION */}
+src/app/(dashboard)/dashboard/exams/ati/[subject]/page.tsx:20:import { studyCategories } from "@/data/mock/dashboard/overview";
+src/app/(dashboard)/dashboard/exams/ati/[subject]/page.tsx:50:  const subject = studyCategories.find(
+src/app/(dashboard)/dashboard/exams/ati/[subject]/page.tsx:329:          Explore other subjects
+src/app/(dashboard)/dashboard/study-library/page.tsx:56:        case "NCLEX":
+src/app/(dashboard)/dashboard/study-library/page.tsx:57:          matchesFilter = set.track === "NCLEX";
+src/app/(dashboard)/dashboard/study-library/page.tsx:272:        {/* INFORMATION PANEL */}
+src/app/(dashboard)/dashboard/study-library/page.tsx:372:      {/* RATINGS */}
+src/app/(dashboard)/dashboard/performance/page.tsx:73:    const subjects = new Map<
+src/app/(dashboard)/dashboard/performance/page.tsx:79:      const existing = subjects.get(attempt.subject) ?? {
+src/app/(dashboard)/dashboard/performance/page.tsx:89:      subjects.set(attempt.subject, existing);
+src/app/(dashboard)/dashboard/performance/page.tsx:92:    return Array.from(subjects.entries())
+src/app/(dashboard)/dashboard/performance/page.tsx:206:              subjects.
+src/app/(dashboard)/dashboard/performance/page.tsx:220:            {/* STATISTICS */}
+src/app/(dashboard)/dashboard/performance/page.tsx:519:                more attention. These scores do not predict your actual NCLEX
+src/app/(dashboard)/dashboard/flashcards/page.tsx:141:     PROGRESS CALCULATIONS
+src/app/(dashboard)/dashboard/flashcards/page.tsx:205:     CARD NAVIGATION
+src/app/(dashboard)/dashboard/custom-practice/page.tsx:18:type ExamType = "All" | "RN" | "LPN" | "NCLEX" | "HESI" | "ATI";
+src/app/(dashboard)/dashboard/custom-practice/page.tsx:21:const examTypes: ExamType[] = [
+src/app/(dashboard)/dashboard/custom-practice/page.tsx:25:  "NCLEX",
+src/app/(dashboard)/dashboard/custom-practice/page.tsx:26:  "HESI",
+src/app/(dashboard)/dashboard/custom-practice/page.tsx:27:  "ATI",
+src/app/(dashboard)/dashboard/custom-practice/page.tsx:162:            <HeroStat icon={BookOpen} label="Multiple nursing subjects" />
+src/app/(dashboard)/dashboard/custom-practice/page.tsx:229:                  {examTypes.map((exam) => {
+src/app/(dashboard)/dashboard/custom-practice/page.tsx:293:                      Only subjects with available demonstration questions are
+src/app/(dashboard)/dashboard/custom-practice/page.tsx:515:              BOTTOM INFORMATION
+src/app/(dashboard)/dashboard/study-cards/page.tsx:49:    useState("All subjects");
+src/app/(dashboard)/dashboard/study-cards/page.tsx:119:        selectedSubject === "All subjects" ||
+src/app/(dashboard)/dashboard/study-cards/page.tsx:312:            PROGRESS STATISTICS
+src/app/(dashboard)/dashboard/study-cards/page.tsx:535:              {/* CARD INFORMATION */}
+src/app/(dashboard)/dashboard/study-cards/page.tsx:714:              {/* CARD NAVIGATION */}
+src/app/(dashboard)/dashboard/study-cards/page.tsx:767:                  changeSubject("All subjects");
+src/app/(dashboard)/dashboard/study-cards/page.tsx:782:            INFORMATION PANEL
+src/app/(dashboard)/dashboard/study-cards/page.tsx:811:   STATISTICS CARD
+src/app/(dashboard)/dashboard/care-plans/page.tsx:592:            EDUCATIONAL NOTE
+src/app/(dashboard)/dashboard/care-plans/page.tsx:817:   INFORMATION CARD
+src/app/(dashboard)/dashboard/study-planner/page.tsx:24:import { studyCategories } from "@/data/mock/dashboard/overview";
+src/app/(dashboard)/dashboard/study-planner/page.tsx:941:                  {studyCategories.map((item) => (
+src/app/layout.tsx:27:    "NCLEX",
+src/app/layout.tsx:29:    "NCLEX-RN",
+src/app/layout.tsx:30:    "NCLEX-PN",
+
+========== AUTH / REDIRECT LOGIC ==========
+src/data/mock/student-success.ts:73:      "Being able to practise different subjects in one place gives me a clearer structure for my study sessions.",
+src/data/mock/study-benefits.ts:17:    title: "Different ways to approach your study sessions",
+src/data/mock/student-experiences.ts:30:      "Breaking my revision into focused sessions makes it easier to stay consistent with my studies.",
+src/data/mock/dashboard/community.ts:16:  author: string;
+src/data/mock/dashboard/community.ts:24:  author: string;
+src/data/mock/dashboard/community.ts:35:    author: "Sunny Penguin 5819",
+src/data/mock/dashboard/community.ts:45:    author: "Sunny Robin 0987",
+src/data/mock/dashboard/community.ts:55:    author: "Bright Nurse 2041",
+src/data/mock/dashboard/community.ts:63:        author: "Calm Nurse 3321",
+src/data/mock/dashboard/community.ts:65:          "Short focused sessions helped me. I do 25 minutes of questions, then review the rationales.",
+src/data/mock/footer-links.ts:15:      { label: "Create Account", href: "/register" },
+src/data/mock/learning-approach.ts:18:      "Use timed sessions to practise pacing",
+src/lib/practice-sessions.ts:2:  "qbanknurse-practice-sessions";
+src/lib/practice-sessions.ts:22:    const stored = localStorage.getItem(
+src/lib/practice-sessions.ts:39:  const sessions = getAllSessions();
+src/lib/practice-sessions.ts:42:    sessions.find(
+src/lib/practice-sessions.ts:43:      (session) => session.subjectSlug === subjectSlug,
+src/lib/practice-sessions.ts:49:  session: PracticeSession,
+src/lib/practice-sessions.ts:54:    const sessions = getAllSessions();
+src/lib/practice-sessions.ts:56:    const updatedSessions = sessions.filter(
+src/lib/practice-sessions.ts:57:      (item) => item.subjectSlug !== session.subjectSlug,
+src/lib/practice-sessions.ts:60:    localStorage.setItem(
+src/lib/practice-sessions.ts:62:      JSON.stringify([session, ...updatedSessions]),
+src/lib/practice-sessions.ts:65:    console.error("Could not save practice session:", error);
+src/lib/practice-sessions.ts:75:    const sessions = getAllSessions();
+src/lib/practice-sessions.ts:77:    const updatedSessions = sessions.filter(
+src/lib/practice-sessions.ts:78:      (session) => session.subjectSlug !== subjectSlug,
+src/lib/practice-sessions.ts:81:    localStorage.setItem(
+src/lib/practice-sessions.ts:86:    console.error("Could not remove practice session:", error);
+src/lib/practice-attempts.ts:21:    const stored = localStorage.getItem(
+src/lib/practice-attempts.ts:50:    localStorage.setItem(
+src/lib/flashcard-progress.ts:23:    const stored = localStorage.getItem(STORAGE_KEY);
+src/lib/flashcard-progress.ts:43:  localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+src/lib/flashcard-progress.ts:75:  localStorage.removeItem(STORAGE_KEY);
+src/lib/demo-auth.ts:1:const DEMO_SESSION_KEY = "qbanknurse-demo-session";
+src/lib/demo-auth.ts:10:  authenticated: boolean;
+src/lib/demo-auth.ts:17:  const session: DemoSession = {
+src/lib/demo-auth.ts:19:    authenticated: true,
+src/lib/demo-auth.ts:23:  localStorage.setItem(DEMO_SESSION_KEY, JSON.stringify(session));
+src/lib/demo-auth.ts:30:    const stored = localStorage.getItem(DEMO_SESSION_KEY);
+src/lib/demo-auth.ts:34:    const session = JSON.parse(stored);
+src/lib/demo-auth.ts:36:    if (!session.authenticated || !session.user?.email) {
+src/lib/demo-auth.ts:40:    return session.user as DemoUser;
+src/lib/demo-auth.ts:50:    const stored = localStorage.getItem(DEMO_SESSION_KEY);
+src/lib/demo-auth.ts:54:    const session = JSON.parse(stored);
+src/lib/demo-auth.ts:56:    if (!session.authenticated) return false;
+src/lib/demo-auth.ts:58:    session.user = user;
+src/lib/demo-auth.ts:60:    localStorage.setItem(DEMO_SESSION_KEY, JSON.stringify(session));
+src/lib/demo-auth.ts:70:    localStorage.removeItem(DEMO_SESSION_KEY);
+src/lib/saved-items.ts:30:    const stored = localStorage.getItem(STORAGE_KEY);
+src/lib/saved-items.ts:46:  localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+src/components/dashboard/header/index.tsx:6:import { clearDemoSession } from "@/lib/demo-auth";
+src/components/dashboard/exams/track-landing.tsx:41:      "Build confidence with focused practice sessions and questions across nursing topics.",
+src/components/dashboard/exams/track-landing.tsx:191:              Make every practice session count
+src/components/dashboard/exams/track-landing.tsx:196:              building your nursing knowledge one session at a time.
+src/components/dashboard/layout/index.tsx:10:import { getDemoSession } from "@/lib/demo-auth";
+src/components/dashboard/layout/index.tsx:25:  const [authenticated, setAuthenticated] = useState(false);
+src/components/dashboard/layout/index.tsx:28:  const session = getDemoSession();
+src/components/dashboard/layout/index.tsx:30:  if (!session) {
+src/components/dashboard/layout/index.tsx:31:    router.replace("/login");
+src/components/dashboard/layout/index.tsx:44:  if (checkingSession || !authenticated) {
+src/components/auth/demo-auth-form.tsx:16:import { createDemoSession, getDemoSession } from "@/lib/demo-auth";
+src/components/auth/demo-auth-form.tsx:19:  mode: "login" | "register";
+src/components/auth/demo-auth-form.tsx:24:  const isRegister = mode === "register";
+src/components/auth/demo-auth-form.tsx:283:              href={isRegister ? "/login" : "/register"}
+src/components/marketing/footer/index.tsx:24:          session count.
+src/components/marketing/navbar/mobile-nav.tsx:92:              href="/login"
+src/components/marketing/navbar/mobile-nav.tsx:100:              href="/register"
+src/components/marketing/navbar/index.tsx:23:            href="/login"
+src/components/marketing/navbar/index.tsx:30:            href="/register"
+src/components/marketing/study-benefits/index.tsx:44:              Inside every study session
+src/app/(marketing)/login/page.tsx:1:import DemoAuthForm from "@/components/auth/demo-auth-form";
+src/app/(marketing)/login/page.tsx:4:  return <DemoAuthForm mode="login" />;
+src/app/(marketing)/register/page.tsx:1:import DemoAuthForm from "@/components/auth/demo-auth-form";
+src/app/(marketing)/register/page.tsx:4:  return <DemoAuthForm mode="register" />;
+src/app/(dashboard)/dashboard/account/page.tsx:25:} from "@/lib/demo-auth";
+src/app/(dashboard)/dashboard/account/page.tsx:54:    const session = getDemoSession();
+src/app/(dashboard)/dashboard/account/page.tsx:56:    if (session) {
+src/app/(dashboard)/dashboard/account/page.tsx:57:      setUser(session);
+src/app/(dashboard)/dashboard/account/page.tsx:58:      setForm(session);
+src/app/(dashboard)/dashboard/account/page.tsx:61:    const storedAvatar = localStorage.getItem(AVATAR_KEY);
+src/app/(dashboard)/dashboard/account/page.tsx:141:          localStorage.setItem(AVATAR_KEY, reader.result);
+src/app/(dashboard)/dashboard/account/page.tsx:478:              Keep building your knowledge, one study session at a time.
+src/app/(dashboard)/dashboard/ai-tutor/page.tsx:341:      const stored = localStorage.getItem(STORAGE_KEY);
+src/app/(dashboard)/dashboard/ai-tutor/page.tsx:351:      localStorage.removeItem(STORAGE_KEY);
+src/app/(dashboard)/dashboard/ai-tutor/page.tsx:358:    localStorage.setItem(
+src/app/(dashboard)/dashboard/study-hub/page.tsx:67:      const stored = localStorage.getItem(STORAGE_KEY);
+src/app/(dashboard)/dashboard/study-hub/page.tsx:111:    localStorage.setItem(
+src/app/(dashboard)/dashboard/page.tsx:34:} from "@/lib/practice-sessions";
+src/app/(dashboard)/dashboard/page.tsx:61:  const [sessions, setSessions] = useState<PracticeSession[]>([]);
+src/app/(dashboard)/dashboard/page.tsx:176:        (session) => session.subjectSlug !== subjectSlug,
+src/app/(dashboard)/dashboard/page.tsx:476:                  Resume your unfinished practice sessions.
+src/app/(dashboard)/dashboard/page.tsx:482:              {sessions.length} saved {sessions.length === 1 ? "session" : "sessions"}
+src/app/(dashboard)/dashboard/page.tsx:489:                Loading saved sessions...
+src/app/(dashboard)/dashboard/page.tsx:492:          ) : sessions.length === 0 ? (
+src/app/(dashboard)/dashboard/page.tsx:500:                No unfinished sessions
+src/app/(dashboard)/dashboard/page.tsx:517:              {sessions.map((session) => {
+src/app/(dashboard)/dashboard/page.tsx:518:                const answered = countAnsweredQuestions(session.answers);
+src/app/(dashboard)/dashboard/page.tsx:519:                const totalQuestions = session.totalQuestions ?? 0;
+src/app/(dashboard)/dashboard/page.tsx:531:                const lastSaved = new Date(session.updatedAt);
+src/app/(dashboard)/dashboard/page.tsx:543:                  session.subjectSlug,
+src/app/(dashboard)/dashboard/page.tsx:548:                    key={session.subjectSlug}
+src/app/(dashboard)/dashboard/page.tsx:559:                            {session.subjectSlug.replaceAll("-", " ")}
+src/app/(dashboard)/dashboard/page.tsx:570:                        onClick={() => discardSession(session.subjectSlug)}
+src/app/(dashboard)/dashboard/page.tsx:571:                        title="Discard saved session"
+src/app/(dashboard)/dashboard/page.tsx:572:                        aria-label={`Discard ${session.subjectSlug} session`}
+src/app/(dashboard)/dashboard/page.tsx:596:                          {Math.floor(session.timeRemaining / 60)}m{" "}
+src/app/(dashboard)/dashboard/page.tsx:597:                          {session.timeRemaining % 60}s
+src/app/(dashboard)/dashboard/exams/ati/[subject]/practice/page.tsx:56:} from "@/lib/practice-sessions";
+src/app/(dashboard)/dashboard/exams/ati/[subject]/practice/page.tsx:260:  const [sessionLoaded, setSessionLoaded] = useState(false);
+src/app/(dashboard)/dashboard/exams/ati/[subject]/practice/page.tsx:400:  !sessionLoaded ||
+src/app/(dashboard)/dashboard/exams/ati/[subject]/practice/page.tsx:418:  sessionLoaded,
+src/app/(dashboard)/dashboard/exams/ati/[subject]/practice/page.tsx:481:  !sessionLoaded ||
+src/app/(dashboard)/dashboard/exams/ati/[subject]/practice/page.tsx:497:  }, [sessionLoaded, submitted, questions.length]);
+src/app/(dashboard)/dashboard/exams/ati/[subject]/practice/page.tsx:860:            Practice session completed
+src/app/(dashboard)/dashboard/exams/ati/[subject]/practice/page.tsx:2426:              this session.
+src/app/(dashboard)/dashboard/exams/ati/[subject]/page.tsx:248:                Timed question sessions
+src/app/(dashboard)/dashboard/exams/ati/[subject]/page.tsx:318:            Actual questions, topic content, progress and practice sessions
+src/app/(dashboard)/dashboard/flashcards/page.tsx:101:      const storedConfidence = localStorage.getItem(CONFIDENCE_KEY);
+src/app/(dashboard)/dashboard/flashcards/page.tsx:241:      localStorage.setItem(
+src/app/(dashboard)/dashboard/flashcards/page.tsx:246:      // Continue the current session if local storage is unavailable.
+src/app/(dashboard)/dashboard/custom-practice/page.tsx:156:            Build your own practice session. Choose an exam, focus on a
+src/app/(dashboard)/dashboard/custom-practice/page.tsx:181:              Practice session builder
+src/app/(dashboard)/dashboard/custom-practice/page.tsx:189:              Customize the session to match your learning goals. Your choices
+src/app/(dashboard)/dashboard/custom-practice/page.tsx:212:                    Set up your next nursing practice session.
+src/app/(dashboard)/dashboard/custom-practice/page.tsx:327:                description="Decide how many questions you want in this session."
+src/app/(dashboard)/dashboard/custom-practice/page.tsx:376:                        demonstration questions. Your session will use the
+src/app/(dashboard)/dashboard/custom-practice/page.tsx:410:                    description="Complete your session and see your results at the end."
+src/app/(dashboard)/dashboard/custom-practice/page.tsx:429:                      Your practice session
+src/app/(dashboard)/dashboard/custom-practice/page.tsx:526:                Make every practice session count
+src/app/(dashboard)/dashboard/study-cards/page.tsx:65:      const stored = localStorage.getItem(STORAGE_KEY);
+src/app/(dashboard)/dashboard/study-cards/page.tsx:109:    localStorage.setItem(
+src/app/(dashboard)/dashboard/study-guides/page.tsx:331:                against authoritative educational resources.
+src/app/(dashboard)/dashboard/study-planner/page.tsx:118:      const stored = localStorage.getItem(STORAGE_KEY);
+src/app/(dashboard)/dashboard/study-planner/page.tsx:138:    localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+src/app/(dashboard)/dashboard/study-planner/page.tsx:305:              Build a consistent study routine, organize your sessions,
+src/app/(dashboard)/dashboard/study-planner/page.tsx:765:                Small, consistent study sessions can make your preparation
+src/app/(dashboard)/dashboard/study-planner/page.tsx:790:              Your next scheduled study sessions.
+src/app/(dashboard)/dashboard/study-planner/page.tsx:846:              Create a study task to plan your next session and keep
+src/app/(dashboard)/dashboard/study-planner/page.tsx:856:              Plan a study session
+src/app/(dashboard)/dashboard/study-planner/page.tsx:881:                    New study session
+src/app/(dashboard)/dashboard/study-planner/page.tsx:889:                    Add a new session to your study schedule.
+src/app/(dashboard)/dashboard/community/page.tsx:65:      const saved = localStorage.getItem(STORAGE_KEY);
+src/app/(dashboard)/dashboard/community/page.tsx:85:    localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
+src/app/(dashboard)/dashboard/community/page.tsx:101:          post.author.toLowerCase().includes(query);
+src/app/(dashboard)/dashboard/community/page.tsx:138:      author: "QbankNurse Student",
+src/app/(dashboard)/dashboard/community/page.tsx:169:      author: "QbankNurse Student",
+src/app/(dashboard)/dashboard/community/page.tsx:472:                    {post.author}
+src/app/(dashboard)/dashboard/community/page.tsx:526:                              {reply.author}
+src/app/(dashboard)/dashboard/community/page.tsx:612:          locally in this browser. Shared discussions, registered

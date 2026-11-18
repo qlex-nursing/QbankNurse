@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 
 import { createDemoSession, getDemoSession } from "@/lib/demo-auth";
+import { getSafeReturnTo } from "@/lib/navigation";
 
 interface DemoAuthFormProps {
   mode: "login" | "register";
@@ -29,6 +30,13 @@ export default function DemoAuthForm({ mode }: DemoAuthFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [returnTo, setReturnTo] = useState<string | null>(null);
+
+useEffect(() => {
+  const params = new URLSearchParams(window.location.search);
+
+  setReturnTo(getSafeReturnTo(params.get("returnTo")));
+}, []);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -62,9 +70,9 @@ export default function DemoAuthForm({ mode }: DemoAuthFormProps) {
 
     createDemoSession(user);
 
-    window.setTimeout(() => {
-      router.push("/dashboard");
-    }, 350);
+   window.setTimeout(() => {
+  router.push(returnTo ?? "/dashboard");
+}, 350);
   };
 
   return (
@@ -278,11 +286,15 @@ export default function DemoAuthForm({ mode }: DemoAuthFormProps) {
           </div>
 
           <p className="text-center text-sm text-[#817B91]">
-            {isRegister ? "Already have an account?" : "New to QbankNurse?"}{" "}
-            <Link
-              href={isRegister ? "/login" : "/register"}
-              className="font-extrabold text-[#5B3DF5] hover:underline"
-            >
+            {isRegister ? "Already have an account?" : "New to QbankNurse?"}{" "}  
+           <Link
+  href={`${isRegister ? "/login" : "/register"}${
+    returnTo
+      ? `?returnTo=${encodeURIComponent(returnTo)}`
+      : ""
+  }`}
+  className="font-extrabold text-[#5B3DF5] hover:underline"
+>
               {isRegister ? "Log in" : "Create an account"}
             </Link>
           </p>

@@ -24,22 +24,27 @@ export default function DashboardLayout({
   const [checkingSession, setCheckingSession] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
 
- useEffect(() => {
-  const session = getDemoSession();
+  useEffect(() => {
+    const session = getDemoSession();
 
-  if (!session) {
-    router.replace("/login");
-    return;
-  }
+    if (!session) {
+      const returnTo =
+        window.location.pathname +
+        window.location.search +
+        window.location.hash;
 
-  // Keep the loader visible briefly for a polished transition.
-  const timer = window.setTimeout(() => {
-    setAuthenticated(true);
-    setCheckingSession(false);
-  }, 1300);
+      router.replace(`/login?returnTo=${encodeURIComponent(returnTo)}`);
+      return;
+    }
 
-  return () => window.clearTimeout(timer);
-}, [router]);
+    // Keep the loader visible briefly for a polished transition.
+    const timer = window.setTimeout(() => {
+      setAuthenticated(true);
+      setCheckingSession(false);
+    }, 1300);
+
+    return () => window.clearTimeout(timer);
+  }, [router]);
 
   if (checkingSession || !authenticated) {
     return (

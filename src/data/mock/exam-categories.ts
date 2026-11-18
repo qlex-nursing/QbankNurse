@@ -26,7 +26,7 @@ export const examCategories: ExamCategory[] = [
       "Detailed rationales",
     ],
     buttonLabel: "Open ATI Practice",
-    href: "/exams/ati",
+    href: "/dashboard/exams/rn/ati",
     tag: "ATI PREPARATION",
   },
   {
@@ -43,7 +43,7 @@ export const examCategories: ExamCategory[] = [
       "Review and rationales",
     ],
     buttonLabel: "Open HESI Practice",
-    href: "/exams/hesi",
+    href: "/dashboard/study-library",
     tag: "HESI PREPARATION",
   },
 ];

@@ -25,7 +25,7 @@ export const examLibrary: ExamSet[] = [
     isFree: true,
     hasRationales: true,
     hasNgn: true,
-    href: "/exams/ati/fundamentals",
+    href: "/dashboard/exams/ati/fundamentals",
   },
   {
     id: "ati-medical-surgical",
@@ -39,7 +39,7 @@ export const examLibrary: ExamSet[] = [
     isFree: true,
     hasRationales: true,
     hasNgn: true,
-    href: "/exams/ati/medical-surgical",
+    href: "/dashboard/exams/ati/medical-surgical",
   },
   {
     id: "ati-pharmacology",
@@ -53,7 +53,7 @@ export const examLibrary: ExamSet[] = [
     isFree: true,
     hasRationales: true,
     hasNgn: true,
-    href: "/exams/ati/pharmacology",
+    href: "/dashboard/exams/ati/pharmacology",
   },
   {
     id: "ati-dosage-calculations",
@@ -67,7 +67,7 @@ export const examLibrary: ExamSet[] = [
     isFree: true,
     hasRationales: true,
     hasNgn: true,
-    href: "/exams/ati/dosage-calculations",
+    href: "/dashboard/exams/ati/dosage-calculations",
   },
   {
     id: "ati-maternal-newborn",
@@ -81,7 +81,7 @@ export const examLibrary: ExamSet[] = [
     isFree: true,
     hasRationales: true,
     hasNgn: true,
-    href: "/exams/ati/maternal-newborn",
+    href: "/dashboard/exams/ati/maternal-newborn",
   },
   {
     id: "ati-pediatrics",
@@ -95,7 +95,7 @@ export const examLibrary: ExamSet[] = [
     isFree: true,
     hasRationales: true,
     hasNgn: true,
-    href: "/exams/ati/pediatrics",
+    href: "/dashboard/exams/ati/pediatrics",
   },
   {
     id: "ati-mental-health",
@@ -109,7 +109,7 @@ export const examLibrary: ExamSet[] = [
     isFree: true,
     hasRationales: true,
     hasNgn: true,
-    href: "/exams/ati/mental-health",
+    href: "/dashboard/exams/ati/mental-health",
   },
   {
     id: "ati-community-health",
@@ -123,7 +123,7 @@ export const examLibrary: ExamSet[] = [
     isFree: true,
     hasRationales: true,
     hasNgn: true,
-    href: "/exams/ati/community-health",
+    href: "/dashboard/exams/ati/community-health",
   },
   {
     id: "ati-leadership",
@@ -137,7 +137,7 @@ export const examLibrary: ExamSet[] = [
     isFree: true,
     hasRationales: true,
     hasNgn: true,
-    href: "/exams/ati/leadership",
+    href: "/dashboard/exams/ati/leadership",
   },
   {
     id: "ati-nutrition",
@@ -151,7 +151,7 @@ export const examLibrary: ExamSet[] = [
     isFree: true,
     hasRationales: true,
     hasNgn: true,
-    href: "/exams/ati/nutrition",
+    href: "/dashboard/exams/ati/nutrition",
   },
   {
     id: "ati-comprehensive-predictor",
@@ -165,6 +165,6 @@ export const examLibrary: ExamSet[] = [
     isFree: true,
     hasRationales: true,
     hasNgn: true,
-    href: "/exams/ati/comprehensive-predictor",
+    href: "/dashboard/exams/ati/comprehensive-predictor",
   },
 ];

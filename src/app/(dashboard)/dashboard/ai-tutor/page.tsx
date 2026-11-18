@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import type { FormEvent } from "react";
 import {
-  ArrowDown,
-  ArrowLeft,
   ArrowRight,
   Bot,
   Check,
@@ -46,7 +45,8 @@ const STORAGE_KEY = "qbanknurse-ai-tutor-conversations";
 const suggestions = [
   {
     title: "Understand pharmacology",
-    prompt: "Explain the difference between pharmacokinetics and pharmacodynamics.",
+    prompt:
+      "Explain the difference between pharmacokinetics and pharmacodynamics.",
     icon: Stethoscope,
   },
   {
@@ -56,12 +56,14 @@ const suggestions = [
   },
   {
     title: "Clinical judgment",
-    prompt: "Explain the nursing process and how to prioritize patient care.",
+    prompt:
+      "Explain the nursing process and how to prioritize patient care.",
     icon: GraduationCap,
   },
   {
     title: "Exam preparation",
-    prompt: "Give me a simple strategy for answering NCLEX-style questions.",
+    prompt:
+      "Give me a simple strategy for answering NCLEX-style questions.",
     icon: Lightbulb,
   },
 ];
@@ -140,18 +142,23 @@ When prioritizing care, assess the patient's condition and identify immediate th
 Try this approach:
 
 **1. Read the final sentence first.**
+
 Understand exactly what the question is asking.
 
 **2. Identify the clinical problem.**
+
 Look for important symptoms, vital signs and changes in patient condition.
 
 **3. Determine the priority.**
+
 Consider immediate safety risks and the patient's most urgent needs.
 
 **4. Evaluate every option.**
+
 Don't choose an answer simply because it sounds familiar. Ask whether it directly addresses the problem.
 
 **5. Review your reasoning.**
+
 After answering, understand why the correct answer is appropriate and why the alternatives are less appropriate.
 
 **Remember:** The goal is not simply to memorize facts. It is to apply nursing knowledge to clinical situations.`,
@@ -268,14 +275,10 @@ function generateTutorResponse(
   const normalized = question.toLowerCase();
 
   const match = topicResponses.find((item) =>
-    item.keywords.some((keyword) =>
-      normalized.includes(keyword),
-    ),
+    item.keywords.some((keyword) => normalized.includes(keyword)),
   );
 
-  if (match) {
-    return match.response;
-  }
+  if (match) return match.response;
 
   return `## Let's explore ${subject}
 
@@ -379,7 +382,9 @@ export default function AiTutorPage() {
     setShowHistory(false);
   };
 
-  const selectConversation = (conversation: TutorConversation) => {
+  const selectConversation = (
+    conversation: TutorConversation,
+  ) => {
     setActiveId(conversation.id);
     setSelectedSubject(conversation.subject);
     setShowHistory(false);
@@ -504,7 +509,7 @@ export default function AiTutorPage() {
     }, 900);
   };
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
     sendMessage();
   };
@@ -512,41 +517,45 @@ export default function AiTutorPage() {
   const isEmpty = messages.length === 0;
 
   return (
-    <div className="dashboard-content mx-auto flex w-full min-w-0 max-w-[1440px] flex-col gap-6 px-4 py-5 sm:px-6 lg:px-8">
+    <div className="dashboard-content mx-auto flex w-full min-w-0 max-w-[1500px] flex-col gap-6 px-5 pb-8 pt-6 sm:px-7 lg:px-9">
+      {/* HERO */}
+      <section className="relative min-h-[165px] overflow-hidden rounded-2xl bg-gradient-to-br from-[#17263F] via-[#202C50] to-[#30245F] px-5 py-6 sm:px-8 lg:px-11">
+        <div className="pointer-events-none absolute -right-20 -top-24 h-72 w-72 rounded-full border border-white/10" />
+        <div className="pointer-events-none absolute -right-10 -top-12 h-56 w-56 rounded-full border border-white/10" />
+        <div className="pointer-events-none absolute -right-12 top-8 h-56 w-56 rounded-full bg-[#8B5CF6]/20 blur-3xl" />
 
-      {/* PAGE HEADER */}
-      <section className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <div className="mb-2 flex items-center gap-2 text-xs font-bold text-[#5B3DF5]">
-            <Sparkles size={15} />
-            YOUR PERSONAL STUDY ASSISTANT
+        <div className="relative flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
+          <div className="max-w-2xl">
+            <div className="mb-2 flex items-center gap-2 text-xs font-bold tracking-[0.16em] text-[#B9A9FF]">
+              <Sparkles size={15} />
+              YOUR PERSONAL STUDY ASSISTANT
+            </div>
+
+            <h1 className="text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
+              AI Nursing Tutor
+            </h1>
+
+            <p className="mt-2 max-w-xl text-sm leading-6 text-white/65">
+              Explore nursing concepts, understand difficult topics
+              and strengthen your clinical knowledge.
+            </p>
           </div>
 
-          <h1 className="dashboard-heading text-3xl font-extrabold tracking-tight">
-            AI Nursing Tutor
-          </h1>
-
-          <p className="dashboard-muted mt-2 max-w-xl text-sm leading-6">
-            Explore nursing concepts, understand difficult topics
-            and strengthen your clinical knowledge.
-          </p>
+          <button
+            type="button"
+            onClick={startNewConversation}
+            className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-white px-5 text-sm font-bold text-[#30245F] shadow-sm transition hover:bg-[#E8DEFF]"
+          >
+            <Plus size={17} />
+            New conversation
+          </button>
         </div>
-
-        <button
-          type="button"
-          onClick={startNewConversation}
-          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#5B3DF5] px-5 text-sm font-bold text-white shadow-sm transition hover:bg-[#4930D0]"
-        >
-          <Plus size={17} />
-          New conversation
-        </button>
       </section>
 
       {/* MAIN TUTOR AREA */}
       <section className="dashboard-card flex min-h-[650px] flex-col overflow-hidden rounded-2xl lg:min-h-[720px]">
-
         {/* TOOLBAR */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--dashboard-border)] px-4 py-4 sm:px-6">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--dash-border)] px-4 py-4 sm:px-6">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#E8DEFF] text-[#5B3DF5]">
               <Bot size={22} />
@@ -567,7 +576,7 @@ export default function AiTutorPage() {
             <button
               type="button"
               onClick={() => setShowHistory(true)}
-              className="dashboard-heading inline-flex min-h-10 items-center gap-2 rounded-xl border border-[var(--dashboard-border)] px-3 text-xs font-semibold transition hover:border-[#5B3DF5]"
+              className="dashboard-heading inline-flex min-h-10 items-center gap-2 rounded-xl border border-[var(--dash-border)] px-3 text-xs font-semibold transition hover:border-[#5B3DF5]"
             >
               <Clock size={15} />
               History
@@ -577,7 +586,7 @@ export default function AiTutorPage() {
               type="button"
               onClick={startNewConversation}
               aria-label="Start a new conversation"
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--dashboard-border)] text-[#5B3DF5] transition hover:bg-[#E8DEFF]"
+              className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--dash-border)] text-[#5B3DF5] transition hover:bg-[#E8DEFF]"
             >
               <Plus size={19} />
             </button>
@@ -585,19 +594,22 @@ export default function AiTutorPage() {
         </div>
 
         {/* SUBJECT SELECTOR */}
-        <div className="relative border-b border-[var(--dashboard-border)] px-4 py-3 sm:px-6">
+        <div className="relative border-b border-[var(--dash-border)] px-4 py-3 sm:px-6">
           <button
             type="button"
             onClick={() => setShowSubjects((previous) => !previous)}
             className="dashboard-heading inline-flex min-h-10 items-center gap-2 rounded-xl bg-[var(--dash-surface-soft)] px-3 text-xs font-semibold transition hover:text-[#5B3DF5]"
           >
-            <GraduationCap size={16} className="text-[#5B3DF5]" />
+            <GraduationCap
+              size={16}
+              className="text-[#5B3DF5]"
+            />
             {selectedSubject}
             <ChevronDown size={15} />
           </button>
 
           {showSubjects && (
-            <div className="dashboard-card absolute left-4 top-full z-30 mt-2 max-h-72 w-[min(320px,calc(100vw-48px))] overflow-y-auto rounded-xl border border-[var(--dashboard-border)] p-2 shadow-xl sm:left-6">
+            <div className="dashboard-card absolute left-4 top-full z-30 mt-2 max-h-72 w-[min(320px,calc(100vw-48px))] overflow-y-auto rounded-xl border border-[var(--dash-border)] p-2 shadow-xl sm:left-6">
               <button
                 type="button"
                 onClick={() => updateSubject("General Nursing")}
@@ -616,7 +628,10 @@ export default function AiTutorPage() {
                   {subject.title}
 
                   {selectedSubject === subject.title && (
-                    <Check size={15} className="text-[#5B3DF5]" />
+                    <Check
+                      size={15}
+                      className="text-[#5B3DF5]"
+                    />
                   )}
                 </button>
               ))}
@@ -626,10 +641,8 @@ export default function AiTutorPage() {
 
         {/* CHAT CONTENT */}
         <div className="relative flex-1 overflow-y-auto px-4 py-6 sm:px-6 lg:px-10">
-
           {isEmpty ? (
             <div className="mx-auto flex min-h-[450px] max-w-3xl flex-col items-center justify-center py-8 text-center">
-
               <div className="relative mb-6">
                 <div className="absolute inset-0 rounded-3xl bg-[#5B3DF5]/15 blur-2xl" />
 
@@ -716,7 +729,9 @@ export default function AiTutorPage() {
 
                   <div
                     className={`min-w-0 max-w-[88%] sm:max-w-[82%] ${
-                      message.role === "user" ? "text-right" : ""
+                      message.role === "user"
+                        ? "text-right"
+                        : ""
                     }`}
                   >
                     <div className="dashboard-muted mb-2 flex items-center gap-2 text-[10px]">
@@ -772,12 +787,12 @@ export default function AiTutorPage() {
         </div>
 
         {/* MESSAGE INPUT */}
-        <div className="border-t border-[var(--dashboard-border)] bg-[var(--dash-surface)] px-4 py-4 sm:px-6 lg:px-10">
+        <div className="border-t border-[var(--dash-border)] bg-[var(--dash-surface)] px-4 py-4 sm:px-6 lg:px-10">
           <form
             onSubmit={handleSubmit}
             className="mx-auto max-w-3xl"
           >
-            <div className="dashboard-card flex items-end gap-2 rounded-2xl border border-[var(--dashboard-border)] p-2 shadow-sm transition focus-within:border-[#5B3DF5]/60 focus-within:shadow-[0_0_0_3px_rgba(91,61,245,0.08)]">
+            <div className="dashboard-card flex items-end gap-2 rounded-2xl border border-[var(--dash-border)] p-2 shadow-sm transition focus-within:border-[#5B3DF5]/60 focus-within:shadow-[0_0_0_3px_rgba(91,61,245,0.08)]">
               <textarea
                 ref={textareaRef}
                 value={input}
@@ -821,23 +836,23 @@ export default function AiTutorPage() {
       </section>
 
       {/* DEMO NOTICE */}
-      <div className="flex items-start gap-3 rounded-2xl border border-blue-200 bg-black-50 p-4 dark:border-red-900 dark:bg-black-950/30">
+      <div className="flex items-start gap-3 rounded-2xl border border-blue-200 bg-blue-50/70 p-4 dark:border-blue-900 dark:bg-blue-950/30">
         <Lightbulb
           size={19}
-          className="mt-0.5 shrink-0 text-black-600 dark:text-black-300"
+          className="mt-0.5 shrink-0 text-blue-600 dark:text-blue-300"
         />
 
         <div>
-          <p className="text-xs font-bold text-blue-900 dark:text-black-200">
+          <p className="text-xs font-bold text-blue-900 dark:text-blue-200">
             AI Tutor demonstration
           </p>
 
-          <p className="mt-1 text-xs leading-6 text-blue-800 dark:text-black-300">
-            This version uses predefined educational responses and
-            stores conversations in your browser. It is not connected
-            to a live AI model. Always verify clinical information
-            against current nursing references and institutional
-            protocols.
+          <p className="mt-1 text-xs leading-6 text-blue-800 dark:text-blue-300">
+            This version uses predefined educational responses
+            and stores conversations in your browser. It is not
+            connected to a live AI model. Always verify clinical
+            information against current nursing references and
+            institutional protocols.
           </p>
         </div>
       </div>
@@ -852,8 +867,8 @@ export default function AiTutorPage() {
             className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"
           />
 
-          <aside className="dashboard-card relative flex h-full w-full max-w-md flex-col border-l border-[var(--dashboard-border)] shadow-2xl">
-            <div className="flex items-center justify-between border-b border-[var(--dashboard-border)] p-5">
+          <aside className="dashboard-card relative flex h-full w-full max-w-md flex-col border-l border-[var(--dash-border)] shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[var(--dash-border)] p-5">
               <div>
                 <h3 className="dashboard-heading text-lg font-bold">
                   Conversation history
@@ -891,7 +906,7 @@ export default function AiTutorPage() {
                     className={`group flex items-center gap-2 rounded-xl border p-3 transition ${
                       activeId === conversation.id
                         ? "border-[#5B3DF5]/40 bg-[#E8DEFF]/40"
-                        : "border-[var(--dashboard-border)] hover:border-[#5B3DF5]/30"
+                        : "border-[var(--dash-border)] hover:border-[#5B3DF5]/30"
                     }`}
                   >
                     <button
@@ -959,7 +974,9 @@ function TutorMessageContent({
       {lines.map((line, index) => {
         const trimmed = line.trim();
 
-        if (!trimmed) return <div key={index} className="h-1" />;
+        if (!trimmed) {
+          return <div key={index} className="h-1" />;
+        }
 
         if (trimmed.startsWith("## ")) {
           return (
@@ -972,7 +989,10 @@ function TutorMessageContent({
           );
         }
 
-        if (trimmed.startsWith("**") && trimmed.endsWith("**")) {
+        if (
+          trimmed.startsWith("**") &&
+          trimmed.endsWith("**")
+        ) {
           return (
             <p
               key={index}
@@ -992,17 +1012,16 @@ function TutorMessageContent({
           );
         }
 
-        if (/^\d+\./.test(trimmed)) {
+        const numberedMatch = trimmed.match(/^(\d+\.)\s*(.*)$/);
+
+        if (numberedMatch) {
           return (
             <div key={index} className="flex gap-2 pl-1">
-              <span className="font-bold text-[#5B3DF5]">
-                {trimmed.match(/^\d+\./)?.[0]}
+              <span className="shrink-0 font-bold text-[#5B3DF5]">
+                {numberedMatch[1]}
               </span>
-              <p>
-                {formatInlineText(
-                  trimmed.replace(/^\d+\.\s*/, ""),
-                )}
-              </p>
+
+              <p>{formatInlineText(numberedMatch[2])}</p>
             </div>
           );
         }
@@ -1021,7 +1040,10 @@ function formatInlineText(text: string) {
   const parts = text.split(/(\*\*.*?\*\*)/g);
 
   return parts.map((part, index) => {
-    if (part.startsWith("**") && part.endsWith("**")) {
+    if (
+      part.startsWith("**") &&
+      part.endsWith("**")
+    ) {
       return (
         <strong
           key={index}

@@ -32,9 +32,9 @@ function getSubjectSlug(title: string) {
 }
 
 function getSubjectPracticeCount(slug: string) {
-  return practiceQuestions[
-    slug as keyof typeof practiceQuestions
-  ]?.length ?? 0;
+  return (
+    practiceQuestions[slug as keyof typeof practiceQuestions]?.length ?? 0
+  );
 }
 
 export default function SubjectsPage() {
@@ -118,85 +118,91 @@ export default function SubjectsPage() {
     setSavedSubjectIds(updatedSavedIds);
   };
 
+  const clearFilters = () => {
+    setSearch("");
+    setFilter("all");
+  };
+
   return (
-    <div className="dashboard-content mx-auto w-full min-w-0 max-w-[1440px] space-y-8 px-4 py-5 sm:px-6 lg:px-8">
+    <div className="dashboard-content mx-auto w-full min-w-0 max-w-[1500px] space-y-6 px-5 pb-8 pt-6 sm:px-7 lg:px-9">
 
-      {/* PAGE INTRODUCTION */}
-      <section className="mx-auto max-w-3xl text-center">
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#E8DEFF] text-[#5B3DF5]">
-          <GraduationCap size={27} />
+      {/* HERO */}
+      <section className="relative isolate min-h-[165px] overflow-hidden rounded-2xl bg-gradient-to-br from-[#17263F] via-[#202C50] to-[#30245F] px-5 py-6 sm:px-8 lg:px-11">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute -right-16 -top-28 h-72 w-72 rounded-full border border-white/[0.06]" />
+          <div className="absolute -right-8 -top-20 h-56 w-56 rounded-full border border-white/[0.08]" />
+          <div className="absolute right-16 top-10 h-32 w-32 rounded-full bg-[#8B5CF6]/15 blur-3xl" />
+          <div className="absolute bottom-0 left-1/3 h-32 w-32 rounded-full bg-[#5B3DF5]/10 blur-3xl" />
         </div>
 
-        <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-[#5B3DF5]/15 bg-[#E8DEFF]/50 px-3 py-1.5 text-[11px] font-bold text-[#5B3DF5]">
-          <Sparkles size={13} />
-          YOUR LEARNING LIBRARY
+        <div className="relative flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
+          <div>
+            <div className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-[#B9A9FF]">
+              <GraduationCap size={15} />
+              Your learning library
+            </div>
+
+            <h1 className="text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
+              Explore All Subjects
+            </h1>
+
+            <p className="mt-2 max-w-xl text-sm leading-6 text-white/60">
+              Explore nursing subjects, discover important study topics,
+              and build your confidence one subject at a time.
+            </p>
+          </div>
+
+          <div className="flex shrink-0 items-center gap-3 rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 backdrop-blur-sm">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#B9A9FF]/15 text-[#B9A9FF]">
+              <BookOpen size={20} />
+            </div>
+
+            <div>
+              <p className="text-xs font-semibold text-white/60">
+                Your subject library
+              </p>
+              <p className="mt-1 text-sm font-bold text-white">
+                {subjects.length} subjects to explore
+              </p>
+            </div>
+          </div>
         </div>
-
-        <h1 className="dashboard-heading text-3xl font-extrabold tracking-tight sm:text-4xl">
-          Explore All Subjects
-        </h1>
-
-        <p className="dashboard-muted mx-auto mt-3 max-w-2xl text-sm leading-7 sm:text-base">
-          Explore nursing subjects, discover important study topics,
-          and build your confidence one subject at a time.
-        </p>
       </section>
 
       {/* OVERVIEW STATS */}
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="dashboard-card flex items-center gap-4 rounded-2xl p-5">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#E8DEFF] text-[#5B3DF5]">
-            <Layers3 size={22} />
-          </div>
+        <SummaryCard
+          icon={<Layers3 size={21} />}
+          label="Total subjects"
+          value={subjects.length.toString()}
+          detail="Across your learning catalogue"
+          iconClass="bg-[#E8DEFF] text-[#5B3DF5]"
+        />
 
-          <div>
-            <p className="dashboard-muted text-xs font-medium">
-              Total subjects
-            </p>
-            <p className="dashboard-heading mt-1 text-2xl font-extrabold">
-              {subjects.length}
-            </p>
-          </div>
-        </div>
+        <SummaryCard
+          icon={<CheckCircle2 size={21} />}
+          label="Available for practice"
+          value={availableCount.toString()}
+          detail="Subjects with practice questions"
+          iconClass="bg-emerald-50 text-emerald-600"
+        />
 
-        <div className="dashboard-card flex items-center gap-4 rounded-2xl p-5">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
-            <CheckCircle2 size={22} />
-          </div>
-
-          <div>
-            <p className="dashboard-muted text-xs font-medium">
-              Available practice subjects
-            </p>
-            <p className="dashboard-heading mt-1 text-2xl font-extrabold">
-              {availableCount}
-            </p>
-          </div>
-        </div>
-
-        <div className="dashboard-card flex items-center gap-4 rounded-2xl p-5">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-            <BookOpen size={22} />
-          </div>
-
-          <div>
-            <p className="dashboard-muted text-xs font-medium">
-              Catalogue questions
-            </p>
-            <p className="dashboard-heading mt-1 text-2xl font-extrabold">
-              {totalQuestions.toLocaleString()}
-            </p>
-          </div>
-        </div>
+        <SummaryCard
+          icon={<BookOpen size={21} />}
+          label="Catalogue questions"
+          value={totalQuestions.toLocaleString()}
+          detail="Questions across all subjects"
+          iconClass="bg-blue-50 text-blue-600"
+        />
       </section>
 
       {/* SEARCH AND FILTERS */}
-      <section className="space-y-5">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-
+      <section className="dashboard-card rounded-2xl p-5 sm:p-6">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+          {/* Search */}
           <div className="relative w-full lg:max-w-md">
             <Search
-              size={18}
+              size={17}
               className="dashboard-muted absolute left-4 top-1/2 -translate-y-1/2"
             />
 
@@ -209,10 +215,11 @@ export default function SubjectsPage() {
             />
           </div>
 
+          {/* Filters */}
           <div className="flex flex-wrap items-center gap-2">
             <span className="dashboard-muted mr-1 inline-flex items-center gap-2 text-xs font-semibold">
               <SlidersHorizontal size={15} />
-              Filter:
+              Filter
             </span>
 
             {[
@@ -232,7 +239,7 @@ export default function SubjectsPage() {
                   className={`rounded-xl border px-4 py-2.5 text-xs font-bold transition ${
                     active
                       ? "border-[#5B3DF5] bg-[#5B3DF5] text-white shadow-sm"
-                      : "dashboard-heading border-[var(--dashboard-border)] hover:border-[#5B3DF5] hover:text-[#5B3DF5]"
+                      : "dashboard-heading border-[var(--dash-border)] hover:border-[#5B3DF5] hover:text-[#5B3DF5]"
                   }`}
                 >
                   {option.label}
@@ -242,28 +249,37 @@ export default function SubjectsPage() {
           </div>
         </div>
 
-        {/* RESULTS COUNT */}
-        <div className="flex flex-wrap items-center justify-between gap-2">
+        {/* RESULTS INFORMATION */}
+        <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--dash-border)] pt-5">
           <div>
-            <h2 className="dashboard-heading text-lg font-bold">
-              Nursing Subjects
-            </h2>
+            <div className="flex items-center gap-2">
+              <h2 className="dashboard-heading text-lg font-bold">
+                Nursing Subjects
+              </h2>
+
+              <span className="dashboard-count-badge">
+                {filteredSubjects.length}
+              </span>
+            </div>
 
             <p className="dashboard-muted mt-1 text-xs">
               Showing {filteredSubjects.length} of {subjects.length} subjects
             </p>
           </div>
 
-          <p className="dashboard-muted text-xs">
-            {savedSubjectIds.length} saved topics
-          </p>
+          <div className="flex items-center gap-2 rounded-lg bg-[#E8DEFF]/50 px-3 py-2">
+            <BookmarkCheck size={14} className="text-[#5B3DF5]" />
+
+            <span className="text-xs font-semibold text-[#5B3DF5]">
+              {savedSubjectIds.length} saved topics
+            </span>
+          </div>
         </div>
       </section>
 
       {/* SUBJECT GRID */}
       {filteredSubjects.length > 0 ? (
         <section className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
-
           {filteredSubjects.map((subject) => {
             const isSaved = savedSubjectIds.includes(
               String(subject.id),
@@ -272,11 +288,11 @@ export default function SubjectsPage() {
             return (
               <article
                 key={subject.id}
-                className="dashboard-card group flex min-h-[300px] flex-col rounded-2xl p-5 transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(91,61,245,0.09)]"
+                className="dashboard-card group flex min-h-[290px] flex-col rounded-2xl p-5 transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(91,61,245,0.09)]"
               >
-                {/* CARD TOP */}
+                {/* CARD HEADER */}
                 <div className="flex items-start justify-between gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#E8DEFF] text-[#5B3DF5]">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#E8DEFF] text-[#5B3DF5] transition group-hover:bg-[#5B3DF5] group-hover:text-white">
                     <BookOpen size={22} />
                   </div>
 
@@ -307,7 +323,7 @@ export default function SubjectsPage() {
                   </button>
                 </div>
 
-                {/* SUBJECT DETAILS */}
+                {/* SUBJECT INFORMATION */}
                 <div className="mt-5 flex-1">
                   <div className="mb-3 flex flex-wrap items-center gap-2">
                     <span className="rounded-lg border border-[#5B3DF5]/10 bg-[#E8DEFF]/60 px-2.5 py-1 text-[10px] font-bold text-[#4931B5]">
@@ -315,12 +331,20 @@ export default function SubjectsPage() {
                     </span>
 
                     <span
-                      className={`rounded-lg px-2.5 py-1 text-[10px] font-bold ${
+                      className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[10px] font-bold ${
                         subject.available
                           ? "bg-emerald-50 text-emerald-700"
                           : "bg-amber-50 text-amber-700"
                       }`}
                     >
+                      <span
+                        className={`h-1.5 w-1.5 rounded-full ${
+                          subject.available
+                            ? "bg-emerald-500"
+                            : "bg-amber-500"
+                        }`}
+                      />
+
                       {subject.available
                         ? "Practice available"
                         : "Coming soon"}
@@ -342,9 +366,11 @@ export default function SubjectsPage() {
                         size={14}
                         className="dashboard-muted"
                       />
+
                       <span className="dashboard-heading text-xs font-semibold">
                         {subject.questions.toLocaleString()}
                       </span>
+
                       <span className="dashboard-muted text-[11px]">
                         catalogue
                       </span>
@@ -355,6 +381,7 @@ export default function SubjectsPage() {
                         size={13}
                         className="fill-amber-400 text-amber-400"
                       />
+
                       <span className="dashboard-heading text-xs font-semibold">
                         {subject.rating.toFixed(1)}
                       </span>
@@ -372,7 +399,7 @@ export default function SubjectsPage() {
                 <div className="mt-5 grid grid-cols-2 gap-2">
                   <Link
                     href={`/dashboard/exams/ati/${subject.slug}`}
-                    className="dashboard-heading flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--dashboard-border)] px-3 text-xs font-bold transition hover:border-[#5B3DF5] hover:bg-[#E8DEFF]/40 hover:text-[#5B3DF5]"
+                    className="dashboard-heading flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--dash-border)] px-3 text-xs font-bold transition hover:border-[#5B3DF5] hover:bg-[#E8DEFF]/40 hover:text-[#5B3DF5]"
                   >
                     Explore
                     <ArrowRight size={14} />
@@ -390,7 +417,7 @@ export default function SubjectsPage() {
                     <button
                       type="button"
                       disabled
-                      className="flex min-h-11 cursor-not-allowed items-center justify-center gap-2 rounded-xl border border-[var(--dashboard-border)] px-3 text-xs font-bold opacity-45"
+                      className="flex min-h-11 cursor-not-allowed items-center justify-center gap-2 rounded-xl border border-[var(--dash-border)] px-3 text-xs font-bold opacity-45"
                     >
                       <Play size={14} />
                       Coming soon
@@ -402,6 +429,7 @@ export default function SubjectsPage() {
           })}
         </section>
       ) : (
+        /* EMPTY STATE */
         <section className="dashboard-card flex flex-col items-center justify-center rounded-2xl px-5 py-16 text-center">
           <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#E8DEFF] text-[#5B3DF5]">
             <Search size={25} />
@@ -418,10 +446,7 @@ export default function SubjectsPage() {
 
           <button
             type="button"
-            onClick={() => {
-              setSearch("");
-              setFilter("all");
-            }}
+            onClick={clearFilters}
             className="mt-5 rounded-xl bg-[#5B3DF5] px-5 py-3 text-xs font-bold text-white transition hover:bg-[#4930D0]"
           >
             Clear filters
@@ -430,8 +455,10 @@ export default function SubjectsPage() {
       )}
 
       {/* BOTTOM INFORMATION */}
-      <section className="rounded-2xl border border-[#5B3DF5]/15 bg-[#E8DEFF]/30 p-5 sm:p-6">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+      <section className="relative overflow-hidden rounded-2xl border border-[#5B3DF5]/15 bg-[#E8DEFF]/30 p-5 sm:p-6">
+        <div className="pointer-events-none absolute -right-10 -top-10 h-36 w-36 rounded-full border border-[#5B3DF5]/10" />
+
+        <div className="relative flex flex-col gap-3 sm:flex-row sm:items-center">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-[#5B3DF5]">
             <Sparkles size={21} />
           </div>
@@ -449,6 +476,46 @@ export default function SubjectsPage() {
           </div>
         </div>
       </section>
+    </div>
+  );
+}
+
+function SummaryCard({
+  icon,
+  label,
+  value,
+  detail,
+  iconClass,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  detail: string;
+  iconClass: string;
+}) {
+  return (
+    <div className="dashboard-card rounded-2xl p-5 transition hover:shadow-sm">
+      <div className="flex items-center gap-3">
+        <div
+          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${iconClass}`}
+        >
+          {icon}
+        </div>
+
+        <div className="min-w-0">
+          <p className="dashboard-muted text-xs font-medium">
+            {label}
+          </p>
+
+          <p className="dashboard-heading mt-1 text-xl font-extrabold">
+            {value}
+          </p>
+        </div>
+      </div>
+
+      <p className="dashboard-muted mt-4 text-[10px]">
+        {detail}
+      </p>
     </div>
   );
 }

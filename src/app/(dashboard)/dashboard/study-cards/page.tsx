@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import type { ReactNode } from "react";
+
 import {
   ArrowLeft,
   ArrowRight,
@@ -12,6 +14,7 @@ import {
   RotateCcw,
   RotateCw,
   Sparkles,
+  GraduationCap,
 } from "lucide-react";
 
 import {
@@ -256,113 +259,200 @@ export default function StudyCardsPage() {
     : false;
 
   return (
-    <div className="dashboard-content mx-auto w-full min-w-0 max-w-[1440px] space-y-8 px-4 py-2 sm:px-6 lg:px-8">
+    <main className="w-full pb-7">
 
-      {/* Page heading */}
-      <section className="mx-auto flex max-w-3xl flex-col items-center space-y-4 text-center">
-        <div className="flex items-center gap-2">
-          <div className="dashboard-accent-icon">
-            <BookOpen size={19} />
-          </div>
+      {/* =====================================================
+          FULL-WIDTH HERO
+      ===================================================== */}
 
-          <span className="dashboard-section-label">
+      <section className="relative isolate flex min-h-[165px] w-full items-center overflow-hidden bg-gradient-to-r from-[#17263F] via-[#202C50] to-[#30245F] px-5 py-6 text-white">
+
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_75%_50%,rgba(91,61,245,0.22),transparent_55%)]" />
+
+        <div className="pointer-events-none absolute -right-16 -top-24 h-64 w-64 rounded-full border border-white/[0.06]" />
+
+        <div className="pointer-events-none absolute -bottom-32 right-1/4 h-64 w-64 rounded-full border border-white/[0.05]" />
+
+        <div className="relative z-10 w-full max-w-4xl">
+
+          <span className="inline-flex items-center gap-2 text-[10px] font-extrabold tracking-[0.22em] text-[#B9A9FF]">
+            <GraduationCap size={13} />
             ACTIVE LEARNING
           </span>
-        </div>
 
-        <div className="space-y-3">
-          <h1 className="dashboard-heading text-3xl font-bold tracking-tight sm:text-4xl">
-            Study Cards
+          <h1 className="mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">
+            Master your nursing{" "}
+            <span className="text-[#B9A9FF]">
+              knowledge
+            </span>
           </h1>
 
-          <p className="dashboard-muted mx-auto max-w-2xl text-sm leading-7 sm:text-base">
-            Strengthen your nursing knowledge with interactive
-            study cards. Review important concepts, test your
-            memory and track what you have mastered.
+          <p className="mt-1.5 max-w-2xl text-sm leading-6 text-white/60">
+            Strengthen your nursing knowledge with interactive study cards.
+            Review important concepts, test your memory and track what
+            you have mastered.
           </p>
+
+          <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1.5 text-[11px] font-semibold text-white/70">
+            <span>{studyCards.length} study cards</span>
+            <span>{knownCount} mastered</span>
+            <span>{savedCount} saved for later</span>
+          </div>
+
         </div>
       </section>
 
-      {/* Progress overview */}
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard
-          label="Total cards"
-          value={studyCards.length}
-          icon={<BookOpen size={20} />}
-        />
+      {/* =====================================================
+          PAGE CONTENT
+      ===================================================== */}
 
-        <StatCard
-          label="Mastered"
-          value={knownCount}
-          icon={<CheckCircle2 size={20} />}
-        />
+      <div className="mx-auto w-full max-w-[1500px] space-y-6 px-5 pt-6 sm:px-7 lg:px-9">
 
-        <StatCard
-          label="Review again"
-          value={reviewCount}
-          icon={<RotateCcw size={20} />}
-        />
+        {/* =====================================================
+            PROGRESS STATISTICS
+        ===================================================== */}
 
-        <StatCard
-          label="Saved cards"
-          value={savedCount}
-          icon={<Bookmark size={20} />}
-        />
-      </section>
+        <section className="space-y-3">
 
-      {/* Learning progress */}
-      <section className="dashboard-card rounded-2xl p-5 sm:p-6">
-        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
           <div>
-            <h2 className="dashboard-heading font-bold">
-              Your learning progress
+            <p className="dashboard-section-label">
+              YOUR LEARNING ACTIVITY
+            </p>
+
+            <h2 className="dashboard-heading mt-1 text-xl font-extrabold">
+              Learning overview
             </h2>
 
             <p className="dashboard-muted mt-1 text-sm">
-              Cards you have marked as mastered.
+              Track your progress as you master important nursing concepts.
             </p>
           </div>
 
-          <span className="dashboard-heading text-2xl font-bold">
-            {progressPercentage}%
-          </span>
-        </div>
+          <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
 
-        <div className="mt-5 h-3 overflow-hidden rounded-full bg-violet-100">
-          <div
-            className="h-full rounded-full bg-[#5B3DF5] transition-all duration-500"
-            style={{
-              width: `${progressPercentage}%`,
-            }}
-          />
-        </div>
+            <StatCard
+              label="Total cards"
+              value={studyCards.length}
+              icon={<BookOpen size={19} />}
+            />
 
-        <div className="dashboard-muted mt-3 flex justify-between text-xs">
-          <span>{knownCount} mastered</span>
-          <span>{studyCards.length - knownCount} remaining</span>
-        </div>
-      </section>
+            <StatCard
+              label="Mastered"
+              value={knownCount}
+              icon={<CheckCircle2 size={19} />}
+              accent="green"
+            />
 
-      {/* Filters and collection */}
-      <section className="dashboard-card space-y-5 rounded-2xl p-5 sm:p-6">
-        <div>
-          <h2 className="dashboard-heading font-bold">
-            Your Study Cards collection
-          </h2>
+            <StatCard
+              label="Review again"
+              value={reviewCount}
+              icon={<RotateCcw size={19} />}
+              accent="orange"
+            />
 
-          <p className="dashboard-muted mt-1 text-sm">
-            Choose a subject and learning mode.
-          </p>
-        </div>
+            <StatCard
+              label="Saved cards"
+              value={savedCount}
+              icon={<Bookmark size={19} />}
+              accent="purple"
+            />
 
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <div className="relative flex-1">
+          </div>
+        </section>
+
+        {/* =====================================================
+            LEARNING PROGRESS
+        ===================================================== */}
+
+        <section className="dashboard-card rounded-xl border border-[var(--dashboard-border)] p-4 sm:p-5">
+
+          <div className="flex flex-wrap items-center justify-between gap-3">
+
+            <div>
+              <div className="flex items-center gap-2">
+                <div className="dashboard-accent-icon !h-9 !w-9">
+                  <Sparkles size={17} />
+                </div>
+
+                <h2 className="dashboard-heading text-base font-extrabold">
+                  Your learning progress
+                </h2>
+              </div>
+
+              <p className="dashboard-muted mt-2 text-xs sm:text-sm">
+                Cards you have marked as mastered.
+              </p>
+            </div>
+
+            <span className="text-2xl font-extrabold tracking-tight text-[#5B3DF5]">
+              {progressPercentage}%
+            </span>
+
+          </div>
+
+          <div className="mt-5 h-3 overflow-hidden rounded-full bg-violet-100">
+            <div
+              className="h-full rounded-full bg-[#5B3DF5] transition-all duration-500"
+              style={{
+                width: `${progressPercentage}%`,
+              }}
+            />
+          </div>
+
+          <div className="dashboard-muted mt-3 flex justify-between text-[11px] font-medium sm:text-xs">
+            <span>{knownCount} mastered</span>
+            <span>{studyCards.length - knownCount} remaining</span>
+          </div>
+
+        </section>
+
+        {/* =====================================================
+            FILTERS AND COLLECTION
+        ===================================================== */}
+
+        <section className="space-y-4 border-t border-[var(--dashboard-border)] pt-5">
+
+          <div className="flex flex-wrap items-center justify-between gap-3">
+
+            <div>
+              <p className="dashboard-section-label">
+                ORGANIZE YOUR LEARNING
+              </p>
+
+              <h2 className="dashboard-heading mt-1 text-xl font-extrabold">
+                Study Cards collection
+              </h2>
+
+              <p className="dashboard-muted mt-1 text-sm">
+                Choose a subject and select your learning mode.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={resetProgress}
+              className="dashboard-card dashboard-heading inline-flex min-h-9 items-center gap-2 rounded-lg border border-[var(--dashboard-border)] px-3 py-2 text-xs font-semibold transition hover:border-[#5B3DF5] hover:text-[#5B3DF5]"
+            >
+              <RotateCcw size={14} />
+              Reset progress
+            </button>
+
+          </div>
+
+          {/* SUBJECT SELECTOR */}
+
+          <div className="relative max-w-md">
+
+            <div className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2">
+              <BookOpen size={16} className="dashboard-muted" />
+            </div>
+
             <select
               value={selectedSubject}
               onChange={(event) =>
                 changeSubject(event.target.value)
               }
-              className="dashboard-search h-12 w-full appearance-none rounded-xl px-4 pr-10 text-sm outline-none"
+              className="dashboard-search dashboard-heading h-11 w-full appearance-none rounded-xl border border-[var(--dashboard-border)] pl-11 pr-10 text-sm outline-none transition focus:border-[#5B3DF5]"
             >
               {studyCardSubjects.map((subject) => (
                 <option key={subject} value={subject}>
@@ -375,303 +465,395 @@ export default function StudyCardsPage() {
               size={16}
               className="dashboard-muted pointer-events-none absolute right-4 top-1/2 -translate-y-1/2"
             />
+
           </div>
 
-          <button
-            type="button"
-            onClick={resetProgress}
-            className="dashboard-search flex h-12 items-center justify-center gap-2 rounded-xl px-4 text-sm font-medium transition hover:opacity-80"
-          >
-            <RotateCcw size={16} />
-            Reset progress
-          </button>
-        </div>
+          {/* FILTER PILLS */}
 
-        <div className="flex flex-wrap gap-2">
-          <FilterButton
-            active={activeFilter === "all"}
-            onClick={() => changeFilter("all")}
-          >
-            All cards ({studyCards.length})
-          </FilterButton>
+          <div className="flex flex-wrap items-center gap-2">
 
-          <FilterButton
-            active={activeFilter === "review"}
-            onClick={() => changeFilter("review")}
-          >
-            Review again ({reviewCount})
-          </FilterButton>
+            <FilterButton
+              active={activeFilter === "all"}
+              onClick={() => changeFilter("all")}
+            >
+              All cards ({studyCards.length})
+            </FilterButton>
 
-          <FilterButton
-            active={activeFilter === "saved"}
-            onClick={() => changeFilter("saved")}
-          >
-            Saved ({savedCount})
-          </FilterButton>
-        </div>
-      </section>
+            <FilterButton
+              active={activeFilter === "review"}
+              onClick={() => changeFilter("review")}
+            >
+              <RotateCcw size={13} />
+              Review again ({reviewCount})
+            </FilterButton>
 
-      {/* Flashcard workspace */}
-      <section className="mx-auto w-full max-w-3xl space-y-5">
-        {currentCard ? (
-          <>
-            {/* Card information */}
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <p className="dashboard-muted text-sm">
-                  Card {currentIndex + 1} of {filteredCards.length}
-                </p>
+            <FilterButton
+              active={activeFilter === "saved"}
+              onClick={() => changeFilter("saved")}
+            >
+              <Bookmark size={13} />
+              Saved ({savedCount})
+            </FilterButton>
 
-                <h3 className="dashboard-heading mt-1 font-semibold">
-                  {currentCard.topic}
-                </h3>
-              </div>
+          </div>
 
-              <span className="rounded-full bg-violet-100 px-3 py-1.5 text-xs font-semibold text-violet-700">
-                {currentCard.subject}
-              </span>
+        </section>
+
+        {/* =====================================================
+            FLASHCARD WORKSPACE
+        ===================================================== */}
+
+        <section className="space-y-4 border-t border-[var(--dashboard-border)] pt-5">
+
+          <div className="flex flex-wrap items-center justify-between gap-3">
+
+            <div>
+              <p className="dashboard-section-label">
+                TEST YOUR KNOWLEDGE
+              </p>
+
+              <h2 className="dashboard-heading mt-1 text-xl font-extrabold">
+                Interactive flashcards
+              </h2>
+
+              <p className="dashboard-muted mt-1 text-sm">
+                Reveal answers, review explanations and track mastery.
+              </p>
             </div>
 
-            {/* Flip card */}
-            <button
-              type="button"
-              onClick={() =>
-                setIsFlipped((value) => !value)
-              }
-              className="group w-full text-left"
-              aria-label={
-                isFlipped
-                  ? "Show study card question"
-                  : "Reveal study card answer"
-              }
-            >
-              <div
-                className="relative min-h-[340px] w-full rounded-3xl transition-transform duration-500 [transform-style:preserve-3d]"
-                style={{
-                  transform: isFlipped
-                    ? "rotateY(180deg)"
-                    : "rotateY(0deg)",
-                }}
-              >
-                {/* Front */}
-                <div className="dashboard-card absolute inset-0 flex flex-col items-center justify-center rounded-3xl border border-violet-200 bg-white p-7 text-center shadow-sm [backface-visibility:hidden] sm:p-12">
-                  <span className="mb-6 rounded-full bg-violet-100 px-4 py-2 text-xs font-bold uppercase tracking-wider text-violet-700">
-                    Question
-                  </span>
+            {currentCard && (
+              <span className="dashboard-count-badge">
+                {currentIndex + 1} of {filteredCards.length} cards
+              </span>
+            )}
 
-                  <h2 className="dashboard-heading max-w-xl text-xl font-bold leading-relaxed sm:text-2xl">
-                    {currentCard.question}
-                  </h2>
+          </div>
 
-                  <div className="dashboard-muted mt-9 flex items-center gap-2 text-sm">
-                    <RotateCw size={16} />
-                    Click to reveal answer
-                  </div>
-                </div>
+          {currentCard ? (
+            <div className="mx-auto w-full max-w-4xl space-y-5">
 
-                {/* Back */}
-                <div className="dashboard-card absolute inset-0 flex flex-col items-center justify-center rounded-3xl border border-violet-200 bg-violet-50 p-7 text-center shadow-sm [backface-visibility:hidden] sm:p-12 [transform:rotateY(180deg)]">
-                  <span className="mb-6 rounded-full bg-emerald-100 px-4 py-2 text-xs font-bold uppercase tracking-wider text-emerald-700">
-                    Answer
-                  </span>
+              {/* CARD INFORMATION */}
 
-                  <h2 className="dashboard-heading max-w-xl text-xl font-bold leading-relaxed sm:text-2xl">
-                    {currentCard.answer}
-                  </h2>
+              <div className="flex flex-wrap items-center justify-between gap-3">
 
-                  <div className="mt-7 max-w-xl rounded-xl border border-violet-200 bg-white p-4 text-left">
-                    <p className="text-xs font-bold uppercase tracking-wider text-violet-700">
-                      Why it matters
-                    </p>
-
-                    <p className="dashboard-muted mt-2 text-sm leading-6">
-                      {currentCard.explanation}
-                    </p>
-                  </div>
-
-                  <p className="dashboard-muted mt-5 text-xs">
-                    Click to see the question again
+                <div>
+                  <p className="dashboard-muted text-xs font-medium">
+                    CURRENT TOPIC
                   </p>
-                </div>
-              </div>
-            </button>
 
-            {/* Flip and save actions */}
-            <div className="flex flex-wrap justify-center gap-3">
+                  <h3 className="dashboard-heading mt-1 text-sm font-extrabold sm:text-base">
+                    {currentCard.topic}
+                  </h3>
+                </div>
+
+                <span className="rounded-full bg-[#E8DEFF] px-3 py-1.5 text-[10px] font-bold text-[#392576]">
+                  {currentCard.subject}
+                </span>
+
+              </div>
+
+              {/* FLIP CARD */}
+
               <button
                 type="button"
                 onClick={() =>
                   setIsFlipped((value) => !value)
                 }
-                className="dashboard-search flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold transition hover:opacity-80"
+                className="group block w-full text-left"
+                aria-label={
+                  isFlipped
+                    ? "Show study card question"
+                    : "Reveal study card answer"
+                }
               >
-                <RotateCw size={16} />
-                {isFlipped ? "Show question" : "Reveal answer"}
-              </button>
+                <div
+                  className="relative min-h-[340px] w-full rounded-xl transition-transform duration-500 [transform-style:preserve-3d]"
+                  style={{
+                    transform: isFlipped
+                      ? "rotateY(180deg)"
+                      : "rotateY(0deg)",
+                  }}
+                >
 
-              <button
-                type="button"
-                onClick={toggleSaved}
-                className={`flex items-center gap-2 rounded-xl border px-5 py-3 text-sm font-semibold transition ${
-                  isSaved
-                    ? "border-violet-300 bg-violet-100 text-violet-700"
-                    : "dashboard-search"
-                }`}
-              >
-                <Bookmark
-                  size={16}
-                  fill={isSaved ? "currentColor" : "none"}
-                />
+                  {/* FRONT */}
 
-                {isSaved ? "Saved" : "Save card"}
-              </button>
-            </div>
+                  <div className="dashboard-card absolute inset-0 flex flex-col items-center justify-center overflow-y-auto rounded-xl border border-[var(--dashboard-border)] bg-white p-6 text-center shadow-sm [backface-visibility:hidden] sm:p-12">
 
-            {/* Learning actions */}
-            {isFlipped && (
-              <div className="dashboard-card rounded-2xl p-5">
-                <p className="dashboard-heading text-center text-sm font-bold">
-                  How well did you know this?
-                </p>
+                    <div className="dashboard-accent-icon mb-6 !h-12 !w-12">
+                      <BookOpen size={21} />
+                    </div>
 
-                <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                  <button
-                    type="button"
-                    onClick={() => updateStatus("review")}
-                    className="flex items-center justify-center gap-2 rounded-xl border border-orange-200 bg-orange-50 px-4 py-3 text-sm font-semibold text-orange-700 transition hover:bg-orange-100"
-                  >
-                    <RotateCcw size={17} />
-                    Review Again
-                  </button>
+                    <span className="mb-5 rounded-full bg-[#E8DEFF] px-4 py-2 text-[10px] font-extrabold uppercase tracking-widest text-[#392576]">
+                      Question
+                    </span>
 
-                  <button
-                    type="button"
-                    onClick={() => updateStatus("known")}
-                    className="flex items-center justify-center gap-2 rounded-xl bg-[#5B3DF5] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#4930D1]"
-                  >
-                    <Check size={17} />
-                    Know It
-                  </button>
+                    <h2 className="dashboard-heading max-w-2xl text-xl font-extrabold leading-relaxed sm:text-2xl">
+                      {currentCard.question}
+                    </h2>
+
+                    <div className="dashboard-muted mt-8 flex items-center gap-2 text-xs font-medium">
+                      <RotateCw size={15} />
+                      Click anywhere to reveal answer
+                    </div>
+
+                  </div>
+
+                  {/* BACK */}
+
+                  <div className="dashboard-card absolute inset-0 flex flex-col items-center justify-center overflow-y-auto rounded-xl border border-[#8D79FF]/30 bg-[#F8F6FF] p-6 text-center shadow-sm [backface-visibility:hidden] sm:p-10 [transform:rotateY(180deg)]">
+
+                    <span className="mb-5 rounded-full bg-emerald-100 px-4 py-2 text-[10px] font-extrabold uppercase tracking-widest text-emerald-700">
+                      Answer
+                    </span>
+
+                    <h2 className="dashboard-heading max-w-2xl text-xl font-extrabold leading-relaxed sm:text-2xl">
+                      {currentCard.answer}
+                    </h2>
+
+                    <div className="mt-6 w-full max-w-2xl rounded-xl border border-[#8D79FF]/20 bg-white p-4 text-left">
+
+                      <p className="text-[10px] font-extrabold uppercase tracking-widest text-[#5B3DF5]">
+                        Why it matters
+                      </p>
+
+                      <p className="dashboard-muted mt-2 text-sm leading-6">
+                        {currentCard.explanation}
+                      </p>
+
+                    </div>
+
+                    <p className="dashboard-muted mt-5 text-xs">
+                      Click to see the question again
+                    </p>
+
+                  </div>
+
                 </div>
+              </button>
 
-                {isKnown && (
-                  <p className="mt-3 text-center text-xs font-medium text-emerald-600">
-                    You've already mastered this card.
-                  </p>
-                )}
+              {/* FLIP AND SAVE ACTIONS */}
+
+              <div className="flex flex-wrap justify-center gap-2">
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setIsFlipped((value) => !value)
+                  }
+                  className="dashboard-card dashboard-heading inline-flex min-h-10 items-center gap-2 rounded-xl border border-[var(--dashboard-border)] px-4 py-2.5 text-xs font-bold transition hover:border-[#5B3DF5] hover:text-[#5B3DF5]"
+                >
+                  <RotateCw size={15} />
+                  {isFlipped ? "Show question" : "Reveal answer"}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={toggleSaved}
+                  className={`inline-flex min-h-10 items-center gap-2 rounded-xl border px-4 py-2.5 text-xs font-bold transition ${
+                    isSaved
+                      ? "border-[#5B3DF5] bg-[#E8DEFF] text-[#4B2ED0]"
+                      : "dashboard-card dashboard-heading border-[var(--dashboard-border)] hover:border-[#5B3DF5] hover:text-[#5B3DF5]"
+                  }`}
+                >
+                  <Bookmark
+                    size={15}
+                    fill={isSaved ? "currentColor" : "none"}
+                  />
+
+                  {isSaved ? "Saved to My Library" : "Save card"}
+                </button>
+
               </div>
-            )}
 
-            {/* Card navigation */}
-            <div className="flex items-center justify-between gap-3">
+              {/* LEARNING ACTIONS */}
+
+              {isFlipped && (
+                <div className="dashboard-card rounded-xl border border-[var(--dashboard-border)] p-4 sm:p-5">
+
+                  <div className="text-center">
+                    <h3 className="dashboard-heading text-sm font-extrabold">
+                      How well did you know this?
+                    </h3>
+
+                    <p className="dashboard-muted mt-1 text-xs">
+                      Update your learning progress for this card.
+                    </p>
+                  </div>
+
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
+
+                    <button
+                      type="button"
+                      onClick={() => updateStatus("review")}
+                      className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-orange-200 bg-orange-50 px-4 py-3 text-xs font-bold text-orange-700 transition hover:bg-orange-100"
+                    >
+                      <RotateCcw size={16} />
+                      Review Again
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => updateStatus("known")}
+                      className="flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#5B3DF5] px-4 py-3 text-xs font-bold text-white transition hover:bg-[#4930D1]"
+                    >
+                      <Check size={16} />
+                      Know It
+                    </button>
+
+                  </div>
+
+                  {isKnown && (
+                    <p className="mt-3 text-center text-xs font-semibold text-emerald-600">
+                      You've already mastered this card.
+                    </p>
+                  )}
+
+                </div>
+              )}
+
+              {/* CARD NAVIGATION */}
+
+              <div className="flex items-center justify-between gap-3 border-t border-[var(--dashboard-border)] pt-4">
+
+                <button
+                  type="button"
+                  onClick={() => goToCard(currentIndex - 1)}
+                  disabled={filteredCards.length <= 1}
+                  className="dashboard-card dashboard-heading inline-flex min-h-10 items-center gap-2 rounded-xl border border-[var(--dashboard-border)] px-4 py-2.5 text-xs font-bold transition hover:border-[#5B3DF5] hover:text-[#5B3DF5] disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  <ArrowLeft size={15} />
+                  Previous
+                </button>
+
+                <span className="dashboard-muted text-xs font-semibold">
+                  {currentIndex + 1} / {filteredCards.length}
+                </span>
+
+                <button
+                  type="button"
+                  onClick={() => goToCard(currentIndex + 1)}
+                  disabled={filteredCards.length <= 1}
+                  className="dashboard-primary-button inline-flex min-h-10 items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  Next
+                  <ArrowRight size={15} />
+                </button>
+
+              </div>
+
+            </div>
+          ) : (
+
+            /* EMPTY STATE */
+
+            <div className="dashboard-card flex flex-col items-center justify-center rounded-xl border border-[var(--dashboard-border)] px-5 py-12 text-center">
+
+              <div className="dashboard-accent-icon mb-3">
+                <Sparkles size={22} />
+              </div>
+
+              <h3 className="dashboard-heading text-base font-extrabold">
+                No cards found
+              </h3>
+
+              <p className="dashboard-muted mt-2 max-w-sm text-sm leading-6">
+                There are no cards in this collection yet. Try another
+                subject or learning filter.
+              </p>
+
               <button
                 type="button"
-                onClick={() => goToCard(currentIndex - 1)}
-                disabled={filteredCards.length <= 1}
-                className="dashboard-search flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-40"
+                onClick={() => {
+                  changeSubject("All subjects");
+                  changeFilter("all");
+                }}
+                className="dashboard-primary-button mt-4 rounded-xl px-5 py-2.5 text-sm font-semibold"
               >
-                <ArrowLeft size={16} />
-                Previous
+                View all cards
               </button>
 
-              <span className="dashboard-muted text-xs">
-                {currentIndex + 1} / {filteredCards.length}
-              </span>
-
-              <button
-                type="button"
-                onClick={() => goToCard(currentIndex + 1)}
-                disabled={filteredCards.length <= 1}
-                className="dashboard-primary-button flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold"
-              >
-                Next
-                <ArrowRight size={16} />
-              </button>
-            </div>
-          </>
-        ) : (
-          <div className="dashboard-card rounded-2xl p-10 text-center">
-            <div className="dashboard-accent-icon mx-auto">
-              <Sparkles size={23} />
             </div>
 
-            <h2 className="dashboard-heading mt-5 text-xl font-bold">
-              No cards found
-            </h2>
+          )}
 
-            <p className="dashboard-muted mt-2 text-sm">
-              There are no cards in this collection yet. Try
-              another subject or learning filter.
-            </p>
+        </section>
 
-            <button
-              type="button"
-              onClick={() => {
-                changeSubject("All subjects");
-                changeFilter("all");
-              }}
-              className="dashboard-primary-button mt-5 rounded-xl px-5 py-3 text-sm font-semibold"
-            >
-              View all cards
-            </button>
+        {/* =====================================================
+            INFORMATION PANEL
+        ===================================================== */}
+
+        <section className="dashboard-inner-card flex items-center gap-3 rounded-xl p-4">
+
+          <div className="dashboard-accent-icon shrink-0">
+            <Sparkles size={18} />
           </div>
-        )}
-      </section>
 
-      {/* Demo notice */}
-      <section className="dashboard-card flex items-start gap-3 rounded-2xl border border-violet-200 bg-violet-50/70 p-5">
-        <Sparkles
-          size={20}
-          className="mt-0.5 shrink-0 text-violet-600"
-        />
+          <div>
+            <h3 className="dashboard-heading text-sm font-bold">
+              Your Study Cards workspace
+            </h3>
 
-        <div>
-          <h3 className="dashboard-heading text-sm font-bold">
-            Your Study Cards workspace
-          </h3>
+            <p className="dashboard-muted mt-1 text-xs leading-5 sm:text-sm">
+              This version uses demonstration study cards. Your learning
+              progress and saved cards are stored in this browser.
+              Backend synchronization will be added during API integration.
+            </p>
+          </div>
 
-          <p className="dashboard-muted mt-1 text-sm leading-6">
-            This version uses demonstration study cards. Your
-            learning progress and saved cards are stored in this
-            browser. Backend synchronization will be added during
-            API integration.
-          </p>
-        </div>
-      </section>
-    </div>
+        </section>
+
+      </div>
+    </main>
   );
 }
 
-// Statistics card.
+/* =========================================================
+   STATISTICS CARD
+========================================================= */
+
 function StatCard({
   label,
   value,
   icon,
+  accent = "default",
 }: {
   label: string;
   value: number;
-  icon: React.ReactNode;
+  icon: ReactNode;
+  accent?: "default" | "green" | "orange" | "purple";
 }) {
+  const accentStyles = {
+    default: "bg-[#E8DEFF] text-[#5B3DF5]",
+    green: "bg-emerald-100 text-emerald-600",
+    orange: "bg-orange-100 text-orange-600",
+    purple: "bg-violet-100 text-violet-600",
+  };
+
   return (
-    <div className="dashboard-card flex items-center gap-4 rounded-2xl p-5">
-      <div className="dashboard-accent-icon">
+    <div className="dashboard-card flex min-h-[105px] items-center gap-3 rounded-xl border border-[var(--dashboard-border)] p-3.5 sm:p-4">
+
+      <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${accentStyles[accent]}`}>
         {icon}
       </div>
 
-      <div>
-        <p className="dashboard-muted text-sm">
+      <div className="min-w-0">
+        <p className="dashboard-muted text-[11px] font-medium sm:text-xs">
           {label}
         </p>
 
-        <h3 className="dashboard-heading mt-1 text-2xl font-bold">
-          {value}
+        <h3 className="dashboard-heading mt-1 text-xl font-extrabold">
+          {value.toLocaleString()}
         </h3>
       </div>
+
     </div>
   );
 }
 
-// Filter button.
+/* =========================================================
+   FILTER BUTTON
+========================================================= */
+
 function FilterButton({
   active,
   onClick,
@@ -679,16 +861,16 @@ function FilterButton({
 }: {
   active: boolean;
   onClick: () => void;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`rounded-xl px-4 py-2.5 text-sm font-semibold transition ${
+      className={`inline-flex min-h-9 items-center gap-2 rounded-lg border px-3.5 py-2 text-xs font-semibold transition-all duration-200 ${
         active
-          ? "bg-[#5B3DF5] text-white"
-          : "dashboard-search dashboard-heading hover:opacity-80"
+          ? "border-[#5B3DF5] bg-[#5B3DF5] text-white shadow-[0_4px_12px_rgba(91,61,245,0.18)]"
+          : "dashboard-card dashboard-heading border-[var(--dashboard-border)] hover:border-[#5B3DF5] hover:text-[#5B3DF5]"
       }`}
     >
       {children}

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import {
   BookOpen,
   Search,
@@ -14,8 +15,9 @@ import {
   MoreHorizontal,
   X,
   Sparkles,
+  ArrowRight,
+  CheckCircle2,
 } from "lucide-react";
-import type { ReactNode } from "react";
 
 import {
   studySets,
@@ -89,166 +91,202 @@ export default function StudyLibraryPage() {
     return `/dashboard/exams/ati/${set.subjectSlug}/practice?mode=${mode}`;
   };
 
+  const clearFilters = () => {
+    setSearchQuery("");
+    setSelectedFilter("All");
+  };
+
   return (
-    <main className="dashboard-content mx-auto w-full max-w-[1600px] space-y-8 px-5 py-7 sm:px-7 lg:px-9">
+    <main className="w-full pb-7">
+      {/* FULL-WIDTH HERO */}
+      <section className="relative isolate flex min-h-[165px] w-full items-center overflow-hidden bg-gradient-to-r from-[#17263F] via-[#202C50] to-[#30245F] px-5 py-6 text-white sm:px-8 lg:px-11">
+        {/* BACKGROUND EFFECTS */}
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_75%_50%,rgba(91,61,245,0.22),transparent_55%)]" />
 
-      {/* PAGE HEADER */}
-      <section className="space-y-2">
-        <div className="flex items-center gap-2">
-          <div className="dashboard-accent-icon">
-            <BookOpen size={18} />
-          </div>
+        <div className="pointer-events-none absolute -right-16 -top-24 h-64 w-64 rounded-full border border-white/[0.06]" />
 
-          <span className="dashboard-section-label">
-            LEARNING RESOURCES
+        <div className="pointer-events-none absolute -bottom-32 right-1/4 h-64 w-64 rounded-full border border-white/[0.05]" />
+
+        {/* HERO CONTENT */}
+        <div className="relative z-10 w-full max-w-4xl">
+          <span className="inline-flex items-center gap-2 text-[10px] font-extrabold tracking-[0.22em] text-[#B9A9FF]">
+            <GraduationCap size={13} />
+            YOUR LEARNING LIBRARY
           </span>
-        </div>
 
-        <h1 className="dashboard-heading text-3xl font-extrabold tracking-tight sm:text-4xl">
-          Study Library
-        </h1>
+          <h1 className="mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">
+            Explore your study{" "}
+            <span className="text-[#B9A9FF]">library</span>
+          </h1>
 
-        <p className="dashboard-muted text-sm sm:text-base">
-          {studySets.length} study sets ·{" "}
-          {totalQuestions.toLocaleString()} available questions
-        </p>
-      </section>
+          <p className="mt-1.5 max-w-2xl text-sm leading-6 text-white/60">
+            Access your nursing study sets, practise examination questions
+            and strengthen your clinical knowledge.
+          </p>
 
-      {/* SEARCH AND FILTERS */}
-      <section className="space-y-4">
+          <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1.5 text-[11px] font-semibold text-white/70">
+            <span>{studySets.length} study sets</span>
 
-        {/* SEARCH */}
-        <div className="dashboard-search flex min-h-12 items-center gap-3 rounded-xl px-4">
-          <Search
-            size={19}
-            className="dashboard-muted shrink-0"
-          />
+            <span>{availableSets} available for practice</span>
 
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(event) => setSearchQuery(event.target.value)}
-            placeholder="Search study sets, topics, or keywords..."
-            className="dashboard-heading w-full bg-transparent text-sm outline-none placeholder:opacity-60"
-          />
-
-          {searchQuery && (
-            <button
-              type="button"
-              onClick={() => setSearchQuery("")}
-              aria-label="Clear search"
-              className="dashboard-muted transition hover:opacity-60"
-            >
-              <X size={18} />
-            </button>
-          )}
-        </div>
-
-        {/* FILTER PILLS */}
-        <div className="flex flex-wrap items-center gap-2">
-          {studyLibraryFilters.map((filter, index) => {
-            const active = selectedFilter === filter;
-
-            return (
-              <button
-                key={filter}
-                type="button"
-                onClick={() => setSelectedFilter(filter)}
-                className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2.5 text-xs font-semibold transition-all duration-200 ${
-                  active
-                    ? "border-[#5B3DF5] bg-[#5B3DF5] text-white shadow-[0_4px_14px_rgba(91,61,245,0.2)]"
-                    : "dashboard-card dashboard-heading border-[var(--dashboard-border)] hover:border-[#5B3DF5] hover:text-[#5B3DF5]"
-                }`}
-              >
-                {index === 0 && (
-                  <SlidersHorizontal size={15} />
-                )}
-
-                {filter}
-              </button>
-            );
-          })}
+            <span>
+              {totalQuestions.toLocaleString()} catalogue questions
+            </span>
+          </div>
         </div>
       </section>
 
-      {/* STUDY SET LISTING */}
-      <section className="space-y-5 border-t border-[var(--dashboard-border)] pt-6">
-
-        <div className="flex flex-wrap items-center justify-between gap-3">
+      {/* PAGE CONTENT */}
+      <div className="mx-auto w-full max-w-[1500px] space-y-6 px-5 pt-6 sm:px-7 lg:px-9">
+        {/* SEARCH AND FILTERS */}
+        <section className="space-y-3">
           <div>
-            <h2 className="dashboard-heading text-xl font-bold">
+            <p className="dashboard-section-label">
+              FIND YOUR RESOURCES
+            </p>
+
+            <h2 className="dashboard-heading mt-1 text-xl font-extrabold">
               Explore study sets
             </h2>
 
             <p className="dashboard-muted mt-1 text-sm">
-              Choose a study set and select your preferred learning mode.
+              Find the right study material and choose how you want to learn.
             </p>
           </div>
 
-          <span className="dashboard-count-badge">
-            {filteredStudySets.length}{" "}
-            {filteredStudySets.length === 1 ? "study set" : "study sets"}
-          </span>
-        </div>
+          {/* SEARCH */}
+          <div className="dashboard-search flex min-h-11 items-center gap-3 rounded-xl px-4">
+            <Search
+              size={18}
+              className="dashboard-muted shrink-0"
+            />
 
-        {filteredStudySets.length > 0 ? (
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {filteredStudySets.map((set) => (
-              <StudySetCard
-                key={set.id}
-                studySet={set}
-                getPracticeHref={getPracticeHref}
-              />
-            ))}
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              placeholder="Search study sets, topics, or keywords..."
+              className="dashboard-heading w-full bg-transparent text-sm outline-none placeholder:opacity-60"
+            />
+
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                aria-label="Clear search"
+                className="dashboard-muted transition hover:opacity-60"
+              >
+                <X size={17} />
+              </button>
+            )}
           </div>
-        ) : (
-          <div className="dashboard-card flex flex-col items-center justify-center rounded-2xl px-5 py-16 text-center">
 
-            <div className="dashboard-accent-icon mb-4">
-              <Search size={24} />
+          {/* FILTER PILLS */}
+          <div className="flex flex-wrap items-center gap-2">
+            {studyLibraryFilters.map((filter, index) => {
+              const active = selectedFilter === filter;
+
+              return (
+                <button
+                  key={filter}
+                  type="button"
+                  onClick={() => setSelectedFilter(filter)}
+                  className={`inline-flex items-center gap-2 rounded-lg border px-3.5 py-2 text-xs font-semibold transition-all duration-200 ${
+                    active
+                      ? "border-[#5B3DF5] bg-[#5B3DF5] text-white shadow-[0_4px_12px_rgba(91,61,245,0.18)]"
+                      : "dashboard-card dashboard-heading border-[var(--dashboard-border)] hover:border-[#5B3DF5] hover:text-[#5B3DF5]"
+                  }`}
+                >
+                  {index === 0 && (
+                    <SlidersHorizontal size={13} />
+                  )}
+
+                  {filter}
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* STUDY SET LISTING */}
+        <section className="space-y-4 border-t border-[var(--dashboard-border)] pt-5">
+          {/* SECTION HEADER */}
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="dashboard-heading text-lg font-bold">
+                Your study resources
+              </h2>
+
+              <p className="dashboard-muted mt-1 text-xs sm:text-sm">
+                Select a study set and choose your preferred learning mode.
+              </p>
             </div>
 
-            <h3 className="dashboard-heading text-lg font-bold">
-              No study sets found
+            <span className="dashboard-count-badge">
+              {filteredStudySets.length}{" "}
+              {filteredStudySets.length === 1
+                ? "study set"
+                : "study sets"}
+            </span>
+          </div>
+
+          {/* STUDY SET CARDS */}
+          {filteredStudySets.length > 0 ? (
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+              {filteredStudySets.map((set, index) => (
+                <StudySetCard
+                  key={set.id}
+                  studySet={set}
+                  index={index}
+                  getPracticeHref={getPracticeHref}
+                />
+              ))}
+            </div>
+          ) : (
+            /* EMPTY STATE */
+            <div className="dashboard-card flex flex-col items-center justify-center rounded-xl px-5 py-12 text-center">
+              <div className="dashboard-accent-icon mb-3">
+                <Search size={22} />
+              </div>
+
+              <h3 className="dashboard-heading text-base font-bold">
+                No study sets found
+              </h3>
+
+              <p className="dashboard-muted mt-2 max-w-sm text-sm leading-6">
+                We couldn't find a study set matching your search and
+                selected filter. Try another keyword or reset your filters.
+              </p>
+
+              <button
+                type="button"
+                onClick={clearFilters}
+                className="dashboard-primary-button mt-4 rounded-xl px-5 py-2.5 text-sm font-semibold"
+              >
+                Clear filters
+              </button>
+            </div>
+          )}
+        </section>
+
+        {/* INFORMATION PANEL */}
+        <section className="dashboard-inner-card flex items-center gap-3 rounded-xl p-4">
+          <div className="dashboard-accent-icon shrink-0">
+            <Sparkles size={18} />
+          </div>
+
+          <div>
+            <h3 className="dashboard-heading text-sm font-bold">
+              Keep building your nursing knowledge
             </h3>
 
-            <p className="dashboard-muted mt-2 max-w-sm text-sm leading-6">
-              We couldn't find a study set matching your search.
-              Try another keyword or clear your filters.
+            <p className="dashboard-muted mt-1 text-xs leading-5 sm:text-sm">
+              Explore examination resources, practise clinical questions
+              and strengthen your understanding through guided learning.
             </p>
-
-            <button
-              type="button"
-              onClick={() => {
-                setSearchQuery("");
-                setSelectedFilter("All");
-              }}
-              className="dashboard-primary-button mt-5 rounded-xl px-5 py-2.5 text-sm font-semibold"
-            >
-              Clear filters
-            </button>
           </div>
-        )}
-      </section>
-
-      {/* LIBRARY INFORMATION */}
-      <section className="dashboard-inner-card flex flex-col gap-4 rounded-2xl p-5 sm:flex-row sm:items-center">
-
-        <div className="dashboard-accent-icon shrink-0">
-          <Sparkles size={20} />
-        </div>
-
-        <div>
-          <h3 className="dashboard-heading text-sm font-bold">
-            Keep building your nursing knowledge
-          </h3>
-
-          <p className="dashboard-muted mt-1 text-sm leading-6">
-            Explore examination resources, practise clinical questions
-            and strengthen your understanding through guided learning.
-          </p>
-        </div>
-      </section>
+        </section>
+      </div>
     </main>
   );
 }
@@ -259,6 +297,7 @@ export default function StudyLibraryPage() {
 
 interface StudySetCardProps {
   studySet: StudySet;
+  index: number;
 
   getPracticeHref: (
     set: StudySet,
@@ -268,65 +307,75 @@ interface StudySetCardProps {
 
 function StudySetCard({
   studySet,
+  index,
   getPracticeHref,
 }: StudySetCardProps) {
   const available = studySet.status === "available";
 
   return (
-    <article className="dashboard-card group flex min-h-[285px] flex-col rounded-2xl p-5 transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(91,61,245,0.09)]">
+    <article className="dashboard-card group relative flex min-h-[270px] flex-col overflow-hidden rounded-xl border border-[var(--dashboard-border)] p-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-[#8D79FF]/50 hover:shadow-[0_10px_24px_rgba(55,40,120,0.07)]">
+      {/* CARD TOP */}
+      <div className="flex items-center justify-between gap-3">
+        <div className="dashboard-accent-icon !h-10 !w-10">
+          <BookOpen size={18} />
+        </div>
+
+        <span className="text-[10px] font-extrabold tracking-widest text-[var(--dashboard-muted)] opacity-60">
+          {String(index + 1).padStart(2, "0")}
+        </span>
+      </div>
 
       {/* PROGRAMME BADGE */}
-      <div className="flex items-center justify-between gap-3">
-
-        <span className="inline-flex items-center gap-1.5 rounded-lg border border-[#5B3DF5]/10 bg-[#E8DEFF]/60 px-3 py-1.5 text-[10px] font-bold text-[#4931B5]">
-          <GraduationCap size={13} />
+      <div className="mt-3 flex flex-wrap items-center gap-1.5">
+        <span className="inline-flex items-center gap-1 rounded-full bg-[#E8DEFF] px-2.5 py-1 text-[9px] font-bold text-[#392576]">
+          <GraduationCap size={11} />
           {studySet.programme}
         </span>
 
-        <button
-          type="button"
-          title="Study set information"
-          aria-label={`More information about ${studySet.title}`}
-          className="dashboard-muted rounded-lg p-1.5 transition hover:bg-[#E8DEFF] hover:text-[#5B3DF5]"
-        >
-          <MoreHorizontal size={19} />
-        </button>
+        {available ? (
+          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-1 text-[9px] font-bold text-emerald-600">
+            <CheckCircle2 size={11} />
+            Practice available
+          </span>
+        ) : (
+          <span className="rounded-full bg-amber-500/10 px-2.5 py-1 text-[9px] font-bold text-amber-600">
+            Coming soon
+          </span>
+        )}
       </div>
 
       {/* TITLE AND DESCRIPTION */}
-      <div className="mt-4 flex-1">
-
-        <h3 className="dashboard-heading text-base font-bold leading-snug transition-colors group-hover:text-[#5B3DF5]">
+      <div className="mt-3 flex-1">
+        <h3 className="dashboard-heading text-base font-extrabold leading-snug transition-colors group-hover:text-[#5B3DF5]">
           {studySet.title}
         </h3>
 
-        <p className="dashboard-muted mt-2 line-clamp-2 text-xs leading-5">
+        <p className="dashboard-muted mt-1.5 line-clamp-2 text-xs leading-5">
           {studySet.description}
         </p>
       </div>
 
       {/* QUESTION COUNT */}
-      <div className="mt-4 flex items-center gap-2">
+      <div className="mt-3 flex items-center gap-2">
         <FileText
-          size={15}
+          size={14}
           className="dashboard-muted shrink-0"
         />
 
         <span className="dashboard-muted text-xs font-medium">
           {available
-            ? `${studySet.questionCount} questions`
+            ? `${studySet.questionCount.toLocaleString()} questions`
             : "Question bank coming soon"}
         </span>
       </div>
 
       {/* RATINGS */}
-      <div className="mt-3 flex flex-wrap items-center gap-1">
-
+      <div className="mt-2 flex flex-wrap items-center gap-1">
         <div className="flex items-center gap-0.5">
           {Array.from({ length: 5 }).map((_, index) => (
             <Star
               key={index}
-              size={13}
+              size={12}
               className="fill-amber-400 text-amber-400"
             />
           ))}
@@ -336,14 +385,13 @@ function StudySetCard({
           {studySet.rating.toFixed(1)}
         </span>
 
-        <span className="dashboard-muted text-[11px]">
+        <span className="dashboard-muted text-[10px]">
           ({studySet.reviews.toLocaleString()} reviews)
         </span>
       </div>
 
       {/* STUDY MODES */}
-      <div className="mt-5 grid grid-cols-3 gap-2">
-
+      <div className="mt-4 grid grid-cols-3 gap-2 border-t border-[var(--dashboard-border)] pt-3">
         <StudyAction
           label="Exam"
           icon={<Play size={13} fill="currentColor" />}
@@ -365,12 +413,11 @@ function StudySetCard({
           href={getPracticeHref(studySet, "tutor")}
           enabled={available}
         />
-
       </div>
 
       {!available && (
-        <p className="mt-3 text-center text-[11px] font-medium text-amber-600">
-          Coming soon
+        <p className="mt-2 text-center text-[10px] font-medium text-amber-600">
+          This study set will be available soon.
         </p>
       )}
     </article>
@@ -436,6 +483,7 @@ function StudyAction({
     >
       {icon}
       {label}
+      <ArrowRight size={11} className="hidden sm:block" />
     </Link>
   );
 }

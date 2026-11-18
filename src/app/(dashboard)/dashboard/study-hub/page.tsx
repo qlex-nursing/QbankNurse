@@ -7,10 +7,12 @@ import {
   ArrowRight,
   Bookmark,
   Check,
+  BookOpen,
   Compass,
   GraduationCap,
   LockKeyhole,
   Sparkles,
+  CheckCircle2,
 } from "lucide-react";
 
 import { studyCategories } from "@/data/mock/dashboard/overview";
@@ -147,365 +149,547 @@ export default function StudyHubPage() {
     );
   };
 
+  const totalQuestions = studyCategories.reduce(
+    (total, subject) => total + subject.questions,
+    0,
+  );
+
+  const availableExams = examPreparationOptions.filter(
+    (exam) => exam.available,
+  ).length;
+
+  const availableTools = studyTools.filter(
+    (tool) => tool.available,
+  ).length;
+
   return (
-    <div className="dashboard-content mx-auto w-full min-w-0 max-w-[1440px] space-y-10 px-4 py-2 sm:px-6 lg:px-8">
+    <main className="w-full pb-7">
 
-      {/* CENTERED PAGE INTRODUCTION */}
-      <section className="flex flex-col items-center px-2 pb-2 pt-3 text-center sm:pt-5">
+      {/* =====================================================
+          FULL-WIDTH HERO
+      ===================================================== */}
 
-        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#F0EBFF] text-[#5B3DF5]">
-          <Compass size={23} />
-        </div>
+      <section className="relative isolate flex min-h-[165px] w-full items-center overflow-hidden bg-gradient-to-r from-[#17263F] via-[#202C50] to-[#30245F] px-5 py-6 text-white sm:px-8 lg:px-11">
 
-        <span className="dashboard-section-label">
-          YOUR LEARNING SPACE
-        </span>
+        {/* BACKGROUND EFFECTS */}
 
-        <h1 className="dashboard-heading mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-[42px]">
-          Study Hub
-        </h1>
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_75%_50%,rgba(91,61,245,0.22),transparent_55%)]" />
 
-        <p className="dashboard-muted mx-auto mt-4 max-w-2xl text-sm leading-7 sm:text-base">
-          Everything you need to strengthen your nursing knowledge,
-          prepare for exams and make progress in your studies.
-        </p>
+        <div className="pointer-events-none absolute -right-16 -top-24 h-64 w-64 rounded-full border border-white/[0.06]" />
 
-        <div className="mt-5 flex items-center justify-center gap-2 text-xs sm:text-sm">
-          <span className="dashboard-muted">Resources</span>
-          <span className="dashboard-muted">/</span>
-          <span className="dashboard-heading font-semibold">
-            Study Hub
+        <div className="pointer-events-none absolute -bottom-32 right-1/4 h-64 w-64 rounded-full border border-white/[0.05]" />
+
+        {/* HERO CONTENT */}
+
+        <div className="relative z-10 w-full max-w-4xl">
+
+          <span className="inline-flex items-center gap-2 text-[10px] font-extrabold tracking-[0.22em] text-[#B9A9FF]">
+            <Compass size={13} />
+            YOUR LEARNING SPACE
           </span>
-        </div>
 
-        <div className="mt-7 h-1 w-16 rounded-full bg-[#5B3DF5]" />
+          <h1 className="mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">
+            Welcome to your{" "}
+            <span className="text-[#B9A9FF]">
+              Study Hub
+            </span>
+          </h1>
 
-      </section>
+          <p className="mt-1.5 max-w-2xl text-sm leading-6 text-white/60">
+            Everything you need to strengthen your nursing knowledge,
+            prepare for exams and make progress in your studies.
+          </p>
 
-      {/* STUDY BY SUBJECT */}
-      <section className="space-y-5">
+          <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1.5 text-[11px] font-semibold text-white/70">
+            <span>
+              {studyCategories.length} nursing subjects
+            </span>
 
-        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+            <span>
+              {totalQuestions.toLocaleString()} catalogue questions
+            </span>
 
-          <div>
-            <h2 className="dashboard-heading text-xl font-bold">
-              Study by subject
-            </h2>
-
-            <p className="dashboard-muted mt-1 text-sm">
-              Choose a subject and explore its learning resources.
-            </p>
+            <span>
+              {availableExams} available exam pathways
+            </span>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setShowSavedOnly((previous) => !previous)}
-            className={`inline-flex items-center justify-center gap-2 self-start rounded-xl border px-4 py-2.5 text-sm font-semibold transition sm:self-auto ${
-              showSavedOnly
-                ? "border-transparent bg-[#5B3DF5] text-white"
-                : "dashboard-card dashboard-heading hover:border-[#8B78F8]"
-            }`}
-          >
-            <Bookmark size={16} />
-
-            {showSavedOnly ? "Show all subjects" : "Saved subjects"}
-
-            <span className="rounded-full bg-black/10 px-2 py-0.5 text-xs">
-              {savedSubjects.length}
-            </span>
-          </button>
-
         </div>
+      </section>
 
-        {displayedSubjects.length > 0 ? (
+      {/* =====================================================
+          PAGE CONTENT
+      ===================================================== */}
 
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="mx-auto w-full max-w-[1500px] space-y-6 px-5 pt-6 sm:px-7 lg:px-9">
 
-            {displayedSubjects.map((subject) => {
-              const isSaved = savedSubjects.includes(subject.id);
+        {/* =====================================================
+            STUDY BY SUBJECT
+        ===================================================== */}
 
-              return (
-                <article
-                  key={subject.id}
-                  className="dashboard-card group flex min-h-[160px] min-w-0 flex-col justify-between rounded-2xl border p-5 transition hover:-translate-y-0.5 hover:border-[#8B78F8]"
-                >
+        <section className="space-y-4">
 
-                  <div className="flex items-start justify-between gap-3">
+          {/* SECTION HEADER */}
 
-                    <div className="min-w-0">
-                      <h3 className="dashboard-heading text-base font-bold">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+
+            <div>
+              <p className="dashboard-section-label">
+                BUILD YOUR KNOWLEDGE
+              </p>
+
+              <h2 className="dashboard-heading mt-1 text-xl font-extrabold">
+                Study by subject
+              </h2>
+
+              <p className="dashboard-muted mt-1 text-sm">
+                Choose a nursing subject and explore its learning resources.
+              </p>
+            </div>
+
+            {/* SAVED SUBJECTS FILTER */}
+
+            <button
+              type="button"
+              onClick={() =>
+                setShowSavedOnly((previous) => !previous)
+              }
+              className={`inline-flex items-center justify-center gap-2 self-start rounded-lg border px-3.5 py-2 text-xs font-semibold transition-all ${
+                showSavedOnly
+                  ? "border-[#5B3DF5] bg-[#5B3DF5] text-white shadow-[0_4px_12px_rgba(91,61,245,0.18)]"
+                  : "dashboard-card dashboard-heading border-[var(--dashboard-border)] hover:border-[#5B3DF5] hover:text-[#5B3DF5]"
+              }`}
+            >
+              <Bookmark size={14} />
+
+              {showSavedOnly ? "Show all subjects" : "Saved subjects"}
+
+              <span className="rounded-full bg-black/10 px-2 py-0.5 text-[10px]">
+                {savedSubjects.length}
+              </span>
+            </button>
+
+          </div>
+
+          {/* SUBJECT CARDS */}
+
+          {displayedSubjects.length > 0 ? (
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+
+              {displayedSubjects.map((subject, index) => {
+                const isSaved = savedSubjects.includes(subject.id);
+
+                return (
+                  <article
+                    key={subject.id}
+                    className="dashboard-card group relative flex min-h-[205px] min-w-0 flex-col overflow-hidden rounded-xl border border-[var(--dashboard-border)] p-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-[#8D79FF]/50 hover:shadow-[0_10px_24px_rgba(55,40,120,0.07)]"
+                  >
+
+                    {/* CARD TOP */}
+
+                    <div className="flex items-center justify-between gap-3">
+
+                      <div className="dashboard-accent-icon !h-10 !w-10">
+                        <BookOpen size={18} />
+                      </div>
+
+                      <div className="flex items-center gap-2">
+
+                        <span className="text-[10px] font-extrabold tracking-widest text-[var(--dashboard-muted)] opacity-60">
+                          {String(index + 1).padStart(2, "0")}
+                        </span>
+
+                        {/* SAVE BUTTON */}
+
+                        <button
+                          type="button"
+                          onClick={() => toggleSaved(subject.id)}
+                          aria-label={
+                            isSaved
+                              ? `Remove ${subject.title} from saved subjects`
+                              : `Save ${subject.title}`
+                          }
+                          title={
+                            isSaved
+                              ? "Remove from saved subjects"
+                              : "Save subject"
+                          }
+                          className={`flex h-8 items-center gap-1.5 rounded-lg border px-2 transition-all ${
+                            isSaved
+                              ? "border-[#5B3DF5] bg-[#E8DEFF] text-[#4B2ED0]"
+                              : "border-[var(--dashboard-border)] dashboard-heading hover:border-[#5B3DF5] hover:text-[#5B3DF5]"
+                          }`}
+                        >
+                          {isSaved ? (
+                            <Check size={13} />
+                          ) : (
+                            <Bookmark size={13} />
+                          )}
+
+                          <span className="text-[10px] font-bold">
+                            {isSaved ? "Saved" : "Save"}
+                          </span>
+                        </button>
+
+                      </div>
+
+                    </div>
+
+                    {/* SUBJECT BADGES */}
+
+                    <div className="mt-3 flex flex-wrap items-center gap-1.5">
+
+                      <span className="rounded-full bg-[#E8DEFF] px-2.5 py-1 text-[9px] font-bold text-[#392576]">
+                        {subject.program}
+                      </span>
+
+                      {isSaved && (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-1 text-[9px] font-bold text-emerald-600">
+                          <CheckCircle2 size={10} />
+                          Saved
+                        </span>
+                      )}
+
+                    </div>
+
+                    {/* SUBJECT DETAILS */}
+
+                    <div className="mt-3 flex-1">
+
+                      <h3 className="dashboard-heading text-base font-extrabold leading-snug transition-colors group-hover:text-[#5B3DF5]">
                         {subject.title}
                       </h3>
 
-                      <p className="dashboard-muted mt-2 text-sm leading-6">
+                      <p className="dashboard-muted mt-1.5 text-xs leading-5">
                         {subjectDescriptions[subject.title] ??
                           subject.description}
                       </p>
+
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={() => toggleSaved(subject.id)}
-                      aria-label={
-                        isSaved
-                          ? `Remove ${subject.title} from saved subjects`
-                          : `Save ${subject.title}`
-                      }
-                      className={`flex shrink-0 items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition ${
-                        isSaved
-                          ? "border-[#5B3DF5] bg-[#E8DEFF] text-[#4B2ED0]"
-                          : "dashboard-heading hover:border-[#8B78F8]"
-                      }`}
-                    >
-                      {isSaved ? (
-                        <Check size={13} />
-                      ) : (
-                        <Bookmark size={13} />
+                    {/* CARD FOOTER */}
+
+                    <div className="mt-3 flex items-center justify-between gap-2 border-t border-[var(--dashboard-border)] pt-3">
+
+                      <div>
+                        <p className="dashboard-heading text-sm font-bold">
+                          {subject.questions.toLocaleString()}
+                        </p>
+
+                        <p className="dashboard-muted text-[10px]">
+                          Practice questions
+                        </p>
+                      </div>
+
+                      <Link
+                        href="/dashboard/study-library"
+                        className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-[var(--dashboard-border)] px-3 text-[11px] font-bold text-[#8B78F8] transition hover:border-[#5B3DF5] hover:bg-[#5B3DF5] hover:text-white"
+                      >
+                        Practice exams
+                        <ArrowRight size={13} />
+                      </Link>
+
+                    </div>
+
+                  </article>
+                );
+              })}
+
+            </div>
+
+          ) : (
+
+            /* EMPTY STATE */
+
+            <div className="dashboard-card flex flex-col items-center justify-center rounded-xl px-5 py-12 text-center">
+
+              <div className="dashboard-accent-icon mb-3">
+                <Bookmark size={22} />
+              </div>
+
+              <h3 className="dashboard-heading text-base font-bold">
+                No saved subjects yet
+              </h3>
+
+              <p className="dashboard-muted mt-2 max-w-sm text-sm leading-6">
+                Save a subject to find it quickly next time.
+              </p>
+
+              <button
+                type="button"
+                onClick={() => setShowSavedOnly(false)}
+                className="dashboard-primary-button mt-4 rounded-xl px-5 py-2.5 text-sm font-semibold"
+              >
+                Explore subjects
+              </button>
+
+            </div>
+
+          )}
+
+        </section>
+
+        {/* =====================================================
+            EXAM PREPARATION
+        ===================================================== */}
+
+        <section className="space-y-4 border-t border-[var(--dashboard-border)] pt-5">
+
+          {/* SECTION HEADER */}
+
+          <div>
+            <p className="dashboard-section-label">
+              PREPARE WITH CONFIDENCE
+            </p>
+
+            <h2 className="dashboard-heading mt-1 text-xl font-extrabold">
+              Exam preparation
+            </h2>
+
+            <p className="dashboard-muted mt-1 text-sm">
+              Explore resources for your nursing and entrance examinations.
+            </p>
+          </div>
+
+          {/* EXAM CARDS */}
+
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+
+            {examPreparationOptions.map((exam, index) => (
+
+              <Link
+                key={exam.title}
+                href={exam.href}
+                onClick={(event) => {
+                  if (!exam.available) event.preventDefault();
+                }}
+                aria-disabled={!exam.available}
+                className={`dashboard-card group relative flex min-h-[155px] flex-col rounded-xl border border-[var(--dashboard-border)] p-4 transition-all duration-300 ${
+                  exam.available
+                    ? "hover:-translate-y-0.5 hover:border-[#8D79FF]/50 hover:shadow-[0_10px_24px_rgba(55,40,120,0.07)]"
+                    : "cursor-not-allowed opacity-75"
+                }`}
+              >
+
+                {/* CARD TOP */}
+
+                <div className="flex items-center justify-between">
+
+                  <div className="dashboard-accent-icon !h-9 !w-9">
+                    <GraduationCap size={17} />
+                  </div>
+
+                  <span className="text-[10px] font-extrabold tracking-widest text-[var(--dashboard-muted)] opacity-60">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+
+                </div>
+
+                {/* EXAM DETAILS */}
+
+                <div className="mt-3 flex-1">
+
+                  <div className="flex items-center justify-between gap-2">
+
+                    <h3 className="dashboard-heading text-base font-extrabold">
+                      {exam.title}
+                    </h3>
+
+                    {exam.available ? (
+                      <CheckCircle2
+                        size={15}
+                        className="shrink-0 text-emerald-500"
+                      />
+                    ) : (
+                      <LockKeyhole
+                        size={14}
+                        className="dashboard-muted shrink-0"
+                      />
+                    )}
+
+                  </div>
+
+                  <p className="dashboard-muted mt-1.5 text-xs leading-5">
+                    {exam.description}
+                  </p>
+
+                </div>
+
+                {/* CARD FOOTER */}
+
+                <div className="mt-3 flex items-center justify-between border-t border-[var(--dashboard-border)] pt-3">
+
+                  <span
+                    className={`text-[10px] font-bold ${
+                      exam.available
+                        ? "text-emerald-600"
+                        : "text-amber-600"
+                    }`}
+                  >
+                    {exam.available ? "Available now" : "Coming soon"}
+                  </span>
+
+                  {exam.available && (
+                    <ArrowRight
+                      size={15}
+                      className="text-[#8B78F8] transition group-hover:translate-x-1 group-hover:text-[#5B3DF5]"
+                    />
+                  )}
+
+                </div>
+
+              </Link>
+
+            ))}
+
+          </div>
+
+        </section>
+
+        {/* =====================================================
+            STUDY TOOLS
+        ===================================================== */}
+
+        <section className="space-y-4 border-t border-[var(--dashboard-border)] pt-5">
+
+          {/* SECTION HEADER */}
+
+          <div>
+
+            <div className="flex items-center gap-2">
+
+              <div className="dashboard-accent-icon !h-9 !w-9">
+                <Sparkles size={16} />
+              </div>
+
+              <span className="dashboard-section-label">
+                LEARNING RESOURCES
+              </span>
+
+            </div>
+
+            <h2 className="dashboard-heading mt-3 text-xl font-extrabold">
+              Study tools
+            </h2>
+
+            <p className="dashboard-muted mt-1 text-sm">
+              Use these tools to practise, review and organize your learning.
+            </p>
+
+          </div>
+
+          {/* STUDY TOOL CARDS */}
+
+          <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+
+            {studyTools.map((tool, index) => {
+              const Icon = tool.icon;
+
+              const content = (
+                <div
+                  className={`dashboard-card flex min-h-[120px] h-full min-w-0 items-center justify-between gap-4 rounded-xl border border-[var(--dashboard-border)] p-4 transition-all duration-300 ${
+                    tool.available
+                      ? "group hover:-translate-y-0.5 hover:border-[#8D79FF]/50 hover:shadow-[0_10px_24px_rgba(55,40,120,0.07)]"
+                      : "cursor-not-allowed opacity-75"
+                  }`}
+                >
+
+                  {/* TOOL DETAILS */}
+
+                  <div className="flex min-w-0 items-center gap-4">
+
+                    <div className="dashboard-accent-icon shrink-0">
+                      <Icon size={20} />
+                    </div>
+
+                    <div className="min-w-0">
+
+                      <h3 className="dashboard-heading text-sm font-extrabold">
+                        {tool.title}
+                      </h3>
+
+                      <p className="dashboard-muted mt-1 text-xs leading-5">
+                        {tool.description}
+                      </p>
+
+                      {!tool.available && (
+                        <span className="mt-2 inline-block rounded-full bg-amber-500/10 px-2.5 py-1 text-[9px] font-bold text-amber-600">
+                          Coming soon
+                        </span>
                       )}
 
-                      {isSaved ? "Saved" : "Save"}
-                    </button>
+                    </div>
 
                   </div>
 
-                  <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+                  {/* ACTION INDICATOR */}
 
-                    <span className="dashboard-muted text-xs">
-                      {subject.questions.toLocaleString()} practice questions
-                    </span>
+                  {tool.available ? (
+                    <ArrowRight
+                      size={18}
+                      className="shrink-0 text-[#8B78F8] transition group-hover:translate-x-1 group-hover:text-[#5B3DF5]"
+                    />
+                  ) : (
+                    <LockKeyhole
+                      size={16}
+                      className="dashboard-muted shrink-0"
+                    />
+                  )}
 
-                    <Link
-                      href="/dashboard/study-library"
-                      className="inline-flex items-center gap-1 text-sm font-semibold text-[#8B78F8] transition hover:text-[#5B3DF5]"
-                    >
-                      Practice exams
-                      <ArrowRight size={14} />
-                    </Link>
+                </div>
+              );
 
-                  </div>
-
-                </article>
+              return tool.available ? (
+                <Link
+                  key={tool.title}
+                  href={tool.href}
+                  className="block h-full"
+                >
+                  {content}
+                </Link>
+              ) : (
+                <div
+                  key={tool.title}
+                  aria-disabled="true"
+                  className="h-full"
+                >
+                  {content}
+                </div>
               );
             })}
 
           </div>
 
-        ) : (
+        </section>
 
-          <div className="dashboard-card rounded-2xl border border-dashed p-8 text-center sm:p-10">
+        {/* =====================================================
+            INFORMATION PANEL
+        ===================================================== */}
 
-            <Bookmark
-              size={28}
-              className="mx-auto text-[#8B78F8]"
-            />
+        <section className="dashboard-inner-card flex items-center gap-3 rounded-xl p-4">
 
-            <h3 className="dashboard-heading mt-3 font-semibold">
-              No saved subjects yet
+          <div className="dashboard-accent-icon shrink-0">
+            <Sparkles size={18} />
+          </div>
+
+          <div>
+
+            <h3 className="dashboard-heading text-sm font-bold">
+              Your learning journey starts here
             </h3>
 
-            <p className="dashboard-muted mt-2 text-sm">
-              Save a subject to find it quickly next time.
+            <p className="dashboard-muted mt-1 text-xs leading-5 sm:text-sm">
+              Explore examination resources, practise clinical questions
+              and organize your learning. Available tools will open directly,
+              while upcoming features will become accessible as they are developed.
             </p>
 
-            <button
-              type="button"
-              onClick={() => setShowSavedOnly(false)}
-              className="mt-5 rounded-xl bg-[#5B3DF5] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#4930D0]"
-            >
-              Explore subjects
-            </button>
-
           </div>
 
-        )}
+        </section>
 
-      </section>
-
-      {/* EXAM PREPARATION */}
-      <section className="space-y-5">
-
-        <div>
-          <h2 className="dashboard-heading text-xl font-bold">
-            Exam preparation
-          </h2>
-
-          <p className="dashboard-muted mt-1 text-sm">
-            Explore resources for your nursing and entrance examinations.
-          </p>
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-
-          {examPreparationOptions.map((exam) => (
-
-            <Link
-              key={exam.title}
-              href={exam.href}
-              onClick={(event) => {
-                if (!exam.available) event.preventDefault();
-              }}
-              aria-disabled={!exam.available}
-              className={`dashboard-card group rounded-2xl border p-5 transition ${
-                exam.available
-                  ? "hover:-translate-y-0.5 hover:border-[#8B78F8]"
-                  : "cursor-not-allowed opacity-75"
-              }`}
-            >
-
-              <div className="flex items-center justify-between gap-3">
-
-                <h3 className="dashboard-heading font-bold">
-                  {exam.title}
-                </h3>
-
-                {exam.available ? (
-                  <ArrowRight
-                    size={17}
-                    className="shrink-0 text-[#8B78F8] transition group-hover:translate-x-1"
-                  />
-                ) : (
-                  <LockKeyhole
-                    size={15}
-                    className="dashboard-muted shrink-0"
-                  />
-                )}
-
-              </div>
-
-              <p className="dashboard-muted mt-2 text-sm leading-6">
-                {exam.description}
-              </p>
-
-              {!exam.available && (
-                <span className="mt-3 inline-block rounded-full bg-[#E8DEFF] px-2.5 py-1 text-xs font-semibold text-[#4B2ED0]">
-                  Coming soon
-                </span>
-              )}
-
-            </Link>
-
-          ))}
-
-        </div>
-
-      </section>
-
-      {/* STUDY TOOLS */}
-      <section className="space-y-5">
-
-        <div>
-
-          <div className="flex items-center gap-2">
-            <div className="dashboard-accent-icon">
-              <Sparkles size={16} />
-            </div>
-
-            <span className="dashboard-section-label">
-              LEARNING RESOURCES
-            </span>
-          </div>
-
-          <h2 className="dashboard-heading mt-3 text-xl font-bold">
-            Study tools
-          </h2>
-
-          <p className="dashboard-muted mt-1 text-sm">
-            Use these tools to practise, review and organize your learning.
-          </p>
-
-        </div>
-
-        <div className="grid gap-4 lg:grid-cols-2">
-
-          {studyTools.map((tool) => {
-            const Icon = tool.icon;
-
-            const content = (
-              <div
-                className={`dashboard-card flex h-full min-w-0 items-center justify-between gap-4 rounded-2xl border p-5 transition ${
-                  tool.available
-                    ? "group hover:-translate-y-0.5 hover:border-[#8B78F8]"
-                    : "cursor-not-allowed opacity-75"
-                }`}
-              >
-
-                <div className="flex min-w-0 items-center gap-4">
-
-                  <div className="dashboard-accent-icon shrink-0">
-                    <Icon size={21} />
-                  </div>
-
-                  <div className="min-w-0">
-
-                    <h3 className="dashboard-heading font-bold">
-                      {tool.title}
-                    </h3>
-
-                    <p className="dashboard-muted mt-1 text-sm leading-6">
-                      {tool.description}
-                    </p>
-
-                    {!tool.available && (
-                      <span className="mt-2 inline-block rounded-full bg-[#E8DEFF] px-2.5 py-1 text-xs font-semibold text-[#4B2ED0]">
-                        Coming soon
-                      </span>
-                    )}
-
-                  </div>
-
-                </div>
-
-                {tool.available ? (
-                  <ArrowRight
-                    size={19}
-                    className="shrink-0 text-[#8B78F8] transition group-hover:translate-x-1"
-                  />
-                ) : (
-                  <LockKeyhole
-                    size={16}
-                    className="dashboard-muted shrink-0"
-                  />
-                )}
-
-              </div>
-            );
-
-            return tool.available ? (
-              <Link key={tool.title} href={tool.href}>
-                {content}
-              </Link>
-            ) : (
-              <div key={tool.title} aria-disabled="true">
-                {content}
-              </div>
-            );
-          })}
-
-        </div>
-
-      </section>
-
-      {/* DEMO NOTICE */}
-      <section className="flex items-start gap-3 rounded-2xl border border-[#8B78F8]/20 bg-[#E8DEFF]/40 p-4 sm:p-5">
-
-        <div className="mt-0.5 shrink-0 rounded-lg bg-[#5B3DF5]/10 p-2 text-[#5B3DF5]">
-          <GraduationCap size={19} />
-        </div>
-
-        <div>
-          <h3 className="text-sm font-semibold text-[#39258F]">
-            Your learning journey starts here
-          </h3>
-
-          <p className="mt-1 text-sm leading-6 text-[#514477]">
-            Some resources are still being prepared. Available tools will
-            open directly, while upcoming features will become accessible
-            as they are developed.
-          </p>
-        </div>
-
-      </section>
-
-    </div>
+      </div>
+    </main>
   );
 }

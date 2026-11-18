@@ -18,11 +18,10 @@ const links = [
 ];
 
 const exams = [
-  { label: "NCLEX-RN", href: "/dashboard/custom-practice" },
-  { label: "NCLEX-PN", href: "/dashboard/custom-practice" },
-  { label: "ATI Exams", href: "/dashboard/study-library" },
+  { label: "NCLEX-RN", href: "/dashboard/exams/rn" },
+  { label: "NCLEX-PN", href: "/dashboard/exams/lpn" },
+  { label: "ATI Exams", href: "/dashboard/exams/rn/ati" },
   { label: "HESI Exams", href: "/dashboard/study-library" },
-  // { label: "TEAS", href: "/dashboard/study-library" },
 ];
 
 export default function MobileNav({ open, onClose }: MobileNavProps) {

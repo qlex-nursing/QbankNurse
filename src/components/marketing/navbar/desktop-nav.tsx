@@ -23,28 +23,23 @@ const examLinks = [
   {
     title: "NCLEX-RN",
     description: "Registered Nurse preparation",
-    href: "/dashboard/custom-practice",
+    href: "/dashboard/exams/rn",
   },
   {
     title: "NCLEX-PN",
     description: "Practical Nurse preparation",
-    href: "/dashboard/custom-practice",
+    href: "/dashboard/exams/lpn",
   },
   {
     title: "ATI Exams",
     description: "Nursing assessment preparation",
-    href: "/dashboard/study-library",
+    href: "/dashboard/exams/rn/ati",
   },
   {
     title: "HESI Exams",
     description: "HESI and exit examination practice",
     href: "/dashboard/study-library",
   },
-  // {
-  //   title: "TEAS",
-  //   description: "Test of Essential Academic Skills",
-  //   href: "/dashboard/study-library",
-  // },
 ];
 
 export default function DesktopNav() {
@@ -158,7 +153,7 @@ export default function DesktopNav() {
 
       {/* NCLEX */}
      <Link
-  href="/dashboard/custom-practice"
+  href="/dashboard/exams/rn"
         className="nav-link [--nav-hover-color:#5B3DF5]"
       >
         NCLEX
