@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 
 import { registerUser } from "@/lib/services/auth/registerservice";
-import { login } from "@/lib/services/auth/loginservice";
+import { writeAuthSessionCookies } from "@/lib/auth/session";
 import { getSafeReturnTo } from "@/lib/navigation";
 
 interface DemoAuthFormProps {
@@ -136,14 +136,12 @@ useEffect(() => {
       return;
     }
 
-    await login(email.trim(), password);
-    router.push(returnTo ?? "/dashboard");
-  } catch (err) {
-    setError(
-      err instanceof Error
-        ? err.message
-        : "Authentication failed. Please try again.",
-    );
+    writeAuthSessionCookies(
+  "qbanknurse-demo",
+  "qbanknurse-demo-session",
+);
+
+router.push(returnTo ?? "/dashboard");
   } finally {
     setLoading(false);
   }
