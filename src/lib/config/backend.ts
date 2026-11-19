@@ -2,30 +2,32 @@ import "server-only";
 
 export type BackendType = "dotnet" | "laravel" | "fastapi";
 
-export const backendConfig = {
-  appName: process.env.SKEW_LINE_APP_NAME ?? "",
-  appTitle: process.env.SKEW_LINE_APP_TITLE ?? "",
-  appDomain: process.env.SKEW_LINE_APP_DOMAIN ?? "",
-  appKey: process.env.SKEW_LINE_APP_KEY ?? "",
+const DEFAULT_BACKEND_URL = "http://207.148.28.52:8008";
 
-  activeBackend: process.env.SKEW_LINE_ACTIVE_BACKEND as BackendType,
+export const backendConfig = {
+  appName: process.env.SKEW_LINE_APP_NAME || "Qlex Nursing",
+  appTitle: process.env.SKEW_LINE_APP_TITLE || "Qlex Nursing",
+  appDomain:
+    process.env.SKEW_LINE_APP_DOMAIN || "https://qlexnursing.com",
+  appKey: process.env.SKEW_LINE_APP_KEY || "WEBSITE_2",
+
+  activeBackend: (process.env.SKEW_LINE_ACTIVE_BACKEND ||
+    "dotnet") as BackendType,
 
   backends: {
-  dotnet: process.env.SKEW_LINE_DOTNET_BASE_URL ?? "",
-  laravel: process.env.SKEW_LINE_LARAVEL_BASE_URL ?? "",
-  fastapi: process.env.SKEW_LINE_FASTAPI_BASE_URL ?? "",
-},
+    dotnet:
+      process.env.SKEW_LINE_DOTNET_BASE_URL || DEFAULT_BACKEND_URL,
+    laravel: process.env.SKEW_LINE_LARAVEL_BASE_URL || "",
+    fastapi: process.env.SKEW_LINE_FASTAPI_BASE_URL || "",
+  },
 };
 
 export function getActiveBackendUrl(): string {
   const backend = backendConfig.activeBackend;
-
   const baseUrl = backendConfig.backends[backend];
 
   if (!baseUrl) {
-    throw new Error(
-      `Backend URL is not configured for: ${backend}`,
-    );
+    throw new Error(`Backend URL is not configured for: ${backend}`);
   }
 
   return baseUrl.replace(/\/+$/, "");
