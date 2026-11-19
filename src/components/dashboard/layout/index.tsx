@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -7,7 +8,7 @@ import DashboardSidebar from "@/components/dashboard/sidebar";
 import DashboardHeader from "@/components/dashboard/header";
 import HeartbeatLoader from "@/components/dashboard/heartbeat-loader";
 
-import { getDemoSession } from "@/lib/demo-auth";
+import { getAuthSession } from "@/lib/auth/session";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -25,7 +26,7 @@ export default function DashboardLayout({
   const [authenticated, setAuthenticated] = useState(false);
 
   useEffect(() => {
-    const session = getDemoSession();
+    const session = getAuthSession();
 
     if (!session) {
       const returnTo =
@@ -37,9 +38,6 @@ export default function DashboardLayout({
       return;
     }
 
-    
-
-    // Keep the loader visible briefly for a polished transition.
     const timer = window.setTimeout(() => {
       setAuthenticated(true);
       setCheckingSession(false);

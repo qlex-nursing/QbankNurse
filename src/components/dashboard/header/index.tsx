@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { clearDemoSession } from "@/lib/demo-auth";
+import { clearAuthSessionCookies } from "@/lib/auth/session";
 import {
   Menu,
   Search,
@@ -28,13 +28,12 @@ export default function DashboardHeader({
 }: DashboardHeaderProps) {
   const [profileOpen, setProfileOpen] = useState(false);
   const router = useRouter();
-
-  const handleSignOut = () => {
-    clearDemoSession();
-    setProfileOpen(false);
-    router.replace("/");
-  };
-
+  
+const handleSignOut = () => {
+  clearAuthSessionCookies();
+  setProfileOpen(false);
+  router.replace("/login");
+};
   return (
     <header className="dashboard-header sticky top-0 z-30 flex h-[76px] items-center justify-between gap-4 border-b px-4 sm:px-6 lg:px-8">
       <button

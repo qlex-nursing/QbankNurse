@@ -13,7 +13,8 @@ import {
   UserRound,
 } from "lucide-react";
 
-import { createDemoSession, getDemoSession } from "@/lib/demo-auth";
+import { registerUser } from "@/lib/services/auth/registerservice";
+import { login } from "@/lib/services/auth/loginservice";
 import { getSafeReturnTo } from "@/lib/navigation";
 
 interface DemoAuthFormProps {
@@ -30,50 +31,123 @@ export default function DemoAuthForm({ mode }: DemoAuthFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [phone, setPhone] = useState("");
+const [confirmPassword, setConfirmPassword] = useState("");
+const [agree, setAgree] = useState(false);
+const [registrationSuccess, setRegistrationSuccess] = useState("");
   const [returnTo, setReturnTo] = useState<string | null>(null);
 
 useEffect(() => {
   const params = new URLSearchParams(window.location.search);
 
   setReturnTo(getSafeReturnTo(params.get("returnTo")));
-}, []);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setError("");
+  if (!isRegister && params.get("registered") === "1") {
+    setEmail(params.get("email") ?? "");
+    setRegistrationSuccess(
+      "Your account has been created successfully. Please sign in to continue.",
+    );
+  }
+}, [isRegister]);
 
-    if (isRegister && !name.trim()) {
-      setError("Please enter your name.");
+ const handleSubmit = async (
+  event: React.FormEvent<HTMLFormElement>,
+) => {
+  event.preventDefault();
+  setError("");
+
+  if (isRegister && !name.trim()) {
+    setError("Please enter your username.");
+    return;
+  }
+
+  if (!email.trim() || !email.includes("@")) {
+    setError("Please enter a valid email address.");
+    return;
+  }
+
+  if (!password) {
+    setError("Please enter your password.");
+    return;
+  }
+
+  if (isRegister) {
+    if (!phone.trim()) {
+      setError("Please enter your phone number.");
       return;
     }
 
-    if (!email.trim() || !email.includes("@")) {
-      setError("Please enter a valid email address.");
+    if (password.length < 6) {
+      setError("Password must contain at least 6 characters.");
       return;
     }
 
-    if (password.length < 4) {
-      setError("Please enter at least 4 characters for the demo password.");
+    if (!/[A-Z]/.test(password)) {
+      setError("Password must contain at least one uppercase letter.");
       return;
     }
 
-    setLoading(true);
+    if (!/[0-9]/.test(password)) {
+      setError("Password must contain at least one number.");
+      return;
+    }
 
-    const user = {
-      name: isRegister
-        ? name.trim()
-        : getDemoSession()?.email === email.trim()
-          ? getDemoSession()?.name ?? "QbankNurse Student"
-          : email.split("@")[0],
-      email: email.trim(),
-    };
+    if (!/[^A-Za-z0-9]/.test(password)) {
+      setError("Password must contain at least one special character.");
+      return;
+    }
 
-    createDemoSession(user);
+    if (password !== confirmPassword) {
+      setError("Your passwords do not match.");
+      return;
+    }
 
-   window.setTimeout(() => {
-  router.push(returnTo ?? "/dashboard");
-}, 350);
-  };
+    if (!agree) {
+      setError("Please accept the terms to continue.");
+      return;
+    }
+  }
+
+  setLoading(true);
+
+  try {
+    if (isRegister) {
+      const result = await registerUser({
+        username: name.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
+        password,
+        passwordConfirmation: confirmPassword,
+        loginMethod: "password",
+        agree: true,
+        role: "Learner",
+        dashboardName: "web",
+        provider: "email",
+        challenge: "register-skew8@lancasto",
+      });
+
+      if (result.error) {
+        throw new Error(result.error);
+      }
+
+      router.push(
+        `/login?registered=1&email=${encodeURIComponent(email.trim())}`,
+      );
+      return;
+    }
+
+    await login(email.trim(), password);
+    router.push(returnTo ?? "/dashboard");
+  } catch (err) {
+    setError(
+      err instanceof Error
+        ? err.message
+        : "Authentication failed. Please try again.",
+    );
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <main className="flex min-h-screen bg-[#F8F7FC]">
@@ -155,7 +229,7 @@ useEffect(() => {
 
             <p className="mt-3 text-sm leading-6 text-[#817B91]">
               {isRegister
-                ? "Create your demo student profile and explore your learning dashboard."
+                ? "Registration is currently available in preview mode."
                 : "Enter your details to continue to your learning dashboard."}
             </p>
           </div>
@@ -212,6 +286,26 @@ useEffect(() => {
                 />
               </div>
             </div>
+            {isRegister && (
+  <div>
+    <label
+      htmlFor="phone"
+      className="mb-2 block text-sm font-bold text-[#342B50]"
+    >
+      Phone number
+    </label>
+
+    <input
+      id="phone"
+      type="tel"
+      autoComplete="tel"
+      value={phone}
+      onChange={(event) => setPhone(event.target.value)}
+      placeholder="+254 7XX XXX XXX"
+      className="h-12 w-full rounded-xl border border-[#E5E0ED] bg-white px-4 text-sm text-[#30264E] outline-none transition focus:border-[#8B72ED] focus:ring-4 focus:ring-[#8B72ED]/10"
+    />
+  </div>
+)}
 
             <div>
               <label
@@ -249,19 +343,66 @@ useEffect(() => {
                 </button>
               </div>
 
+              {isRegister && (
+  <div>
+    <label
+      htmlFor="confirmPassword"
+      className="mb-2 block text-sm font-bold text-[#342B50]"
+    >
+      Confirm password
+    </label>
+
+    <input
+      id="confirmPassword"
+      type="password"
+      autoComplete="new-password"
+      value={confirmPassword}
+      onChange={(event) => setConfirmPassword(event.target.value)}
+      placeholder="Re-enter your password"
+      className="h-12 w-full rounded-xl border border-[#E5E0ED] bg-white px-4 text-sm text-[#30264E] outline-none transition focus:border-[#8B72ED] focus:ring-4 focus:ring-[#8B72ED]/10"
+    />
+  </div>
+)}
+
               <p className="mt-2 text-[11px] text-[#928BA0]">
-                Demo only: any password with at least 4 characters is accepted.
+             {isRegister
+  ? "Create your student profile and explore your learning dashboard."
+  : "Enter your registered learner credentials to continue."}
               </p>
             </div>
 
-            {error && (
-              <p
-                role="alert"
-                className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-xs font-medium text-rose-700"
-              >
-                {error}
-              </p>
-            )}
+
+            {isRegister && (
+  <label className="flex items-start gap-3 text-xs leading-5 text-[#817B91]">
+    <input
+      type="checkbox"
+      checked={agree}
+      onChange={(event) => setAgree(event.target.checked)}
+      className="mt-1 h-4 w-4 rounded border-[#E5E0ED] accent-[#5B3DF5]"
+    />
+    <span>
+      I agree to the terms of service and privacy policy.
+    </span>
+  </label>
+)}
+
+           {registrationSuccess && (
+  <p
+    role="status"
+    className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs font-medium text-emerald-700"
+  >
+    {registrationSuccess}
+  </p>
+)}
+
+{error && (
+  <p
+    role="alert"
+    className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-xs font-medium text-rose-700"
+  >
+    {error}
+  </p>
+)}
 
             <button
               type="submit"
@@ -271,7 +412,7 @@ useEffect(() => {
               {loading
                 ? "Please wait..."
                 : isRegister
-                  ? "Create demo account"
+                  ? "Create account"
                   : "Sign in"}
               {!loading && <ArrowRight size={17} />}
             </button>
@@ -300,8 +441,7 @@ useEffect(() => {
           </p>
 
           <p className="mt-8 text-center text-[10px] leading-5 text-[#A39BAD]">
-            This is a demonstration sign-in experience. No real account or
-            password is created or verified.
+            Create your learner account and start your nursing preparation journey.
           </p>
         </div>
       </section>

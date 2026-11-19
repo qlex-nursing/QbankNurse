@@ -1,5 +1,6 @@
-import TrackLanding from "@/components/dashboard/exams/track-landing";
+
+import RNCourseLanding from "@/components/dashboard/exams/rn/rn-course-landing";
 
 export default function RNExamsPage() {
-  return <TrackLanding track="RN" />;
+  return <RNCourseLanding />;
 }
