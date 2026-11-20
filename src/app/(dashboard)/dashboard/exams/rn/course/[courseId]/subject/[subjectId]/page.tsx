@@ -72,11 +72,77 @@ interface ExamApiResponse {
   };
 }
 
+
+
+interface SavedAnswer {
+  attemptNumber?: number;
+  questionOptionId?: number;
+  questionContentId?: number;
+  questionMatrixCellId?: number;
+  questionMediaId?: number;
+  userAnswerData?: string;
+  userOrder?: string;
+  userHotspot?: string;
+  userHighlight?: string;
+  openEndedAnswer?: string;
+}
+
+interface LiveExamResponse {
+  data?: {
+    resumeAnswers?: Record<number, SavedAnswer>;
+  };
+  message?: string;
+  error?: string;
+}
+
+function hasSavedAnswer(answer?: SavedAnswer): boolean {
+  if (!answer) return false;
+
+  if (
+    answer.questionOptionId != null ||
+    answer.questionContentId != null ||
+    answer.questionMatrixCellId != null ||
+    answer.questionMediaId != null
+  ) {
+    return true;
+  }
+
+  if (
+    answer.userOrder?.trim() ||
+    answer.userHotspot?.trim() ||
+    answer.userHighlight?.trim() ||
+    answer.openEndedAnswer?.trim()
+  ) {
+    return true;
+  }
+
+  const rawAnswer = answer.userAnswerData?.trim();
+  if (!rawAnswer) return false;
+
+  try {
+    const parsed: unknown = JSON.parse(rawAnswer);
+
+    if (parsed == null) return false;
+    if (Array.isArray(parsed)) return parsed.length > 0;
+
+    if (typeof parsed === "object") {
+      return Object.keys(parsed).length > 0;
+    }
+
+    return Boolean(parsed);
+  } catch {
+    // Non-JSON answer strings (for example numeric/text responses) count.
+    return true;
+  }
+}
+
 export default function RNSubjectExamsPage() {
   const params = useParams<{
     courseId: string;
     subjectId: string;
   }>();
+
+  const [reviewableExams, setReviewableExams] = useState<Record<string, boolean>>({});
 
   const courseId = Number(params.courseId);
   const subjectId = Number(params.subjectId);
@@ -156,7 +222,41 @@ export default function RNSubjectExamsPage() {
         }
 
         if (!cancelled) {
-          setExams(examResponse.data.items ?? []);
+          const fetchedExams = examResponse.data.items ?? [];
+          setExams(fetchedExams);
+
+          // LiveFetch returns the saved answers for the active exam session.
+          const eligibilityEntries = await Promise.all(
+            fetchedExams.map(async (exam) => {
+              try {
+                const liveResponse =
+                  await examService.live<LiveExamResponse>({
+                    identifier: exam.guidId,
+                    dynamicPage: 1,
+                    dynamicPerPage: 100,
+                    dynamicSearch: "",
+                    dynamicSortDirection: "asc",
+                    dynamicExamLayout: "Generic",
+                    dynamicExamMode: "Exam",
+                  });
+
+                const resumeAnswers =
+                  liveResponse.data?.resumeAnswers ?? {};
+
+                const canReview = Object.values(resumeAnswers).some(
+                  (answer) => hasSavedAnswer(answer),
+                );
+
+                return [exam.guidId, canReview] as const;
+              } catch {
+                return [exam.guidId, false] as const;
+              }
+            }),
+          );
+
+          if (!cancelled) {
+            setReviewableExams(Object.fromEntries(eligibilityEntries));
+          }
         }
       } catch (err) {
         if (!cancelled) {
@@ -340,71 +440,95 @@ export default function RNSubjectExamsPage() {
             </div>
           )}
 
-          {/* EXAM CARDS */}
-          {!loading && !error && filteredExams.length > 0 && (
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-              {filteredExams.map((exam, index) => (
-                <Link
-  key={exam.guidId || exam.id}
-  href={`/dashboard/exams/rn/exam/${encodeURIComponent(
-    exam.guidId || String(exam.id),
-  )}?mode=Exam&layout=Generic`}
-  className="dashboard-card group relative flex min-h-[210px] flex-col overflow-hidden rounded-xl border border-[var(--dashboard-border)] p-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-[#8D79FF]/50 hover:shadow-[0_10px_24px_rgba(55,40,120,0.07)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8D79FF]"
->
-                
-                  {/* HEADER */}
-                  <div className="flex items-center justify-between">
-                    <div className="dashboard-accent-icon !h-10 !w-10">
-                      <ClipboardCheck size={18} />
-                    </div>
+         {/* EXAM CARDS */}
+{!loading && !error && filteredExams.length > 0 && (
+  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+    {filteredExams.map((exam, index) => {
+      const examIdentifier = encodeURIComponent(
+        exam.guidId || String(exam.id),
+      );
 
-                    <span className="text-[10px] font-extrabold tracking-widest text-[var(--dashboard-muted)] opacity-60">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                  </div>
+      const canReview = reviewableExams[exam.guidId] === true;
 
-                  {/* DETAILS */}
-                  <div className="mt-4 flex-1">
-                    <h3 className="dashboard-heading text-base font-extrabold leading-snug transition-colors group-hover:text-[#5B3DF5]">
-                      {exam.title}
-                    </h3>
+const modes = [
+  { label: "Exam", value: "Exam" },
+  ...(canReview
+    ? [{ label: "Review", value: "Review" }]
+    : []),
+  { label: "Tutor", value: "Tutor" },
+];
 
-                    <div className="dashboard-muted mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
-                      <span className="inline-flex items-center gap-1.5">
-                        <BookOpen size={14} />
-                        {exam.questionsCount ?? 0} questions
-                      </span>
-
-                      {exam.sectionsCount != null && (
-                        <span className="inline-flex items-center gap-1.5">
-                          <Layers3 size={14} />
-                          {exam.sectionsCount} sections
-                        </span>
-                      )}
-
-                      {exam.duration != null && (
-                        <span className="inline-flex items-center gap-1.5">
-                          <Clock3 size={14} />
-                          {exam.duration} minutes
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* ACTION */}
-                  <div className="mt-4 flex items-center justify-between border-t border-[var(--dashboard-border)] pt-3">
-                    <span className="text-xs font-bold text-[#5B3DF5]">
-                      Exam ID: {exam.id}
-                    </span>
-
-                    <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--dashboard-border)] bg-[var(--dashboard-surface)]">
-                      <ArrowRight size={15} />
-                    </span>
-                  </div>
-                </Link>
-              ))}
+      return (
+        <article
+          key={exam.guidId || exam.id}
+          className="dashboard-card group relative flex min-h-[220px] flex-col overflow-hidden rounded-xl border border-[var(--dashboard-border)] p-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-[#8D79FF]/50 hover:shadow-[0_10px_24px_rgba(55,40,120,0.07)]"
+        >
+          {/* HEADER */}
+          <div className="flex items-center justify-between">
+            <div className="dashboard-accent-icon !h-10 !w-10">
+              <ClipboardCheck size={18} />
             </div>
-          )}
+
+            <span className="text-[10px] font-extrabold tracking-widest text-[var(--dashboard-muted)] opacity-60">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+          </div>
+
+          {/* DETAILS */}
+          <div className="mt-4 flex-1">
+            <h3 className="dashboard-heading text-base font-extrabold leading-snug">
+              {exam.title}
+            </h3>
+
+            <div className="dashboard-muted mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
+              <span className="inline-flex items-center gap-1.5">
+                <BookOpen size={14} />
+                {exam.questionsCount ?? 0} questions
+              </span>
+
+              {exam.sectionsCount != null && (
+                <span className="inline-flex items-center gap-1.5">
+                  <Layers3 size={14} />
+                  {exam.sectionsCount} sections
+                </span>
+              )}
+
+              {exam.duration != null && (
+                <span className="inline-flex items-center gap-1.5">
+                  <Clock3 size={14} />
+                  {exam.duration} minutes
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* STUDY MODES */}
+        <div
+  className={`mt-4 grid gap-2 border-t border-[var(--dashboard-border)] pt-3 ${
+    canReview ? "grid-cols-3" : "grid-cols-2"
+  }`}
+>
+            {modes.map((mode) => (
+              <Link
+                key={mode.value}
+                href={`/dashboard/exams/rn/exam/${examIdentifier}?mode=${mode.value}&layout=Generic`}
+                className={`flex items-center justify-center rounded-lg border px-2 py-2 text-xs font-bold transition-colors ${
+  mode.value === "Exam"
+    ? "border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 dark:border-blue-400/30 dark:bg-blue-500/15 dark:text-blue-300 dark:hover:bg-blue-500/25"
+    : mode.value === "Review"
+      ? "border-violet-200 bg-violet-50 text-violet-700 hover:bg-violet-100 dark:border-violet-400/30 dark:bg-violet-500/15 dark:text-violet-300 dark:hover:bg-violet-500/25"
+      : "border-teal-200 bg-teal-50 text-teal-700 hover:bg-teal-100 dark:border-teal-400/30 dark:bg-teal-500/15 dark:text-teal-300 dark:hover:bg-teal-500/25"
+}`}
+              >
+                {mode.label}
+              </Link>
+            ))}
+          </div>
+        </article>
+      );
+    })}
+  </div>
+)}
         </section>
       </div>
     </main>

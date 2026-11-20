@@ -86,9 +86,7 @@ const handleSignOut = () => {
               <span className="dashboard-heading block text-xs font-bold">
                 My Account
               </span>
-              <span className="dashboard-muted mt-0.5 block text-[10px]">
-                Demo profile
-              </span>
+             
             </span>
 
             <ChevronDown
