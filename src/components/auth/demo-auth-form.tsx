@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 
 import { registerUser } from "@/lib/services/auth/registerservice";
-import { writeAuthSessionCookies } from "@/lib/auth/session";
+import { login } from "@/lib/services/auth/loginservice";
 import { getSafeReturnTo } from "@/lib/navigation";
 
 interface DemoAuthFormProps {
@@ -30,6 +30,7 @@ export default function DemoAuthForm({ mode }: DemoAuthFormProps) {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [accountNotFound, setAccountNotFound] = useState(false);
   const [loading, setLoading] = useState(false);
   const [phone, setPhone] = useState("");
 const [confirmPassword, setConfirmPassword] = useState("");
@@ -41,6 +42,10 @@ useEffect(() => {
   const params = new URLSearchParams(window.location.search);
 
   setReturnTo(getSafeReturnTo(params.get("returnTo")));
+
+  if (isRegister && params.get("email")) {
+    setEmail(params.get("email") ?? "");
+  }
 
   if (!isRegister && params.get("registered") === "1") {
     setEmail(params.get("email") ?? "");
@@ -55,6 +60,7 @@ useEffect(() => {
 ) => {
   event.preventDefault();
   setError("");
+  setAccountNotFound(false);
 
   if (isRegister && !name.trim()) {
     setError("Please enter your username.");
@@ -108,7 +114,7 @@ useEffect(() => {
     }
   }
 
-  setLoading(true);
+    setLoading(true);
 
   try {
     if (isRegister) {
@@ -136,17 +142,38 @@ useEffect(() => {
       return;
     }
 
-    writeAuthSessionCookies(
-  "qbanknurse-demo",
-  "qbanknurse-demo-session",
-);
+    await login(email.trim(), password);
+    router.push(returnTo ?? "/dashboard");
+    return;
 
-router.push(returnTo ?? "/dashboard");
+  } catch (err) {
+    const message =
+      err instanceof Error
+        ? err.message
+        : "Authentication failed. Please try again.";
+
+    const normalizedMessage = message.toLowerCase();
+
+    const isUnknownAccount =
+      normalizedMessage.includes("user not found") ||
+      normalizedMessage.includes("account not found") ||
+      normalizedMessage.includes("email not found") ||
+      normalizedMessage.includes("email does not exist") ||
+      normalizedMessage.includes("email is not registered") ||
+      normalizedMessage.includes("user does not exist");
+
+    setAccountNotFound(isUnknownAccount);
+
+    setError(
+      isUnknownAccount
+        ? "We couldn't find an account with this email. Please create an account to continue."
+        : message,
+    );
+
   } finally {
     setLoading(false);
   }
 };
-
   return (
     <main className="flex min-h-screen bg-[#F8F7FC]">
       {/* Left visual panel */}
@@ -400,6 +427,16 @@ router.push(returnTo ?? "/dashboard");
   >
     {error}
   </p>
+)}
+
+{accountNotFound && (
+  <Link
+    href={`/register?email=${encodeURIComponent(email.trim())}`}
+    className="flex items-center justify-center gap-2 rounded-xl border border-[#D8CCFF] bg-[#F3EFFF] px-4 py-3 text-sm font-bold text-[#5B3DF5] transition hover:bg-[#E8DEFF]"
+  >
+    Create your QbankNurse account
+    <ArrowRight size={16} />
+  </Link>
 )}
 
             <button
